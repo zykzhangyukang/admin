@@ -10,6 +10,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bizedu-service</artifactId>
+    <version>${i.project.version}</version>
 
+    <dependencies>
+
+        <!-- 基础service模块 -->
+        <dependency>
+            <groupId>com.coderman</groupId>
+            <artifactId>base-service</artifactId>
+        </dependency>
+
+        <!-- bizedu API 模块 -->
+        <dependency>
+            <groupId>com.coderman</groupId>
+            <artifactId>bizedu-api</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

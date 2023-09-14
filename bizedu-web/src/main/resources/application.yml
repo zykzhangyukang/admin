@@ -1,0 +1,19 @@
+server:
+  port: 8989
+spring:
+  application:
+    name: bizedu
+  datasource:
+    username: root
+    password: DES@2120FA78BC6EB99B019C119BD8067DB0
+    url: jdbc:mysql://localhost:3306/bizedu_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  redis:
+    host: wx.yswg.com.cn
+    password: yswg@2019
+    port: 6379
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

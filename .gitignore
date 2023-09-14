@@ -12,4 +12,7 @@ deploy.js
 /src/views/zmyTest/
 /src/config/env.js
 webstorm.config.js
-/target
+
+/bizedu-web/target/
+/bizedu-service/target/
+/bizedu-api/target/
