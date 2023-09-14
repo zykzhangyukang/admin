@@ -101,7 +101,7 @@ public interface UserService {
 
     /**
      * 设置密码
-     *
+     * @param userPwdUpdateDTO
      * @return
      */
     ResultVO<Void> updateUserPwd(UserPwdUpdateDTO userPwdUpdateDTO);
