@@ -1,6 +1,7 @@
 package com.coderman.bizedu;
 
 import com.coderman.service.anntation.ISpringBootApplication;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 
 /**
@@ -8,6 +9,7 @@ import org.springframework.boot.SpringApplication;
  * @date ：2023/09/14 10:37
  */
 @ISpringBootApplication
+@MapperScan(basePackages = {"com.coderman.*.*.dao"})
 public class BizEduApplication {
 
     public static void main(String[] args) {

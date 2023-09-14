@@ -12,7 +12,7 @@ spring:
     time-zone: GMT+8
   redis:
     host: wx.yswg.com.cn
-    password: yswg@2019
+    password: DES@D59EF7CAF79ADAD55BFE9AE4772B78A7
     port: 6379
 mybatis:
   configuration:
