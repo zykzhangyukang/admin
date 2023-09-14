@@ -1,0 +1,15 @@
+/node_modules/
+/package-lock.json
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+/dist
+deploy.js
+/webpacke.webstorm.js
+/script/
+/src/views/zmyTest/
+/src/config/env.js
+webstorm.config.js
+/target
