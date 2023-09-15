@@ -10,10 +10,10 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-  redis:
-    host: wx.yswg.com.cn
-    password: DES@D59EF7CAF79ADAD55BFE9AE4772B78A7
-    port: 6379
+#  redis:
+#    host: wx.yswg.com.cn
+#    password: DES@D59EF7CAF79ADAD55BFE9AE4772B78A7
+#    port: 6379
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

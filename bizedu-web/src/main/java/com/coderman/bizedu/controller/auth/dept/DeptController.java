@@ -1,4 +1,4 @@
-package com.coderman.bizedu.auth.controller.dept;
+package com.coderman.bizedu.controller.auth.dept;
 
 import com.coderman.api.vo.ResultVO;
 import com.coderman.bizedu.auth.model.dept.DeptModel;

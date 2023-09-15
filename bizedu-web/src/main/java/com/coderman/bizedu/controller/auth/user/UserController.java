@@ -1,4 +1,4 @@
-package com.coderman.bizedu.auth.controller.user;
+package com.coderman.bizedu.controller.auth.user;
 
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.vo.PageVO;

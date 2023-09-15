@@ -1,4 +1,4 @@
-package com.coderman.bizedu.auth.controller.func;
+package com.coderman.bizedu.controller.auth.func;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Api(value = "功能管理", tags = "功能管理")
 @RestController
-@RequestMapping(value = "/${domain}/auth/func")
+@RequestMapping(value = "/auth/func")
 public class FuncController {
 
     @Resource

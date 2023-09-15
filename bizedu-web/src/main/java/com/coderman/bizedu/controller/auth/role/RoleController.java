@@ -1,4 +1,4 @@
-package com.coderman.bizedu.auth.controller.role;
+package com.coderman.bizedu.controller.auth.role;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;

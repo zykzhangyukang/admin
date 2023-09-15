@@ -1,4 +1,4 @@
-package com.coderman.bizedu.auth.controller.resc;
+package com.coderman.bizedu.controller.auth.resc;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;

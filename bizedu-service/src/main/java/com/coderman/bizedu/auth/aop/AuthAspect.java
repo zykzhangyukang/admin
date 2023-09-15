@@ -86,7 +86,7 @@ public class AuthAspect {
     public void init() {
 
         // 白名单
-        whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout", "/auth/user/info", "/auth/user/refresh/login", "/auth/const/all", "/auth/api/resc/all", "/auth/api/user/info"));
+        whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout", "/auth/user/info", "/auth/user/refresh/login", "/auth/const/all"));
 
         // 刷新系统资源
         refreshSystemAllRescMap();

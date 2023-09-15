@@ -4,7 +4,7 @@
 #### 1. 命令行启动参数
 ```text
 -Dserver.port=8989
--Ddomain=domain
+-Ddomain=bizedu
 -Dspring.profiles.active=dev
 -Dlog.file=D:\log\springboot\bizedu
 -Dspring.main.allow-bean-definition-overriding=true

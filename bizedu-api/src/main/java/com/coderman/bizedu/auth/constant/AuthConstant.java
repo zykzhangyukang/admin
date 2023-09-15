@@ -42,8 +42,8 @@ public interface AuthConstant {
     @ConstList(group = project_domain, name = "权限系统")
     String PROJECT_DOMAIN_AUTH = "auth";
 
-    @ConstList(group = project_domain, name = "同步系统")
-    String PROJECT_DOMAIN_SYNC = "sync";
+    @ConstList(group = project_domain, name = "课程系统")
+    String PROJECT_DOMAIN_EDU = "edu";
 
 
     /**
