@@ -9,6 +9,7 @@ import com.coderman.bizedu.auth.vo.user.UserVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +89,13 @@ public interface FuncDAO extends BaseDAO<FuncModel, FuncExample> {
      */
     FuncVO selectFuncInfo(@Param(value = "funcId") Integer funcId);
 
+
+    /**
+     * 查询功能信息
+     * @param funcIdList
+     * @return
+     */
+    List<FuncModel> selectAllByFuncIdList(@Param(value = "funcIdList") Collection<Integer> funcIdList);
 
     /**
      * 根据用户id获取所有目录

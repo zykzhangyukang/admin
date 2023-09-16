@@ -11,6 +11,7 @@ import com.coderman.bizedu.auth.model.func.FuncModel;
 import com.coderman.bizedu.auth.vo.func.FuncTreeVO;
 import com.coderman.bizedu.auth.vo.func.FuncVO;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -117,5 +118,13 @@ public interface FuncService {
      * @param roleId
      * @return
      */
-    ResultVO<List<FuncModel>> selectByRoleId(Integer roleId);
+    List<FuncModel> selectByRoleId(Integer roleId);
+
+    /**
+     * 根据功能id计划查询功能
+     *
+     * @param funcIdList
+     * @return
+     */
+    List<FuncModel> selectAllByFuncIdList(Collection<Integer> funcIdList);
 }

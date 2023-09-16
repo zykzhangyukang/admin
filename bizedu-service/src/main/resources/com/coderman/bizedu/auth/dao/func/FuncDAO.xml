@@ -568,6 +568,16 @@
         f.func_id = #{funcId}
   </select>
 
+  <select id="selectAllByFuncIdList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from auth_func f
+    where f.func_id in
+    <foreach collection="funcIdList" separator="," open="(" close=")" item="item">
+      #{item}
+    </foreach>
+  </select>
+
   <select id="selectByRoleId" resultMap="BaseResultMap">
       SELECT
         f.func_id,

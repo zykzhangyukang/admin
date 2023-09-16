@@ -30,6 +30,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -465,13 +466,15 @@ public class FuncServiceImpl implements FuncService {
 
     @Override
     @LogError(value = "根据角色id查询功能列表")
-    public ResultVO<List<FuncModel>> selectByRoleId(@LogErrorParam Integer roleId) {
+    public List<FuncModel> selectByRoleId(@LogErrorParam Integer roleId) {
+        Assert.notNull(roleId, "角色id不能为空！");
+        return this.funcDAO.selectByRoleId(roleId);
+    }
 
-        if(Objects.isNull(roleId)){
-            return ResultUtil.getWarn("角色id不能为空！");
-        }
-
-        List<FuncModel> funcModelList  = this.funcDAO.selectByRoleId(roleId);
-        return ResultUtil.getSuccessList(FuncModel.class,funcModelList);
+    @Override
+    @LogError(value = "根据功能ids查询功能列表")
+    public List<FuncModel> selectAllByFuncIdList(Collection<Integer> funcIdList) {
+        Assert.noNullElements(funcIdList, "funcIdList is empty");
+        return this.funcDAO.selectAllByFuncIdList(funcIdList);
     }
 }

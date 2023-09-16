@@ -37,9 +37,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -61,9 +63,6 @@ public class RoleServiceImpl implements RoleService {
 
     @Resource
     private FuncService funcService;
-
-    @Resource
-    private FuncDAO funcDAO;
 
     @Resource
     private RoleFuncDAO roleFuncDAO;
@@ -412,41 +411,40 @@ public class RoleServiceImpl implements RoleService {
         }
 
         List<Integer> funcIdList = roleAuthorizedDTO.getFuncIdList();
-        if (Objects.isNull(roleId)) {
-            return ResultUtil.getWarn("角色ID不能为空！");
-        }
+        Assert.notNull(roleId, "角色ID不能为空！");
 
         // 本次需要分配的功能查出来
-        List<FuncModel> needAuthFuncKeyList = new ArrayList<>();
+        List<Integer> needAuthFuncIdList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(funcIdList)) {
 
-            FuncExample example = new FuncExample();
-            example.createCriteria().andFuncIdIn(funcIdList);
-            needAuthFuncKeyList = new ArrayList<>(this.funcDAO.selectByExample(example));
+            List<FuncModel> models = this.funcService.selectAllByFuncIdList(funcIdList);
+            needAuthFuncIdList = models.stream().map(FuncModel::getFuncId).distinct().collect(Collectors.toList());
         }
 
         // 查出该角色原本有的功能
-        ResultVO<List<FuncModel>> listResultVO = this.funcService.selectByRoleId(roleId);
-        if (!ResultConstant.RESULT_CODE_200.equals(listResultVO.getCode())) {
-            return ResultUtil.getWarn(listResultVO.getMsg());
-        }
-
-        List<FuncModel> historyAuthFuncList = listResultVO.getResult();
+        List<FuncModel> models = this.funcService.selectByRoleId(roleId);
+        List<Integer> historyAuthFuncIdList = models.stream().map(FuncModel::getFuncId).distinct().collect(Collectors.toList());
 
         // 取交集
-        Collection<FuncModel> intersection = CollectionUtils.intersection(needAuthFuncKeyList, historyAuthFuncList);
-        if(CollectionUtils.isEmpty(intersection)){
-            return ResultUtil.getSuccess(RoleFuncCheckVO.class, new  RoleFuncCheckVO(Collections.emptyList() , Collections.emptyList()));
+        Collection<Integer> intersection = CollectionUtils.intersection(needAuthFuncIdList, historyAuthFuncIdList);
+        // 新增的
+        Collection<Integer> addList = CollectionUtils.subtract(needAuthFuncIdList, intersection);
+        // 删除的
+        Collection<Integer> delList = CollectionUtils.subtract(historyAuthFuncIdList, intersection);
+
+        List<FuncModel> addListModels =  new ArrayList<>();
+        List<FuncModel> delListModels =  new ArrayList<>();
+
+        if(CollectionUtils.isNotEmpty(addList)){
+            addListModels =  this.funcService.selectAllByFuncIdList(addList);
+        }
+        if(CollectionUtils.isNotEmpty(delList)){
+            delListModels = this.funcService.selectAllByFuncIdList(delList);
         }
 
-        // 新增的
-        Collection<FuncModel> addList = CollectionUtils.subtract(needAuthFuncKeyList, intersection);
-        // 删除的
-        Collection<FuncModel> delList = CollectionUtils.subtract(historyAuthFuncList, intersection);
-
         RoleFuncCheckVO checkVO = new RoleFuncCheckVO();
-        checkVO.setInsertList(new ArrayList<>(addList));
-        checkVO.setDelList(new ArrayList<>(delList));
+        checkVO.setInsertList(addListModels);
+        checkVO.setDelList(delListModels);
         return ResultUtil.getSuccess(RoleFuncCheckVO.class, checkVO);
     }
 
