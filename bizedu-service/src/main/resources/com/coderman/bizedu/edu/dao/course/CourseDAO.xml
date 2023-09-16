@@ -267,4 +267,31 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where course_id = #{courseId,jdbcType=INTEGER}
   </update>
+
+  <resultMap id="pageBaseResultMap" extends="BaseResultMap" type="com.coderman.bizedu.edu.vo.course.CourseVO">
+    <result column="real_name" property="creatorName"/>
+  </resultMap>
+
+  <select id="countPage" resultType="java.lang.Long">
+       SELECT
+         count(1)
+       FROM
+          edu_course ec
+          LEFT JOIN auth_user au ON ec.creator_id = au.user_id
+  </select>
+
+  <select id="selectPage" resultMap="pageBaseResultMap">
+      SELECT
+          ec.course_id,
+          ec.course_name,
+          ec.creator_id,
+          ec.create_time,
+          ec.update_time,
+          au.real_name
+      FROM
+          edu_course ec
+          LEFT JOIN auth_user au ON ec.creator_id = au.user_id
+  </select>
+
+
 </mapper>

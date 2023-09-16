@@ -6,7 +6,6 @@ import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.bizedu.auth.dao.func.FuncDAO;
 import com.coderman.bizedu.auth.dao.role.RoleDAO;
 import com.coderman.bizedu.auth.dao.role.RoleFuncDAO;
 import com.coderman.bizedu.auth.dao.user.UserDAO;
@@ -15,7 +14,6 @@ import com.coderman.bizedu.auth.dto.func.RoleFuncUpdateDTO;
 import com.coderman.bizedu.auth.dto.role.RolePageDTO;
 import com.coderman.bizedu.auth.dto.role.RoleSaveDTO;
 import com.coderman.bizedu.auth.dto.role.RoleUpdateDTO;
-import com.coderman.bizedu.auth.model.func.FuncExample;
 import com.coderman.bizedu.auth.model.func.FuncModel;
 import com.coderman.bizedu.auth.model.role.RoleFuncExample;
 import com.coderman.bizedu.auth.model.role.RoleFuncModel;
@@ -41,7 +39,6 @@ import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
