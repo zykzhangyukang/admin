@@ -11,9 +11,12 @@ public interface CourseConstant {
      */
     String COURSE_STATUS_GROUP = "course_status_group";
 
-    @ConstList(group = COURSE_STATUS_GROUP, name = "正常")
+    @ConstList(group = COURSE_STATUS_GROUP, name = "上架中")
     String COURSE_STATUS_ENABLE = "enable";
 
-    @ConstList(group = COURSE_STATUS_GROUP, name = "禁用")
+    @ConstList(group = COURSE_STATUS_GROUP, name = "已下架")
     String COURSE_STATUS_DISABLE = "disable";
+
+    @ConstList(group = COURSE_STATUS_GROUP, name = "待发布")
+    String COURSE_STATUS_WAIT = "wait";
 }

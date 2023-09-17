@@ -7,20 +7,17 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class CoursePageDTO extends BaseModel {
+public class CourseUpdateDTO extends BaseModel {
 
-    @ApiModelProperty(value = "当前页")
-    private Integer currentPage;
-
-    @ApiModelProperty(value = "每页显示条数")
-    private Integer pageSize;
+    @ApiModelProperty(value = "课程id")
+    private Integer courseId;
 
     @ApiModelProperty(value = "课程名称")
     private String courseName;
 
-    @ApiModelProperty(value = "创建人")
-    private String creatorName;
-
     @ApiModelProperty(value = "课程状态")
     private String status;
+
+    @ApiModelProperty(value = "描述信息")
+    private String description;
 }
