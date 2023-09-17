@@ -31,7 +31,7 @@ public class CourseController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "CourseVO", value = {"updateTime", "courseId", "courseName", "createTime", "creatorId","creatorName"}),
+            @ApiReturnParam(name = "CourseVO", value = {"updateTime", "courseId", "courseName", "createTime", "creatorId","creatorName","description","status"}),
     })
     public ResultVO<PageVO<List<CourseVO>>> page(@RequestBody CoursePageDTO coursePageDTO) {
         return this.courseService.page(coursePageDTO);

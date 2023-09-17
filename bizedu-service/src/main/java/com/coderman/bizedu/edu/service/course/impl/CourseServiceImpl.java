@@ -8,6 +8,7 @@ import com.coderman.bizedu.edu.dao.course.CourseDAO;
 import com.coderman.bizedu.edu.dto.course.CoursePageDTO;
 import com.coderman.bizedu.edu.service.course.CourseService;
 import com.coderman.bizedu.edu.vo.course.CourseVO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +30,15 @@ public class CourseServiceImpl implements CourseService {
 
         Integer pageSize = queryVO.getPageSize();
         Integer currentPage = queryVO.getCurrentPage();
+
+        String courseName = queryVO.getCourseName();
+        if(StringUtils.isNotBlank(courseName)){
+            conditionMap.put("courseName",courseName);
+        }
+        String status = queryVO.getStatus();
+        if(StringUtils.isNotBlank(status)){
+            conditionMap.put("status",status);
+        }
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
 

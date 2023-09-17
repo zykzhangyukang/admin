@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.coderman.bizedu.edu.model.course.CourseModel">
     <id column="course_id" jdbcType="INTEGER" property="courseId" />
     <result column="course_name" jdbcType="VARCHAR" property="courseName" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="creator_id" jdbcType="INTEGER" property="creatorId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -70,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    course_id, course_name, creator_id, create_time, update_time
+    course_id, course_name, status, creator_id, create_time, update_time
   </sql>
   <sql id="Blob_Column_List">
     description
@@ -124,12 +125,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.bizedu.edu.model.course.CourseModel">
-    insert into edu_course (course_id, course_name, creator_id, 
-      create_time, update_time, description
-      )
-    values (#{courseId,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR}, #{creatorId,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{description,jdbcType=LONGVARCHAR}
-      )
+    insert into edu_course (course_id, course_name, status, 
+      creator_id, create_time, update_time, 
+      description)
+    values (#{courseId,jdbcType=INTEGER}, #{courseName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{creatorId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{description,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.bizedu.edu.model.course.CourseModel">
     insert into edu_course
@@ -139,6 +140,9 @@
       </if>
       <if test="courseName != null">
         course_name,
+      </if>
+      <if test="status != null">
+        status,
       </if>
       <if test="creatorId != null">
         creator_id,
@@ -159,6 +163,9 @@
       </if>
       <if test="courseName != null">
         #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
       </if>
       <if test="creatorId != null">
         #{creatorId,jdbcType=INTEGER},
@@ -189,6 +196,9 @@
       <if test="record.courseName != null">
         course_name = #{record.courseName,jdbcType=VARCHAR},
       </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=VARCHAR},
+      </if>
       <if test="record.creatorId != null">
         creator_id = #{record.creatorId,jdbcType=INTEGER},
       </if>
@@ -210,6 +220,7 @@
     update edu_course
     set course_id = #{record.courseId,jdbcType=INTEGER},
       course_name = #{record.courseName,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=VARCHAR},
       creator_id = #{record.creatorId,jdbcType=INTEGER},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
@@ -222,6 +233,7 @@
     update edu_course
     set course_id = #{record.courseId,jdbcType=INTEGER},
       course_name = #{record.courseName,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=VARCHAR},
       creator_id = #{record.creatorId,jdbcType=INTEGER},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP}
@@ -234,6 +246,9 @@
     <set>
       <if test="courseName != null">
         course_name = #{courseName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
       </if>
       <if test="creatorId != null">
         creator_id = #{creatorId,jdbcType=INTEGER},
@@ -253,6 +268,7 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.coderman.bizedu.edu.model.course.CourseModel">
     update edu_course
     set course_name = #{courseName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
       creator_id = #{creatorId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -262,6 +278,7 @@
   <update id="updateByPrimaryKey" parameterType="com.coderman.bizedu.edu.model.course.CourseModel">
     update edu_course
     set course_name = #{courseName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
       creator_id = #{creatorId,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -272,25 +289,42 @@
     <result column="real_name" property="creatorName"/>
   </resultMap>
 
+  <sql id="pageWhereSql">
+    <where>
+      <if test="courseName!=null and courseName!=''">
+        and course_name like concat('%',#{courseName},'%')
+      </if>
+      <if test="status!=null and status!=''">
+        and status = #{status}
+      </if>
+    </where>
+  </sql>
+
   <select id="countPage" resultType="java.lang.Long">
-       SELECT
-         count(1)
-       FROM
-          edu_course ec
-          LEFT JOIN auth_user au ON ec.creator_id = au.user_id
+    SELECT
+    count(1)
+    FROM
+    edu_course ec
+    LEFT JOIN auth_user au ON ec.creator_id = au.user_id
+    <include refid="pageWhereSql"></include>
   </select>
 
   <select id="selectPage" resultMap="pageBaseResultMap">
-      SELECT
-          ec.course_id,
-          ec.course_name,
-          ec.creator_id,
-          ec.create_time,
-          ec.update_time,
-          au.real_name
-      FROM
-          edu_course ec
-          LEFT JOIN auth_user au ON ec.creator_id = au.user_id
+    SELECT
+    ec.course_id,
+    ec.course_name,
+    ec.status,
+    ec.description,
+    ec.creator_id,
+    ec.create_time,
+    ec.update_time,
+    au.real_name
+    FROM
+    edu_course ec
+    LEFT JOIN auth_user au ON ec.creator_id = au.user_id
+    <include refid="pageWhereSql"></include>
+    order by ec.create_time desc
+    limit #{offset}, #{size}
   </select>
 
 

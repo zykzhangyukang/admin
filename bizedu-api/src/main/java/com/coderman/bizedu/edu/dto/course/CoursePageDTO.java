@@ -14,4 +14,10 @@ public class CoursePageDTO extends BaseModel {
 
     @ApiModelProperty(value = "每页显示条数")
     private Integer pageSize;
+
+    @ApiModelProperty(value = "课程名称")
+    private String courseName;
+
+    @ApiModelProperty(value = "课程状态")
+    private String status;
 }

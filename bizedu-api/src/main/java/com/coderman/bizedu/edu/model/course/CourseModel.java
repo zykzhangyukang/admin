@@ -24,6 +24,9 @@ public class CourseModel extends BaseModel {
     @ApiModelProperty(value = "课程名称")
     private String courseName;
 
+    @ApiModelProperty(value = "课程状态")
+    private String status;
+
     @ApiModelProperty(value = "创建人id")
     private Integer creatorId;
 
