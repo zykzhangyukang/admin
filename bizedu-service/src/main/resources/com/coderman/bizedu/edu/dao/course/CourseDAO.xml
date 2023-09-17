@@ -292,7 +292,7 @@
   <sql id="pageWhereSql">
     <where>
       <if test="courseName!=null and courseName!=''">
-        and ec.and course_name like concat('%',#{courseName},'%')
+        and ec.course_name like concat('%',#{courseName},'%')
       </if>
       <if test="creatorName!=null and creatorName!=''">
         and au.real_name like concat('%',#{creatorName},'%')
