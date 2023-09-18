@@ -25,6 +25,11 @@
             <groupId>com.coderman</groupId>
             <artifactId>bizedu-api</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>net.bramp.ffmpeg</groupId>
+            <artifactId>ffmpeg</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

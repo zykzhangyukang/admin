@@ -12,3 +12,7 @@
 
 #### 2. 项目部署参数
 nohup java -Dserver.port=8989 -Ddomain=bizedu -Dspring.profiles.active=pro -Dlog.file=/root/app/logs -Dspring.main.allow-bean-definition-overriding=true  -jar bizedu-web-1.0.0-DEV-SNAPSHOT.jar &
+
+#### 3. 软件下载
+
+https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-5.1.2-full_build.7z [windows]

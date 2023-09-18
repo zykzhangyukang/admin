@@ -19,6 +19,10 @@
         <module>bizedu-service</module>
     </modules>
 
+    <properties>
+        <ffmpeg.version>0.7.0</ffmpeg.version>
+    </properties>
+
     <dependencyManagement>
 
         <dependencies>
@@ -32,6 +36,14 @@
                 <artifactId>bizedu-service</artifactId>
                 <version>${i.project.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>net.bramp.ffmpeg</groupId>
+                <artifactId>ffmpeg</artifactId>
+                <version>${ffmpeg.version}</version>
+            </dependency>
+
+
         </dependencies>
 
     </dependencyManagement>
