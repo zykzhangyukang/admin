@@ -18,3 +18,4 @@ webstorm.config.js
 /bizedu-api/target/
 /ffm
 /tools/ffmpeg-win.exe
+/tools/ffprobe-win.exe

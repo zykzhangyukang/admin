@@ -15,4 +15,4 @@ nohup java -Dserver.port=8989 -Ddomain=bizedu -Dspring.profiles.active=pro -Dlog
 
 #### 3. 软件下载
 
-https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-5.1.2-full_build.7z [windows]
+https://webradio.hinekure.net/ffmpeg/ffmpeg.zeranoe.com/builds/win64/static/ [windows]
