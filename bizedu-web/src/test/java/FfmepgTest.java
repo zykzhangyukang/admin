@@ -26,8 +26,8 @@ public class FfmepgTest {
     public static void main(String[] args) throws IOException {
 
         // 初始化FFmpeg
-        FFmpeg ffmpeg = new FFmpeg("E:\\workspace\\bizedu\\tools\\ffmpeg-win.exe");
-        FFprobe ffprobe = new FFprobe("E:\\workspace\\bizedu\\tools\\ffprobe-win.exe");
+        FFmpeg ffmpeg = new FFmpeg("F:\\workspace\\workspace02\\bizedu\\tools\\ffmpeg-win.exe");
+        FFprobe ffprobe = new FFprobe("F:\\workspace\\workspace02\\bizedu\\tools\\ffprobe-win.exe");
         // 输入视频文件路径
         String inputVideoPath = "C:\\Users\\Administrator\\Desktop\\test\\input.mp4";
         // 输出M3U8文件路径

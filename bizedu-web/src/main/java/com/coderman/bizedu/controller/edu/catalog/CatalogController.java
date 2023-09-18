@@ -31,6 +31,7 @@ public class CatalogController {
     @GetMapping(value = "/tree")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "CatalogTreeVO", value = {"catalogId", "updateTime", "catalogName", "createTime", "parentId","children"}),
     })
     public ResultVO<List<CatalogTreeVO>> listTree() {
         return this.catalogService.listTree();
