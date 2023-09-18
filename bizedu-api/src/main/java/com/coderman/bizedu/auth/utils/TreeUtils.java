@@ -1,6 +1,7 @@
 package com.coderman.bizedu.auth.utils;
 
 import com.coderman.bizedu.auth.vo.func.FuncTreeVO;
+import com.coderman.bizedu.edu.vo.catalog.CatalogTreeVO;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -90,5 +91,32 @@ public class TreeUtils {
 
         rootFuncTreeNode.sort(Comparator.comparingInt(FuncTreeVO::getFuncSort));
         return rootFuncTreeNode;
+    }
+
+    public static List<CatalogTreeVO> buildCatalogTreeByList(List<CatalogTreeVO> treeVoList) {
+
+        List<CatalogTreeVO> rootCatalogTreeNode = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(treeVoList)) {
+            return Collections.emptyList();
+        }
+
+        Map<Integer, CatalogTreeVO> funcTreeVoMap = treeVoList.stream().collect(Collectors.toMap(CatalogTreeVO::getCatalogId, e -> e, (k1, k2) -> k2));
+
+        for (CatalogTreeVO catalogTreeVO : treeVoList) {
+            Integer parentId = catalogTreeVO.getParentId();
+
+            if (funcTreeVoMap.containsKey(parentId)) {
+
+                CatalogTreeVO parentFuncTreeNode = funcTreeVoMap.get(parentId);
+                List<CatalogTreeVO> childrenList = Optional.ofNullable(parentFuncTreeNode.getChildren()).orElse(new ArrayList<>());
+                childrenList.add(catalogTreeVO);
+                parentFuncTreeNode.setChildren(childrenList);
+            } else {
+
+                rootCatalogTreeNode.add(catalogTreeVO);
+            }
+        }
+        return rootCatalogTreeNode;
     }
 }

@@ -208,4 +208,10 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where catalog_id = #{catalogId,jdbcType=INTEGER}
   </update>
+
+  <select id="selectAllCatalogTreeVO" resultType="com.coderman.bizedu.edu.vo.catalog.CatalogTreeVO">
+    select
+    catalog_id, catalog_name, parent_id, create_time, update_time
+    from edu_catalog
+  </select>
 </mapper>

@@ -61,16 +61,9 @@ public class FuncServiceImpl implements FuncService {
     @Override
     @LogError(value = "获取功能树")
     public ResultVO<List<FuncTreeVO>> listTree() {
-
-        List<FuncTreeVO> treeVOS = Lists.newArrayList();
-
         List<FuncTreeVO> funcTreeVos = this.funcDAO.selectAllFuncTreeVO();
-
-        if (CollectionUtils.isNotEmpty(funcTreeVos)) {
-            treeVOS = TreeUtils.buildFuncTreeByList(funcTreeVos);
-        }
-
-        return ResultUtil.getSuccessList(FuncTreeVO.class, treeVOS);
+        List<FuncTreeVO> treeVos = TreeUtils.buildFuncTreeByList(funcTreeVos);
+        return ResultUtil.getSuccessList(FuncTreeVO.class, treeVos);
     }
 
     @Override
@@ -406,20 +399,12 @@ public class FuncServiceImpl implements FuncService {
     public ResultVO<List<FuncTreeVO>> selectMenusTreeByUserId(@LogErrorParam Integer userId) {
 
         if (Objects.isNull(userId)) {
-
             return ResultUtil.getWarn("用户id不能为空！");
         }
-
         // 查询目录类型的功能
-        List<FuncTreeVO> treeVOs = new ArrayList<>();
         List<FuncTreeVO> funcTreeVOList = this.funcDAO.selectAllByUserIdAndFuncType(userId,AuthConstant.FUNC_TYPE_DIR);
-
-        if (CollectionUtils.isNotEmpty(funcTreeVOList)) {
-
-            treeVOs = TreeUtils.buildFuncTreeByList(funcTreeVOList);
-        }
-
-        return ResultUtil.getSuccessList(FuncTreeVO.class, treeVOs);
+        List<FuncTreeVO> treeVos = TreeUtils.buildFuncTreeByList(funcTreeVOList);
+        return ResultUtil.getSuccessList(FuncTreeVO.class, treeVos);
     }
 
 
