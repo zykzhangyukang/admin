@@ -2,7 +2,6 @@ package com.coderman.bizedu.controller.edu.course;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.bizedu.auth.dto.user.UserSaveDTO;
 import com.coderman.bizedu.edu.dto.course.CoursePageDTO;
 import com.coderman.bizedu.edu.dto.course.CourseSaveDTO;
 import com.coderman.bizedu.edu.dto.course.CourseUpdateDTO;
@@ -18,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
+/**
+ * @author zhangyukang
+ */
 @Api(value = "课程管理", tags = "课程管理")
 @RestController
 @RequestMapping(value = "/edu/course")

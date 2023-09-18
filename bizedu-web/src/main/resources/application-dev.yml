@@ -17,6 +17,3 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-logging:
-  level: error
-    net.bramp.ffmpeg: info

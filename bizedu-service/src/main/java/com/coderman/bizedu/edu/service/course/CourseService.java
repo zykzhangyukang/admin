@@ -9,6 +9,9 @@ import com.coderman.bizedu.edu.vo.course.CourseVO;
 
 import java.util.List;
 
+/**
+ * @author zhangyukang
+ */
 public interface CourseService {
 
     /**

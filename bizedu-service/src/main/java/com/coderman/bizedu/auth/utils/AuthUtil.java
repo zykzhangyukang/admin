@@ -6,6 +6,9 @@ import com.coderman.service.util.HttpContextUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * @author zhangyukang
+ */
 public class AuthUtil {
 
 

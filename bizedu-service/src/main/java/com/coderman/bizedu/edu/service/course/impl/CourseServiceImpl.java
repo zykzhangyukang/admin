@@ -17,16 +17,16 @@ import com.coderman.bizedu.edu.service.course.CourseService;
 import com.coderman.bizedu.edu.vo.course.CourseVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
-import com.coderman.service.dict.ConstItem;
-import com.coderman.service.dict.ConstService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.stream.Collectors;
 
+/**
+ * @author zhangyukang
+ */
 @Service
 public class CourseServiceImpl implements CourseService {
 
@@ -60,12 +60,12 @@ public class CourseServiceImpl implements CourseService {
         // 总条数
         Long count = this.courseDAO.countPage(conditionMap);
 
-        List<CourseVO> courseVOs = new ArrayList<>();
+        List<CourseVO> voArrayList = new ArrayList<>();
         if (count > 0) {
-            courseVOs = this.courseDAO.selectPage(conditionMap);
+            voArrayList = this.courseDAO.selectPage(conditionMap);
         }
 
-        return ResultUtil.getSuccessPage(CourseVO.class, PageUtil.getPageVO(count, courseVOs, currentPage, pageSize));
+        return ResultUtil.getSuccessPage(CourseVO.class, PageUtil.getPageVO(count, voArrayList, currentPage, pageSize));
     }
 
     @Override

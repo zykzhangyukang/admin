@@ -516,6 +516,10 @@ public class UserServiceImpl extends BaseService implements UserService {
         String deptCode = userUpdateDTO.getDeptCode();
         Integer userStatus = userUpdateDTO.getUserStatus();
 
+        if (Objects.isNull(userId)) {
+            return ResultUtil.getWarn("用户id不能为空！");
+        }
+
         if (StringUtils.isBlank(deptCode)) {
 
             return ResultUtil.getWarn("所属部门不能为空！");

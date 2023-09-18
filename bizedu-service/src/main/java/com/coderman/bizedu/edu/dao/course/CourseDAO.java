@@ -8,6 +8,9 @@ import com.coderman.mybatis.dao.BaseDAO;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author zhangyukang
+ */
 public interface CourseDAO extends BaseDAO<CourseModel, CourseExample> {
 
     /**

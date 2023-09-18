@@ -208,4 +208,39 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where chapter_id = #{chapterId,jdbcType=INTEGER}
   </update>
+
+  <resultMap id="pageBaseResultMap" extends="BaseResultMap" type="com.coderman.bizedu.edu.vo.chapter.ChapterVO">
+  </resultMap>
+
+  <sql id="pageWhereSql">
+    <where>
+      <if test="chapterName!=null and chapterName!=''">
+        and ec.chapter_name like concat('%',#{chapterName},'%')
+      </if>
+    </where>
+  </sql>
+
+  <select id="countPage" resultType="java.lang.Long">
+    SELECT
+    count(1) as c
+    FROM
+    edu_chapter ec
+    LEFT JOIN edu_course eco ON ec.course_id = eco.course_id
+    <include refid="pageWhereSql"></include>
+  </select>
+
+  <select id="selectPage" resultMap="pageBaseResultMap">
+    SELECT
+    ec.chapter_id,
+    ec.chapter_name,
+    ec.create_time,
+    eco.course_name
+    FROM
+    edu_chapter ec
+    LEFT JOIN edu_course eco ON ec.course_id = eco.course_id
+    <include refid="pageWhereSql"></include>
+    limit #{offset}, #{size}
+  </select>
+
+
 </mapper>

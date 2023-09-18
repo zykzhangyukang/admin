@@ -174,6 +174,11 @@ public class RoleServiceImpl implements RoleService {
         String roleName = roleUpdateDTO.getRoleName();
         String roleDesc = roleUpdateDTO.getRoleDesc();
 
+        if (Objects.isNull(roleId)) {
+
+            return ResultUtil.getWarn("角色id不能为空！");
+        }
+
         if (StringUtils.length(roleName) > 15) {
 
             return ResultUtil.getWarn("角色名称最多15个字符！");

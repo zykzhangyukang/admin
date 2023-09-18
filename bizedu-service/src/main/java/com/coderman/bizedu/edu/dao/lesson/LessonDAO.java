@@ -4,5 +4,8 @@ import com.coderman.bizedu.edu.model.lesson.LessonExample;
 import com.coderman.bizedu.edu.model.lesson.LessonModel;
 import com.coderman.mybatis.dao.BaseDAO;
 
+/**
+ * @author zhangyukang
+ */
 public interface LessonDAO extends BaseDAO<LessonModel, LessonExample> {
 }
