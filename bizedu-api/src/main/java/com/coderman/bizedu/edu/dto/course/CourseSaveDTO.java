@@ -1,11 +1,13 @@
 package com.coderman.bizedu.edu.dto.course;
 
 import com.coderman.api.model.BaseModel;
+import com.coderman.bizedu.edu.vo.catalog.CatalogVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author zhangyukang
@@ -28,4 +30,7 @@ public class CourseSaveDTO extends BaseModel {
 
     @ApiModelProperty(value = "描述信息")
     private String description;
+
+    @ApiModelProperty(value = "课程分类")
+    private List<CatalogVO> catalogVOList;
 }

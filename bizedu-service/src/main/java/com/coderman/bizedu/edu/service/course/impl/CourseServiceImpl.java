@@ -8,21 +8,26 @@ import com.coderman.api.vo.ResultVO;
 import com.coderman.bizedu.auth.utils.AuthUtil;
 import com.coderman.bizedu.auth.vo.user.AuthUserVO;
 import com.coderman.bizedu.edu.constant.CourseConstant;
+import com.coderman.bizedu.edu.dao.course.CourseCatalogDAO;
 import com.coderman.bizedu.edu.dao.course.CourseDAO;
 import com.coderman.bizedu.edu.dto.course.CoursePageDTO;
 import com.coderman.bizedu.edu.dto.course.CourseSaveDTO;
 import com.coderman.bizedu.edu.dto.course.CourseUpdateDTO;
 import com.coderman.bizedu.edu.model.course.CourseModel;
+import com.coderman.bizedu.edu.service.catalog.CatalogService;
 import com.coderman.bizedu.edu.service.course.CourseService;
+import com.coderman.bizedu.edu.vo.catalog.CatalogVO;
 import com.coderman.bizedu.edu.vo.course.CourseVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author zhangyukang
@@ -32,6 +37,12 @@ public class CourseServiceImpl implements CourseService {
 
     @Resource
     private CourseDAO courseDAO;
+
+    @Resource
+    private CourseCatalogDAO courseCatalogDAO;
+
+    @Resource
+    private CatalogService catalogService;
 
     @Override
     @LogError(value = "课程管理列表")
@@ -75,6 +86,7 @@ public class CourseServiceImpl implements CourseService {
         AuthUserVO current = AuthUtil.getCurrent();
         String courseName = courseSaveDTO.getCourseName();
         String description = courseSaveDTO.getDescription();
+        List<CatalogVO> catalogVOList = courseSaveDTO.getCatalogVOList();
 
         Assert.notNull(current, "currentUser is null");
 
@@ -92,7 +104,25 @@ public class CourseServiceImpl implements CourseService {
         courseModel.setCreatorId(current.getUserId());
         courseModel.setDescription(description);
         courseModel.setStatus(CourseConstant.COURSE_STATUS_WAIT);
-        this.courseDAO.insertSelective(courseModel);
+        this.courseDAO.insertSelectiveReturnKey(courseModel);
+
+        // 保存课程分类关系
+        List<Integer> catalogIds = catalogVOList.stream().map(CatalogVO::getCatalogId).distinct().collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(catalogIds)) {
+
+            Map<Integer, CatalogVO> catalogVoMap = this.catalogService.selectCatalogVoMapByIds(catalogIds);
+            for (Integer catalogId : catalogIds) {
+                CatalogVO catalogVO = catalogVoMap.get(catalogId);
+                if (Objects.isNull(catalogVO)) {
+                    throw new BusinessException("课程分类不存在！【" + catalogId + "】");
+                }
+            }
+
+            // 保持课程标签关系
+
+
+            this.courseCatalogDAO.insertBatch(courseModel.getCourseId(), catalogIds);
+        }
 
         return ResultUtil.getSuccess();
     }

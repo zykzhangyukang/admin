@@ -6,11 +6,15 @@ import com.coderman.bizedu.auth.utils.TreeUtils;
 import com.coderman.bizedu.edu.dao.catalog.CatalogDAO;
 import com.coderman.bizedu.edu.service.catalog.CatalogService;
 import com.coderman.bizedu.edu.vo.catalog.CatalogTreeVO;
+import com.coderman.bizedu.edu.vo.catalog.CatalogVO;
 import com.coderman.service.anntation.LogError;
+import com.google.common.collect.Maps;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author ：zhangyukang
@@ -28,5 +32,14 @@ public class CatalogServiceImpl implements CatalogService {
         List<CatalogTreeVO> catalogVOList = this.catalogDAO.selectAllCatalogTreeVO();
         List<CatalogTreeVO> treeList = TreeUtils.buildCatalogTreeByList(catalogVOList);
         return ResultUtil.getSuccessList(CatalogTreeVO.class, treeList);
+    }
+
+    @Override
+    @LogError(value = "查询课程分类map")
+    public Map<Integer, CatalogVO> selectCatalogVoMapByIds(List<Integer> catalogIds) {
+        if(CollectionUtils.isEmpty(catalogIds)){
+            return Maps.newHashMap();
+        }
+        return this.catalogDAO.selectCatalogVoMapByIds(catalogIds);
     }
 }

@@ -214,4 +214,19 @@
     catalog_id, catalog_name, parent_id, create_time, update_time
     from edu_catalog
   </select>
+
+  <select id="selectCatalogVoMapByIds" resultType="com.coderman.bizedu.edu.vo.catalog.CatalogVO">
+    select
+    catalog_id,
+    catalog_name,
+    parent_id,
+    create_time,
+    update_time
+    from edu_catalog
+    where catalog_id in
+    <foreach collection="catalogIds" open="(" close=")" separator="," item="item">
+      #{item}
+    </foreach>
+  </select>
+
 </mapper>

@@ -27,4 +27,12 @@ public interface CourseDAO extends BaseDAO<CourseModel, CourseExample> {
      * @return
      */
     List<CourseVO> selectPage(Map<String, Object> conditionMap);
+
+    /**
+     * 插入并返回主键
+     *
+     * @param record
+     * @return
+     */
+    int insertSelectiveReturnKey(CourseModel record);
 }

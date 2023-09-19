@@ -208,4 +208,13 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where course_catalog_id = #{courseCatalogId,jdbcType=INTEGER}
   </update>
+
+  <select id="insertBatch">
+    insert into edu_course_catalog(course_id,catalog_id)
+    values
+    <foreach collection="catalogIds" open="(" close=")" separator="," item="item">
+      #{courseId,jdbcType=INTEGER},
+      #{item,jdbcType=INTEGER},
+    </foreach>
+  </select>
 </mapper>
