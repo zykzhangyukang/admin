@@ -28,18 +28,22 @@ public class FfmepgTest {
 
     public static void main(String[] args) throws IOException {
 
+        String userDir = System.getProperty("user.dir");
+
+        System.out.println(userDir);
+
         // 分片加密信息路径
-        String keyInfoPath = "E:\\workspace\\bizedu\\tools\\key_info_file.keyinfo";
+        String keyInfoPath = userDir + "\\key_info_file.keyinfo";
 
         // 初始化FFmpeg
-        FFmpeg ffmpeg = new FFmpeg("E:\\workspace\\bizedu\\tools\\ffmpeg-win.exe");
-        FFprobe ffprobe = new FFprobe("E:\\workspace\\bizedu\\tools\\ffprobe-win.exe");
+        FFmpeg ffmpeg = new FFmpeg( userDir + "\\tools\\ffmpeg-win.exe");
+        FFprobe ffprobe = new FFprobe( userDir + "\\tools\\ffprobe-win.exe");
         // 输入视频文件路径
         String inputVideoPath = "C:\\Users\\Administrator\\Desktop\\test\\input.mp4";
         // 输出M3U8文件路径
         String outputM3U8Path = "C:\\Users\\Administrator\\Desktop\\test\\output\\output.m3u8";
         // 视频封面
-        String outputImagePath = "C:\\Users\\Administrator\\Desktop\\test\\output\\output_image.jpg"; // 输出图像文件路径
+        String outputImagePath = "C:\\Users\\Administrator\\Desktop\\test\\output\\output_image.jpg";
 
 
         FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
@@ -52,8 +56,8 @@ public class FfmepgTest {
                 .addOutput(outputM3U8Path)
                 .setFormat("hls")
                 .addExtraArgs("-codec:", "copy")
-                .addExtraArgs("-start_number", "0")
 //                .addExtraArgs("-hls_key_info_file" , keyInfoPath)
+                .addExtraArgs("-start_number", "0")
                 .addExtraArgs("-hls_time", "10")
                 .addExtraArgs("-hls_list_size", "0")
                 .addExtraArgs("-hls_segment_filename" , "C:\\Users\\Administrator\\Desktop\\test\\output\\segment_%d.ts")
