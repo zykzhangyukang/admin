@@ -16,8 +16,7 @@ webstorm.config.js
 /bizedu-web/target/
 /bizedu-service/target/
 /bizedu-api/target/
-/ffm
-/tools/ffmpeg-win.exe
-/tools/ffprobe-win.exe
-/tools/key_info_file.keyinfo
-/tools/keyfile.key
+#/tools/ffmpeg-win.exe
+#/tools/ffprobe-win.exe
+#/tools/key_info_file.keyinfo
+#/tools/keyfile.key
