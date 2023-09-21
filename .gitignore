@@ -19,3 +19,5 @@ webstorm.config.js
 /ffm
 /tools/ffmpeg-win.exe
 /tools/ffprobe-win.exe
+/tools/key_info_file.keyinfo
+/tools/keyfile.key

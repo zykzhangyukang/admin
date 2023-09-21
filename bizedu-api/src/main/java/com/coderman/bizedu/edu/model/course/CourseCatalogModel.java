@@ -3,7 +3,6 @@ package com.coderman.bizedu.edu.model.course;
 import com.coderman.api.model.BaseModel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Date;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -26,10 +25,4 @@ public class CourseCatalogModel extends BaseModel {
 
     @ApiModelProperty(value = "分类id")
     private Integer catalogId;
-
-    @ApiModelProperty(value = "创建时间")
-    private Date createTime;
-
-    @ApiModelProperty(value = "更新时间")
-    private Date updateTime;
 }

@@ -5,8 +5,6 @@
     <id column="course_catalog_id" jdbcType="INTEGER" property="courseCatalogId" />
     <result column="course_id" jdbcType="INTEGER" property="courseId" />
     <result column="catalog_id" jdbcType="INTEGER" property="catalogId" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -67,7 +65,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    course_catalog_id, course_id, catalog_id, create_time, update_time
+    course_catalog_id, course_id, catalog_id
   </sql>
   <select id="selectByExample" parameterType="com.coderman.bizedu.edu.model.course.CourseCatalogExample" resultMap="BaseResultMap">
     select
@@ -100,10 +98,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.bizedu.edu.model.course.CourseCatalogModel">
-    insert into edu_course_catalog (course_catalog_id, course_id, catalog_id, 
-      create_time, update_time)
-    values (#{courseCatalogId,jdbcType=INTEGER}, #{courseId,jdbcType=INTEGER}, #{catalogId,jdbcType=INTEGER}, 
-      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    insert into edu_course_catalog (course_catalog_id, course_id, catalog_id
+      )
+    values (#{courseCatalogId,jdbcType=INTEGER}, #{courseId,jdbcType=INTEGER}, #{catalogId,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.bizedu.edu.model.course.CourseCatalogModel">
     insert into edu_course_catalog
@@ -117,12 +115,6 @@
       <if test="catalogId != null">
         catalog_id,
       </if>
-      <if test="createTime != null">
-        create_time,
-      </if>
-      <if test="updateTime != null">
-        update_time,
-      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="courseCatalogId != null">
@@ -133,12 +125,6 @@
       </if>
       <if test="catalogId != null">
         #{catalogId,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null">
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
@@ -160,12 +146,6 @@
       <if test="record.catalogId != null">
         catalog_id = #{record.catalogId,jdbcType=INTEGER},
       </if>
-      <if test="record.createTime != null">
-        create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="record.updateTime != null">
-        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
-      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -175,9 +155,7 @@
     update edu_course_catalog
     set course_catalog_id = #{record.courseCatalogId,jdbcType=INTEGER},
       course_id = #{record.courseId,jdbcType=INTEGER},
-      catalog_id = #{record.catalogId,jdbcType=INTEGER},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+      catalog_id = #{record.catalogId,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -191,21 +169,13 @@
       <if test="catalogId != null">
         catalog_id = #{catalogId,jdbcType=INTEGER},
       </if>
-      <if test="createTime != null">
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null">
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
     </set>
     where course_catalog_id = #{courseCatalogId,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.bizedu.edu.model.course.CourseCatalogModel">
     update edu_course_catalog
     set course_id = #{courseId,jdbcType=INTEGER},
-      catalog_id = #{catalogId,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      catalog_id = #{catalogId,jdbcType=INTEGER}
     where course_catalog_id = #{courseCatalogId,jdbcType=INTEGER}
   </update>
 

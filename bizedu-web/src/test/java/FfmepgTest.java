@@ -1,3 +1,4 @@
+import com.coderman.service.util.UUIDUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -9,11 +10,13 @@ import net.bramp.ffmpeg.probe.FFmpegFormat;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import net.bramp.ffmpeg.progress.Progress;
 import net.bramp.ffmpeg.progress.ProgressListener;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.SocketUtils;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,9 +28,12 @@ public class FfmepgTest {
 
     public static void main(String[] args) throws IOException {
 
+        // 分片加密信息路径
+        String keyInfoPath = "E:\\workspace\\bizedu\\tools\\key_info_file.keyinfo";
+
         // 初始化FFmpeg
-        FFmpeg ffmpeg = new FFmpeg("F:\\workspace\\workspace02\\bizedu\\tools\\ffmpeg-win.exe");
-        FFprobe ffprobe = new FFprobe("F:\\workspace\\workspace02\\bizedu\\tools\\ffprobe-win.exe");
+        FFmpeg ffmpeg = new FFmpeg("E:\\workspace\\bizedu\\tools\\ffmpeg-win.exe");
+        FFprobe ffprobe = new FFprobe("E:\\workspace\\bizedu\\tools\\ffprobe-win.exe");
         // 输入视频文件路径
         String inputVideoPath = "C:\\Users\\Administrator\\Desktop\\test\\input.mp4";
         // 输出M3U8文件路径
@@ -47,8 +53,10 @@ public class FfmepgTest {
                 .setFormat("hls")
                 .addExtraArgs("-codec:", "copy")
                 .addExtraArgs("-start_number", "0")
+//                .addExtraArgs("-hls_key_info_file" , keyInfoPath)
                 .addExtraArgs("-hls_time", "10")
                 .addExtraArgs("-hls_list_size", "0")
+                .addExtraArgs("-hls_segment_filename" , "C:\\Users\\Administrator\\Desktop\\test\\output\\segment_%d.ts")
                 .done();
 
         // 【截取封面】指定要截取的时间点（这里截取视频中间的一帧）
