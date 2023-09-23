@@ -107,9 +107,8 @@ public class CourseServiceImpl implements CourseService {
         this.courseDAO.insertSelectiveReturnKey(courseModel);
 
         // 保存课程分类关系
-        List<Integer> catalogIds = catalogVOList.stream().map(CatalogVO::getCatalogId).distinct().collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(catalogIds)) {
-
+        if (CollectionUtils.isNotEmpty(catalogVOList)) {
+            List<Integer> catalogIds = catalogVOList.stream().map(CatalogVO::getCatalogId).distinct().collect(Collectors.toList());
             Map<Integer, CatalogVO> catalogVoMap = this.catalogService.selectCatalogVoMapByIds(catalogIds);
             for (Integer catalogId : catalogIds) {
                 CatalogVO catalogVO = catalogVoMap.get(catalogId);
