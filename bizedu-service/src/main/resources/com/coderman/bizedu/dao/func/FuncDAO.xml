@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coderman.bizedu.dao.func.FuncDAO">
+  <resultMap id="BaseResultMap" type="com.coderman.bizedu.model.func.FuncModel">
+    <id column="func_id" jdbcType="INTEGER" property="funcId" />
+    <result column="func_name" jdbcType="VARCHAR" property="funcName" />
+    <result column="func_key" jdbcType="VARCHAR" property="funcKey" />
+    <result column="func_type" jdbcType="VARCHAR" property="funcType" />
+    <result column="func_icon" jdbcType="VARCHAR" property="funcIcon" />
+    <result column="func_sort" jdbcType="INTEGER" property="funcSort" />
+    <result column="func_dir_status" jdbcType="VARCHAR" property="funcDirStatus" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    func_id, func_name, func_key, func_type, func_icon, func_sort, func_dir_status, parent_id, 
+    create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.coderman.bizedu.model.func.FuncExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from auth_func
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from auth_func
+    where func_id = #{funcId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from auth_func
+    where func_id = #{funcId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.coderman.bizedu.model.func.FuncExample">
+    delete from auth_func
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.coderman.bizedu.model.func.FuncModel">
+    insert into auth_func (func_id, func_name, func_key, 
+      func_type, func_icon, func_sort, 
+      func_dir_status, parent_id, create_time, 
+      update_time)
+    values (#{funcId,jdbcType=INTEGER}, #{funcName,jdbcType=VARCHAR}, #{funcKey,jdbcType=VARCHAR}, 
+      #{funcType,jdbcType=VARCHAR}, #{funcIcon,jdbcType=VARCHAR}, #{funcSort,jdbcType=INTEGER}, 
+      #{funcDirStatus,jdbcType=VARCHAR}, #{parentId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.coderman.bizedu.model.func.FuncModel">
+    insert into auth_func
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="funcId != null">
+        func_id,
+      </if>
+      <if test="funcName != null">
+        func_name,
+      </if>
+      <if test="funcKey != null">
+        func_key,
+      </if>
+      <if test="funcType != null">
+        func_type,
+      </if>
+      <if test="funcIcon != null">
+        func_icon,
+      </if>
+      <if test="funcSort != null">
+        func_sort,
+      </if>
+      <if test="funcDirStatus != null">
+        func_dir_status,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="funcId != null">
+        #{funcId,jdbcType=INTEGER},
+      </if>
+      <if test="funcName != null">
+        #{funcName,jdbcType=VARCHAR},
+      </if>
+      <if test="funcKey != null">
+        #{funcKey,jdbcType=VARCHAR},
+      </if>
+      <if test="funcType != null">
+        #{funcType,jdbcType=VARCHAR},
+      </if>
+      <if test="funcIcon != null">
+        #{funcIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="funcSort != null">
+        #{funcSort,jdbcType=INTEGER},
+      </if>
+      <if test="funcDirStatus != null">
+        #{funcDirStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.coderman.bizedu.model.func.FuncExample" resultType="java.lang.Long">
+    select count(*) from auth_func
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update auth_func
+    <set>
+      <if test="record.funcId != null">
+        func_id = #{record.funcId,jdbcType=INTEGER},
+      </if>
+      <if test="record.funcName != null">
+        func_name = #{record.funcName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.funcKey != null">
+        func_key = #{record.funcKey,jdbcType=VARCHAR},
+      </if>
+      <if test="record.funcType != null">
+        func_type = #{record.funcType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.funcIcon != null">
+        func_icon = #{record.funcIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="record.funcSort != null">
+        func_sort = #{record.funcSort,jdbcType=INTEGER},
+      </if>
+      <if test="record.funcDirStatus != null">
+        func_dir_status = #{record.funcDirStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.parentId != null">
+        parent_id = #{record.parentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update auth_func
+    set func_id = #{record.funcId,jdbcType=INTEGER},
+      func_name = #{record.funcName,jdbcType=VARCHAR},
+      func_key = #{record.funcKey,jdbcType=VARCHAR},
+      func_type = #{record.funcType,jdbcType=VARCHAR},
+      func_icon = #{record.funcIcon,jdbcType=VARCHAR},
+      func_sort = #{record.funcSort,jdbcType=INTEGER},
+      func_dir_status = #{record.funcDirStatus,jdbcType=VARCHAR},
+      parent_id = #{record.parentId,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.bizedu.model.func.FuncModel">
+    update auth_func
+    <set>
+      <if test="funcName != null">
+        func_name = #{funcName,jdbcType=VARCHAR},
+      </if>
+      <if test="funcKey != null">
+        func_key = #{funcKey,jdbcType=VARCHAR},
+      </if>
+      <if test="funcType != null">
+        func_type = #{funcType,jdbcType=VARCHAR},
+      </if>
+      <if test="funcIcon != null">
+        func_icon = #{funcIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="funcSort != null">
+        func_sort = #{funcSort,jdbcType=INTEGER},
+      </if>
+      <if test="funcDirStatus != null">
+        func_dir_status = #{funcDirStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where func_id = #{funcId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.coderman.bizedu.model.func.FuncModel">
+    update auth_func
+    set func_name = #{funcName,jdbcType=VARCHAR},
+      func_key = #{funcKey,jdbcType=VARCHAR},
+      func_type = #{funcType,jdbcType=VARCHAR},
+      func_icon = #{funcIcon,jdbcType=VARCHAR},
+      func_sort = #{funcSort,jdbcType=INTEGER},
+      func_dir_status = #{funcDirStatus,jdbcType=VARCHAR},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where func_id = #{funcId,jdbcType=INTEGER}
+  </update>
+
+
+
+  <resultMap  id="pageResultMap"  extends="BaseResultMap" type="com.coderman.bizedu.vo.func.FuncVO">
+<!--    <collection column="func_id" ofType="UserVO" property="userVOList" select="FuncDAO.selectUserListByFuncId" />-->
+    <collection column="func_id" ofType="com.coderman.bizedu.vo.resc.RescVO" property="rescVOList" select="com.coderman.bizedu.dao.func.FuncDAO.selectResListByFuncId" />
+  </resultMap>
+
+  <resultMap  id="funcTreeVOResultMap"  extends="BaseResultMap" type="com.coderman.bizedu.vo.func.FuncTreeVO">
+  </resultMap>
+
+  <resultMap id="funcInfoResultMap" type="com.coderman.bizedu.vo.func.FuncVO">
+    <id column="func_id" property="funcId" />
+    <result column="func_name" property="funcName" />
+    <result column="func_key" property="funcKey" />
+    <result column="func_type" property="funcType" />
+    <result column="func_sort" property="funcSort" />
+    <result column="func_dir_status" property="funcDirStatus" />
+    <result column="func_icon" property="funcIcon"/>
+    <collection column="func_id" ofType="com.coderman.bizedu.vo.resc.RescVO" property="rescVOList" select="com.coderman.bizedu.dao.func.FuncDAO.selectResListByFuncId" />
+    <collection column="func_id" ofType="com.coderman.bizedu.vo.user.UserVO" property="userVOList" select="com.coderman.bizedu.dao.func.FuncDAO.selectUserListByFuncId" />
+  </resultMap>
+
+
+  <select id="selectUserListByFuncId" resultMap="com.coderman.bizedu.dao.user.UserDAO.pageBaseResultMap">
+      SELECT DISTINCT
+          u.user_id,
+          u.username,
+          u.user_status,
+          u.dept_code,
+          u.real_name,
+          d.dept_name
+      FROM
+          auth_role_func rf
+          INNER JOIN auth_user_role ur ON rf.role_id = ur.role_id
+          INNER JOIN auth_user u ON ur.user_id = u.user_id
+          INNER JOIN auth_dept d ON u.dept_code = d.dept_code
+      WHERE
+          rf.func_id = #{funcId}
+  </select>
+
+  <select id="selectResListByFuncId" resultType="com.coderman.bizedu.vo.resc.RescVO">
+    SELECT
+        r.resc_name AS rescName,
+        r.resc_url AS rescUrl,
+        r.resc_domain AS rescDomain,
+        r.resc_id AS rescId,
+        r.method_type AS methodType
+    FROM
+        auth_func_resc fr
+        INNER JOIN auth_resc r ON fr.resc_id = r.resc_id
+    WHERE
+        fr.func_id = #{funcId}
+  </select>
+
+
+
+  <select id="page" resultMap="pageResultMap">
+    SELECT
+    f.func_id,
+    f.func_name,
+    f.func_key,
+    f.parent_id,
+    f.create_time,
+    f.update_time,
+    f.func_type,
+    f.func_icon,
+    f.func_sort,
+    f.func_dir_status
+    FROM
+    auth_func f
+    <include refid="pageWhere"></include>
+    group by  f.func_id, f.func_name, f.func_key, f.parent_id, f.create_time, f.update_time
+    order by
+    <choose>
+      <when test="parentId!=null">
+        f.func_id asc , f.func_type asc, f.func_sort asc
+      </when>
+      <otherwise>
+         f.func_sort asc, f.func_type asc
+      </otherwise>
+    </choose>
+    limit #{offset},#{size}
+  </select>
+
+  <select id="countPage" resultType="long">
+    select count(1)
+    from auth_func f
+    left join auth_func fp on f.parent_id  = fp.func_id
+    <include refid="pageWhere"></include>
+  </select>
+  
+  <sql id="pageWhere">
+    <where>
+      <if test="funcName!=null and funcName!=''">
+        and f.func_name like concat('%',#{funcName},'%')
+      </if>
+      <if test="funcKey!=null and funcKey!=''">
+        and f.func_key like concat('%',#{funcKey},'%')
+      </if>
+      <if test="funcType!=null and funcType!=''">
+        and f.func_type = #{funcType}
+      </if>
+      <if test="funcDirStatus!=null and funcDirStatus!=''">
+        and f.func_dir_status = #{funcDirStatus}
+      </if>
+      <if test="parentId!=null">
+        and (f.parent_id = #{parentId} or f.func_id = #{parentId})
+      </if>
+      <if test="rescUrl!=null and rescUrl!=''">
+        and f.func_id in (
+        select
+        f.func_id
+        from
+        auth_func f
+        inner join auth_func_resc fr on f.func_id = fr.func_id
+        inner join auth_resc r on fr.resc_id = r.resc_id
+        where
+        r.resc_url like concat('%',#{rescUrl},'%')
+        )
+      </if>
+    </where>
+  </sql>
+
+  <select id="selectAllFuncTreeVO"  resultMap="funcTreeVOResultMap">
+    SELECT
+        func_id,
+        func_name,
+        func_key,
+        func_sort,
+        func_type,
+        parent_id
+    FROM
+        auth_func
+  </select>
+
+  <select id="selectByFuncKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from auth_func where func_key = #{funcKey}
+  </select>
+
+  <select id="countChildrenByParentId" resultType="long">
+    select count(1)
+    from auth_func
+    where parent_id = #{parentId}
+  </select>
+
+  <insert id="insertSelectiveReturnKey" keyColumn="func_id" keyProperty="funcId" parameterType="com.coderman.bizedu.model.func.FuncModel" useGeneratedKeys="true">
+    insert into auth_func
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="funcId != null">
+        func_id,
+      </if>
+      <if test="funcName != null">
+        func_name,
+      </if>
+      <if test="funcKey != null">
+        func_key,
+      </if>
+      <if test="funcType != null">
+        func_type,
+      </if>
+      <if test="funcIcon != null">
+        func_icon,
+      </if>
+      <if test="funcSort != null">
+        func_sort,
+      </if>
+      <if test="funcDirStatus != null">
+        func_dir_status,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="funcId != null">
+        #{funcId,jdbcType=INTEGER},
+      </if>
+      <if test="funcName != null">
+        #{funcName,jdbcType=VARCHAR},
+      </if>
+      <if test="funcKey != null">
+        #{funcKey,jdbcType=VARCHAR},
+      </if>
+      <if test="funcType != null">
+        #{funcType,jdbcType=VARCHAR},
+      </if>
+      <if test="funcIcon != null">
+        #{funcIcon,jdbcType=VARCHAR},
+      </if>
+      <if test="funcSort != null">
+        #{funcSort,jdbcType=INTEGER},
+      </if>
+      <if test="funcDirStatus != null">
+        #{funcDirStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectFuncListByUserId" resultMap="BaseResultMap">
+      SELECT DISTINCT
+          f.func_id,
+          f.func_name,
+          f.func_key,
+          f.parent_id,
+          f.create_time,
+          f.update_time
+      FROM
+          auth_user u
+          INNER JOIN auth_user_role ur ON u.user_id = ur.user_id
+          INNER JOIN auth_role r ON ur.role_id = r.role_id
+          INNER JOIN auth_role_func rf ON r.role_id = rf.role_id
+          INNER JOIN auth_func f ON rf.func_id = f.func_id
+      WHERE
+          u.user_id = #{userId}
+  </select>
+
+
+  <select id="selectAllByUserIdAndFuncType"  resultMap="funcTreeVOResultMap">
+    SELECT DISTINCT
+      f.func_id,
+      f.func_name,
+      f.func_key,
+      f.func_type,
+      f.func_icon,
+      f.parent_id,
+      f.func_sort,
+      f.func_dir_status
+    FROM
+    auth_user u
+    INNER JOIN auth_user_role ur ON u.user_id = ur.user_id
+    INNER JOIN auth_role r ON ur.role_id = r.role_id
+    INNER JOIN auth_role_func rf ON r.role_id = rf.role_id
+    INNER JOIN auth_func f ON rf.func_id = f.func_id
+      <where>
+        <if test="userId!=null">
+           AND  u.user_id = #{userId}
+        </if>
+        <if test="funcType!=null and funcType!=''">
+          AND f.func_type = #{funcType}
+        </if>
+      </where>
+       ORDER BY f.func_sort ASC
+  </select>
+
+  <select id="selectFuncInfo" resultMap="funcInfoResultMap">
+    SELECT
+        f.func_id,
+        f.func_name,
+        f.func_key,
+        f.func_icon,
+        f.parent_id,
+        f.create_time,
+        f.update_time,
+        f.func_type,
+        f.func_sort,
+        f.func_dir_status
+    FROM
+        auth_func f
+    WHERE
+        f.func_id = #{funcId}
+  </select>
+
+  <select id="selectAllByFuncIdList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from auth_func f
+    where f.func_id in
+    <foreach collection="funcIdList" separator="," open="(" close=")" item="item">
+      #{item}
+    </foreach>
+  </select>
+
+  <select id="selectByRoleId" resultMap="BaseResultMap">
+      SELECT
+        f.func_id,
+        f.func_name,
+        f.func_key,
+        f.func_type,
+        f.func_icon,
+        f.func_sort,
+        f.func_dir_status,
+        f.parent_id,
+        f.create_time,
+        f.update_time
+      FROM
+        auth_func f
+          LEFT JOIN auth_role_func rf ON f.func_id = rf.func_id
+      WHERE
+        rf.role_id = #{roleId}
+  </select>
+
+
+</mapper>

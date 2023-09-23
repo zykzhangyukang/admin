@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coderman.bizedu.dao.lesson.LessonDAO">
+  <resultMap id="BaseResultMap" type="com.coderman.bizedu.model.lesson.LessonModel">
+    <id column="lesson_id" jdbcType="INTEGER" property="lessonId" />
+    <result column="course_id" jdbcType="INTEGER" property="courseId" />
+    <result column="chapter_id" jdbcType="INTEGER" property="chapterId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content_type" jdbcType="CHAR" property="contentType" />
+    <result column="content_url" jdbcType="VARCHAR" property="contentUrl" />
+    <result column="duration_minutes" jdbcType="INTEGER" property="durationMinutes" />
+    <result column="sequence_order" jdbcType="INTEGER" property="sequenceOrder" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.coderman.bizedu.model.lesson.LessonModel">
+    <result column="description" jdbcType="LONGVARCHAR" property="description" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    lesson_id, course_id, chapter_id, title, content_type, content_url, duration_minutes, 
+    sequence_order, create_time, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    description
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.coderman.bizedu.model.lesson.LessonExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from edu_lesson
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.coderman.bizedu.model.lesson.LessonExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from edu_lesson
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from edu_lesson
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from edu_lesson
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.coderman.bizedu.model.lesson.LessonExample">
+    delete from edu_lesson
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.coderman.bizedu.model.lesson.LessonModel">
+    insert into edu_lesson (lesson_id, course_id, chapter_id, 
+      title, content_type, content_url, 
+      duration_minutes, sequence_order, create_time, 
+      update_time, description)
+    values (#{lessonId,jdbcType=INTEGER}, #{courseId,jdbcType=INTEGER}, #{chapterId,jdbcType=INTEGER}, 
+      #{title,jdbcType=VARCHAR}, #{contentType,jdbcType=CHAR}, #{contentUrl,jdbcType=VARCHAR}, 
+      #{durationMinutes,jdbcType=INTEGER}, #{sequenceOrder,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{description,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.coderman.bizedu.model.lesson.LessonModel">
+    insert into edu_lesson
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lessonId != null">
+        lesson_id,
+      </if>
+      <if test="courseId != null">
+        course_id,
+      </if>
+      <if test="chapterId != null">
+        chapter_id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="contentType != null">
+        content_type,
+      </if>
+      <if test="contentUrl != null">
+        content_url,
+      </if>
+      <if test="durationMinutes != null">
+        duration_minutes,
+      </if>
+      <if test="sequenceOrder != null">
+        sequence_order,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lessonId != null">
+        #{lessonId,jdbcType=INTEGER},
+      </if>
+      <if test="courseId != null">
+        #{courseId,jdbcType=INTEGER},
+      </if>
+      <if test="chapterId != null">
+        #{chapterId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="contentType != null">
+        #{contentType,jdbcType=CHAR},
+      </if>
+      <if test="contentUrl != null">
+        #{contentUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="durationMinutes != null">
+        #{durationMinutes,jdbcType=INTEGER},
+      </if>
+      <if test="sequenceOrder != null">
+        #{sequenceOrder,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.coderman.bizedu.model.lesson.LessonExample" resultType="java.lang.Long">
+    select count(*) from edu_lesson
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update edu_lesson
+    <set>
+      <if test="record.lessonId != null">
+        lesson_id = #{record.lessonId,jdbcType=INTEGER},
+      </if>
+      <if test="record.courseId != null">
+        course_id = #{record.courseId,jdbcType=INTEGER},
+      </if>
+      <if test="record.chapterId != null">
+        chapter_id = #{record.chapterId,jdbcType=INTEGER},
+      </if>
+      <if test="record.title != null">
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.contentType != null">
+        content_type = #{record.contentType,jdbcType=CHAR},
+      </if>
+      <if test="record.contentUrl != null">
+        content_url = #{record.contentUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.durationMinutes != null">
+        duration_minutes = #{record.durationMinutes,jdbcType=INTEGER},
+      </if>
+      <if test="record.sequenceOrder != null">
+        sequence_order = #{record.sequenceOrder,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.description != null">
+        description = #{record.description,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update edu_lesson
+    set lesson_id = #{record.lessonId,jdbcType=INTEGER},
+      course_id = #{record.courseId,jdbcType=INTEGER},
+      chapter_id = #{record.chapterId,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      content_type = #{record.contentType,jdbcType=CHAR},
+      content_url = #{record.contentUrl,jdbcType=VARCHAR},
+      duration_minutes = #{record.durationMinutes,jdbcType=INTEGER},
+      sequence_order = #{record.sequenceOrder,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      description = #{record.description,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update edu_lesson
+    set lesson_id = #{record.lessonId,jdbcType=INTEGER},
+      course_id = #{record.courseId,jdbcType=INTEGER},
+      chapter_id = #{record.chapterId,jdbcType=INTEGER},
+      title = #{record.title,jdbcType=VARCHAR},
+      content_type = #{record.contentType,jdbcType=CHAR},
+      content_url = #{record.contentUrl,jdbcType=VARCHAR},
+      duration_minutes = #{record.durationMinutes,jdbcType=INTEGER},
+      sequence_order = #{record.sequenceOrder,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.bizedu.model.lesson.LessonModel">
+    update edu_lesson
+    <set>
+      <if test="courseId != null">
+        course_id = #{courseId,jdbcType=INTEGER},
+      </if>
+      <if test="chapterId != null">
+        chapter_id = #{chapterId,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="contentType != null">
+        content_type = #{contentType,jdbcType=CHAR},
+      </if>
+      <if test="contentUrl != null">
+        content_url = #{contentUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="durationMinutes != null">
+        duration_minutes = #{durationMinutes,jdbcType=INTEGER},
+      </if>
+      <if test="sequenceOrder != null">
+        sequence_order = #{sequenceOrder,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.coderman.bizedu.model.lesson.LessonModel">
+    update edu_lesson
+    set course_id = #{courseId,jdbcType=INTEGER},
+      chapter_id = #{chapterId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      content_type = #{contentType,jdbcType=CHAR},
+      content_url = #{contentUrl,jdbcType=VARCHAR},
+      duration_minutes = #{durationMinutes,jdbcType=INTEGER},
+      sequence_order = #{sequenceOrder,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      description = #{description,jdbcType=LONGVARCHAR}
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.coderman.bizedu.model.lesson.LessonModel">
+    update edu_lesson
+    set course_id = #{courseId,jdbcType=INTEGER},
+      chapter_id = #{chapterId,jdbcType=INTEGER},
+      title = #{title,jdbcType=VARCHAR},
+      content_type = #{contentType,jdbcType=CHAR},
+      content_url = #{contentUrl,jdbcType=VARCHAR},
+      duration_minutes = #{durationMinutes,jdbcType=INTEGER},
+      sequence_order = #{sequenceOrder,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where lesson_id = #{lessonId,jdbcType=INTEGER}
+  </update>
+</mapper>
