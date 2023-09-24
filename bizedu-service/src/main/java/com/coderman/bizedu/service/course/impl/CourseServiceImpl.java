@@ -90,9 +90,10 @@ public class CourseServiceImpl implements CourseService {
 
         Assert.notNull(current, "currentUser is null");
 
-        if (StringUtils.isBlank(courseName) || StringUtils.length(courseName) < 10 || StringUtils.length(courseName) > 25) {
-            return ResultUtil.getWarn("课程标题必填！字数限制10-25字符");
+        if (StringUtils.isBlank(courseName) || StringUtils.length(courseName) < 5 || StringUtils.length(courseName) > 30) {
+            return ResultUtil.getWarn("课程标题必填，字数限制5-30字符！");
         }
+
         if (StringUtils.isBlank(description)) {
             return ResultUtil.getWarn("课程描述信息必填！");
         }

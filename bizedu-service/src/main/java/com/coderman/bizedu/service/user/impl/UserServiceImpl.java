@@ -17,6 +17,7 @@ import com.coderman.bizedu.model.user.UserModel;
 import com.coderman.bizedu.model.user.UserRoleExample;
 import com.coderman.bizedu.model.user.UserRoleModel;
 import com.coderman.bizedu.service.func.FuncService;
+import com.coderman.bizedu.service.log.LogService;
 import com.coderman.bizedu.service.resc.RescService;
 import com.coderman.bizedu.service.user.UserService;
 import com.coderman.bizedu.utils.AuthUtil;
@@ -73,6 +74,9 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Resource
     private FuncService funcService;
 
+    @Resource
+    private LogService logService;
+
 
     @Override
     @LogError(value = "切换用户登录")
@@ -81,6 +85,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         String username = userSwitchLoginDTO.getUsername();
         AuthUserVO current = AuthUtil.getCurrent();
 
+        Assert.notNull(current, "current is null!");
         Assert.isTrue(StringUtils.isNotBlank(username), "登录账号不能为空！");
 
         ResultVO<UserVO> resultVO = this.selectUserByName(username);
@@ -97,7 +102,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         if (!AuthConstant.USER_STATUS_ENABLE.equals(dbUser.getUserStatus())) {
-            
+
             return ResultUtil.getWarn("用户已被锁定！");
         }
 
@@ -153,7 +158,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 
                 return ResultUtil.getWarn("用户名不能为空！");
             }
-
             if (StringUtils.isBlank(password)) {
 
                 return ResultUtil.getWarn("登录密码不能为空！");
@@ -164,22 +168,20 @@ public class UserServiceImpl extends BaseService implements UserService {
 
                 return ResultUtil.getWarn("用户名或密码错误！");
             }
-
             if (!StringUtils.equals(PasswordUtils.encryptSHA256(password), dbUser.getPassword())) {
 
                 return ResultUtil.getWarn("用户名或密码错误！");
             }
-
             if (Objects.equals(dbUser.getUserStatus(), AuthConstant.USER_STATUS_DISABLE)) {
 
                 return ResultUtil.getWarn("用户已被锁定！");
             }
-
             // 签发token
             UserLoginRespVO response = this.generateAndStoreToken(dbUser);
+            // 记录日志
+            this.logService.saveLog(AuthConstant.LOG_TYPE_LOGIN, null, dbUser.getUserId(), String.format("用户%s登录系统.", dbUser.getUsername()));
 
             return ResultUtil.getSuccess(UserLoginRespVO.class, response);
-
         } catch (Exception e) {
 
             logger.error("用户登录失败,username:{},msg:{}", userLoginDTO.getUsername(), e.getMessage(), e);
@@ -312,7 +314,13 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         if (StringUtils.isNotBlank(token)) {
 
-            this.redisService.del(this.getRedisKey(token), RedisDbConstant.REDIS_DB_AUTH);
+            String redisKey = this.getRedisKey(token);
+            AuthUserVO authUserVO = this.redisService.getObject(redisKey, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+            if (Objects.nonNull(authUserVO)) {
+
+                this.redisService.del(redisKey, RedisDbConstant.REDIS_DB_AUTH);
+                this.logService.saveLog(AuthConstant.LOG_TYPE_LOGOUT, null, authUserVO.getUserId(), String.format("用户%s退出登录.", authUserVO.getUsername()));
+            }
         }
 
         return ResultUtil.getSuccess();
@@ -407,6 +415,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "新增用户信息")
     public ResultVO<Void> save(@LogErrorParam UserSaveDTO userSaveDTO) {
 
+        AuthUserVO current = AuthUtil.getCurrent();
         String username = userSaveDTO.getUsername();
         String realName = userSaveDTO.getRealName();
         String password = userSaveDTO.getPassword();
@@ -414,41 +423,36 @@ public class UserServiceImpl extends BaseService implements UserService {
         String deptCode = userSaveDTO.getDeptCode();
         Date currentDate = new Date();
 
+        Assert.notNull(current, "current is null!");
+
         if (StringUtils.isBlank(username)) {
 
             return ResultUtil.getWarn("用户账号不能为空");
         }
-
         if (StringUtils.length(username) < 4 || StringUtils.length(username) > 15) {
 
             return ResultUtil.getWarn("用户账号4-15个字符!");
         }
-
         if (StringUtils.isBlank(realName)) {
 
             return ResultUtil.getWarn("真实姓名不能为空！");
         }
-
         if (StringUtils.length(realName) < 2 || StringUtils.length(realName) > 10) {
 
             return ResultUtil.getWarn("真实姓名2-10个字符！");
         }
-
         if (StringUtils.isBlank(password)) {
 
             return ResultUtil.getWarn("登录密码不能为空！");
         }
-
         if (StringUtils.length(password) < 5 || StringUtils.length(password) > 15) {
 
             return ResultUtil.getWarn("登录密码5-15个字符！");
         }
-
         if (StringUtils.isBlank(deptCode)) {
 
             return ResultUtil.getWarn("所属部门不能为空！");
         }
-
         if (Objects.isNull(userStatus)) {
 
             return ResultUtil.getWarn("用户状态不能为空！");
@@ -462,7 +466,6 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getFail("存在重复的账号【" + username + "】!");
         }
 
-        // 新增用户
         UserModel insertModel = new UserModel();
         insertModel.setUsername(username);
         insertModel.setRealName(realName);
@@ -472,7 +475,10 @@ public class UserServiceImpl extends BaseService implements UserService {
         insertModel.setUserStatus(userStatus);
         insertModel.setDeptCode(deptCode);
 
+        // 新增用户
         this.userDAO.insertReturnKey(insertModel);
+        // 日志记录
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_SAVE, insertModel.getUserId(), current.getUserId(), String.format("%s新增用户%s", current.getUsername(), insertModel.getUsername()));
 
         return ResultUtil.getSuccess();
     }
@@ -487,12 +493,14 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "删除用户信息")
     public ResultVO<Void> delete(Integer userId) {
 
+        AuthUserVO current = AuthUtil.getCurrent();
+        Assert.notNull(current, "current is null!");
+
         UserModel dbUserModel = this.userDAO.selectByPrimaryKey(userId);
         if (dbUserModel == null) {
 
             return ResultUtil.getFail("用户信息不存在！");
         }
-
         if (AuthConstant.USER_STATUS_ENABLE.equals(dbUserModel.getUserStatus())) {
 
             return ResultUtil.getWarn("请删除禁用状态的记录！");
@@ -500,9 +508,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 删除用户-角色关联
         this.userRoleDAO.deleteByUserId(userId);
-
         // 删除用户
         this.userDAO.deleteByPrimaryKey(userId);
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DELETE, userId, current.getUserId(), String.format("%s删除用户%s", current.getUsername(), dbUserModel.getUsername()));
 
         return ResultUtil.getSuccess();
     }
@@ -510,6 +519,9 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     @LogError(value = "更新用户信息")
     public ResultVO<Void> update(UserUpdateDTO userUpdateDTO) {
+
+        AuthUserVO current = AuthUtil.getCurrent();
+        Assert.notNull(current, "current is null!");
 
         Integer userId = userUpdateDTO.getUserId();
         String realName = userUpdateDTO.getRealName();
@@ -519,6 +531,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (Objects.isNull(userId)) {
             return ResultUtil.getWarn("用户id不能为空！");
         }
+
+        UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
+        Assert.notNull(userModel , "userModel is null");
 
         if (StringUtils.isBlank(deptCode)) {
 
@@ -540,7 +555,6 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getWarn("真实姓名2-10个字符！");
         }
 
-        // 更新
         UserModel updateModel = new UserModel();
         updateModel.setUserId(userId);
         updateModel.setUpdateTime(new Date());
@@ -548,7 +562,10 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setUserStatus(userStatus);
         updateModel.setDeptCode(deptCode);
 
+        // 更新用户
         this.userDAO.updateByPrimaryKeySelective(updateModel);
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DELETE, userId, current.getUserId(), String.format("%s更新用户%s", current.getUsername(), userModel.getUsername()));
 
         return ResultUtil.getSuccess();
     }
@@ -602,6 +619,9 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "启用用户")
     public ResultVO<Void> updateEnable(Integer userId) {
 
+        AuthUserVO current = AuthUtil.getCurrent();
+        Assert.notNull(current, "current is null!");
+
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
         if (Objects.isNull(userModel)) {
 
@@ -619,12 +639,18 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setUpdateTime(new Date());
         this.userDAO.updateByPrimaryKeySelective(updateModel);
 
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_ENABLE, userId, current.getUserId(), String.format("%s启用用户%s", current.getUsername(), userModel.getUsername()));
+
         return ResultUtil.getSuccess();
     }
 
     @Override
     @LogError(value = "用户禁用")
     public ResultVO<Void> updateDisable(Integer userId) {
+
+        AuthUserVO current = AuthUtil.getCurrent();
+        Assert.notNull(current, "current is null!");
 
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
         if (Objects.isNull(userModel)) {
@@ -643,6 +669,8 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setUpdateTime(new Date());
         this.userDAO.updateByPrimaryKeySelective(updateModel);
 
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DISABLE, userId, current.getUserId(), String.format("%s禁用用户%s", current.getUsername(), userModel.getUsername()));
 
         return ResultUtil.getSuccess();
     }
@@ -651,7 +679,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "用户分配角色初始化")
     public ResultVO<UserRoleInitVO> selectUserRoleInit(@LogErrorParam Integer userId) {
 
-        Assert.isTrue(Objects.nonNull(userId) , "userId is null");
+        Assert.isTrue(Objects.nonNull(userId), "userId is null");
 
         UserRoleInitVO userRoleInitVO = new UserRoleInitVO();
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);

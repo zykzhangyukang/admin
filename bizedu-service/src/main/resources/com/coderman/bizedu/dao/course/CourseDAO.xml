@@ -326,7 +326,7 @@
     edu_course ec
     LEFT JOIN auth_user au ON ec.creator_id = au.user_id
     <include refid="pageWhereSql"></include>
-    order by FIELD(ec.status, 'enable' , 'wait' , 'disable') , ec.create_time desc
+    order by ec.create_time desc
     limit #{offset}, #{size}
   </select>
 

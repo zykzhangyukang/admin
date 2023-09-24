@@ -30,9 +30,28 @@ public interface AuthConstant {
 
     @ConstList(group = USER_STATUS_GROUP, name = "锁定")
     Integer USER_STATUS_DISABLE = 0;
-
     @ConstList(group = USER_STATUS_GROUP, name = "启用")
     Integer USER_STATUS_ENABLE = 1;
+
+    /**
+     * 日志类型
+     */
+    String LOG_TYPE_GROUP = "log_type_group";
+
+    @ConstList(group = LOG_TYPE_GROUP, name = "登录")
+    String LOG_TYPE_LOGIN = "login";
+    @ConstList(group = LOG_TYPE_GROUP, name = "注销")
+    String LOG_TYPE_LOGOUT = "logout";
+    @ConstList(group = LOG_TYPE_GROUP, name = "新增用户")
+    String LOG_TYPE_USER_SAVE = "user_save";
+    @ConstList(group = LOG_TYPE_GROUP, name = "更新用户")
+    String LOG_TYPE_USER_UPDATE = "user_update";
+    @ConstList(group = LOG_TYPE_GROUP, name = "启用用户")
+    String LOG_TYPE_USER_ENABLE = "user_enable";
+    @ConstList(group = LOG_TYPE_GROUP, name = "禁用用户")
+    String LOG_TYPE_USER_DISABLE = "user_disable";
+    @ConstList(group = LOG_TYPE_GROUP, name = "删除用户")
+    String LOG_TYPE_USER_DELETE = "user_delete";
 
     /**
      * 项目常量
