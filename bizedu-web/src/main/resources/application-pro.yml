@@ -5,11 +5,11 @@ spring:
     name: bizedu
   datasource:
     username: root
-    password: DES@D701B4AAF2392EEA7A1AE73801A12C7DCB0D9A55012E8988
+    password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
     url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/bizedu_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   redis:
     host: wx.yswg.com.cn
-    password: DES@D59EF7CAF79ADAD55BFE9AE4772B78A7
+    password: DES@37E3CF719471CF2B9A0BC5ADB916BD0F
     port: 6379
 mybatis:
   configuration:

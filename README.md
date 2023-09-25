@@ -8,6 +8,7 @@
 -Dspring.profiles.active=dev
 -Dlog.file=D:\log\springboot\bizedu
 -Dspring.main.allow-bean-definition-overriding=true
+-Dsecret.key=xxxx[配置文件加密key]
 ```
 
 #### 2. 项目部署参数

@@ -5,7 +5,7 @@ spring:
     name: bizedu
   datasource:
     username: root
-    password: DES@2120FA78BC6EB99B019C119BD8067DB0
+    password: DES@99D5518076FE8F32214D66F4B59766B7
     url: jdbc:mysql://localhost:3306/bizedu_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
 mybatis:
   configuration:
