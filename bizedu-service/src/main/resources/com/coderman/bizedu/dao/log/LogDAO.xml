@@ -267,4 +267,37 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where log_id = #{logId,jdbcType=INTEGER}
   </update>
+
+  <resultMap  id="pageResultMap"  extends="BaseResultMap" type="com.coderman.bizedu.vo.log.LogVO">
+  </resultMap>
+
+  <select id="countPage" resultType="long">
+    select count(1) as c
+    from auth_log al
+    <include refid="pageWhere"/>
+  </select>
+
+  <select id="page" resultMap="pageResultMap">
+    select log_id,
+           log_module,
+           user_id,
+           username,
+           create_time,
+           log_info
+    from auth_log al
+    <include refid="pageWhere"/>
+    order by log_id desc
+    limit #{offset},#{size}
+  </select>
+
+  <sql id="pageWhere">
+    <where>
+      <if test="username!=null and username!=''">
+        and al.username like concat('%',#{username},'%')
+      </if>
+      <if test="logModule!=null and logModule!=''">
+        and al.log_module  = #{logModule}
+      </if>
+    </where>
+  </sql>
 </mapper>
