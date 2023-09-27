@@ -21,18 +21,18 @@ public class LogModel extends BaseModel {
     @ApiModelProperty(value = "日志id")
     private Integer logId;
 
-    @ApiModelProperty(value = "日志内容")
-    private String logInfo;
-
     @ApiModelProperty(value = "日志类型")
-    private String logType;
-
-    @ApiModelProperty(value = "关联id")
-    private Integer relationId;
+    private Integer logType;
 
     @ApiModelProperty(value = "操作人id")
     private Integer userId;
 
+    @ApiModelProperty(value = "操作人姓名")
+    private String username;
+
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
+
+    @ApiModelProperty(value = "日志内容")
+    private String logInfo;
 }

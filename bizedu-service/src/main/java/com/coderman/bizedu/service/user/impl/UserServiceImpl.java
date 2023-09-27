@@ -25,6 +25,7 @@ import com.coderman.bizedu.utils.PasswordUtils;
 import com.coderman.bizedu.vo.func.FuncTreeVO;
 import com.coderman.bizedu.vo.resc.RescVO;
 import com.coderman.bizedu.vo.user.*;
+import com.coderman.oss.util.AliYunOssUtil;
 import com.coderman.redis.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
@@ -33,6 +34,7 @@ import com.coderman.service.util.HttpContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -43,6 +45,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -179,7 +182,8 @@ public class UserServiceImpl extends BaseService implements UserService {
             // 签发token
             UserLoginRespVO response = this.generateAndStoreToken(dbUser);
             // 记录日志
-            this.logService.saveLog(AuthConstant.LOG_TYPE_LOGIN, null, dbUser.getUserId(), String.format("用户%s登录系统.", dbUser.getUsername()));
+            this.logService.saveLog(AuthConstant.LOG_TYPE_LOGIN, dbUser.getUserId(), dbUser.getUsername(),String.format("用户%s于%s登录系统" , dbUser.getRealName() ,
+                    DateFormatUtils.format(new Date() , "yyyy-MM-dd HH:mm:ss")));
 
             return ResultUtil.getSuccess(UserLoginRespVO.class, response);
         } catch (Exception e) {
@@ -319,7 +323,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             if (Objects.nonNull(authUserVO)) {
 
                 this.redisService.del(redisKey, RedisDbConstant.REDIS_DB_AUTH);
-                this.logService.saveLog(AuthConstant.LOG_TYPE_LOGOUT, null, authUserVO.getUserId(), String.format("用户%s退出登录.", authUserVO.getUsername()));
+                this.logService.saveLog(AuthConstant.LOG_TYPE_LOGOUT, authUserVO.getUserId(), authUserVO.getUsername(), "用户注销登录");
             }
         }
 
@@ -478,7 +482,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 新增用户
         this.userDAO.insertReturnKey(insertModel);
         // 日志记录
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_SAVE, insertModel.getUserId(), current.getUserId(), String.format("%s新增用户%s", current.getUsername(), insertModel.getUsername()));
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_SAVE, String.format("%s新增用户%s", current.getRealName(), insertModel.getRealName()));
 
         return ResultUtil.getSuccess();
     }
@@ -511,7 +515,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 删除用户
         this.userDAO.deleteByPrimaryKey(userId);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DELETE, userId, current.getUserId(), String.format("%s删除用户%s", current.getUsername(), dbUserModel.getUsername()));
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DELETE, String.format("%s删除用户%s", current.getRealName(), dbUserModel.getRealName()));
 
         return ResultUtil.getSuccess();
     }
@@ -531,25 +535,22 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (Objects.isNull(userId)) {
             return ResultUtil.getWarn("用户id不能为空！");
         }
-
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
-        Assert.notNull(userModel , "userModel is null");
-
+        if(null == userModel){
+            return ResultUtil.getWarn("用户不存在！");
+        }
         if (StringUtils.isBlank(deptCode)) {
 
             return ResultUtil.getWarn("所属部门不能为空！");
         }
-
         if (Objects.isNull(userStatus)) {
 
             return ResultUtil.getWarn("用户状态不能为空！");
         }
-
         if (StringUtils.isBlank(realName)) {
 
             return ResultUtil.getWarn("真实姓名不能为空！");
         }
-
         if (StringUtils.length(realName) < 2 || StringUtils.length(realName) > 10) {
 
             return ResultUtil.getWarn("真实姓名2-10个字符！");
@@ -565,7 +566,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 更新用户
         this.userDAO.updateByPrimaryKeySelective(updateModel);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DELETE, userId, current.getUserId(), String.format("%s更新用户%s", current.getUsername(), userModel.getUsername()));
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DELETE, String.format("%s更新用户%s", current.getRealName(), userModel.getRealName()));
 
         return ResultUtil.getSuccess();
     }
@@ -615,6 +616,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         return ResultUtil.getSuccess(UserVO.class, userVO);
     }
 
+    @Resource
+    private AliYunOssUtil aliYunOssUtil;
+
     @Override
     @LogError(value = "启用用户")
     public ResultVO<Void> updateEnable(Integer userId) {
@@ -638,9 +642,8 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setUserStatus(AuthConstant.USER_STATUS_ENABLE);
         updateModel.setUpdateTime(new Date());
         this.userDAO.updateByPrimaryKeySelective(updateModel);
-
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_ENABLE, userId, current.getUserId(), String.format("%s启用用户%s", current.getUsername(), userModel.getUsername()));
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_ENABLE, String.format("%s启用用户%s", current.getRealName(), userModel.getRealName()));
 
         return ResultUtil.getSuccess();
     }
@@ -670,7 +673,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.userDAO.updateByPrimaryKeySelective(updateModel);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DISABLE, userId, current.getUserId(), String.format("%s禁用用户%s", current.getUsername(), userModel.getUsername()));
+        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DISABLE, String.format("%s禁用用户%s", current.getRealName(), userModel.getRealName()));
 
         return ResultUtil.getSuccess();
     }

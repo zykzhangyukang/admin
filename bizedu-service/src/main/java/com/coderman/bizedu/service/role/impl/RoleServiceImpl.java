@@ -142,16 +142,22 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    @Transactional
     public ResultVO<Void> delete(Integer roleId) {
+
+        if (Objects.isNull(roleId)) {
+            return ResultUtil.getWarn("角色id不能为空！");
+        }
+
+        RoleModel roleModel = this.roleDAO.selectByPrimaryKey(roleId);
+        if (null == roleModel) {
+            return ResultUtil.getWarn("角色不存在！");
+        }
 
         // 查询当前角色是否有关联用户
         UserRoleExample example = new UserRoleExample();
         example.createCriteria().andRoleIdEqualTo(roleId);
         long count = this.userRoleDAO.countByExample(example);
-
         if (count > 0) {
-
             return ResultUtil.getWarn("角色已关联用户 ！");
         }
 
@@ -178,32 +184,30 @@ public class RoleServiceImpl implements RoleService {
 
             return ResultUtil.getWarn("角色id不能为空！");
         }
-
         if (StringUtils.length(roleName) > 15) {
 
             return ResultUtil.getWarn("角色名称最多15个字符！");
         }
-
         if (StringUtils.isBlank(roleName)) {
 
             return ResultUtil.getWarn("角色名称不能为空！");
         }
-
         if (StringUtils.length(roleDesc) > 20) {
 
             return ResultUtil.getWarn("角色描述最多20个字符！");
         }
-
         if (StringUtils.isBlank(roleDesc)) {
 
             return ResultUtil.getWarn("角色描述不能为空！");
         }
+        RoleModel dbRoleModel = this.roleDAO.selectByPrimaryKey(roleId);
+        if(null == dbRoleModel){
+            return ResultUtil.getWarn("角色不存在！");
+        }
 
         // 角色名称唯一性校验
         RoleModel roleModel = this.roleDAO.selectByRoleName(roleName);
-
         if (Objects.nonNull(roleModel) && !Objects.equals(roleModel.getRoleId(), roleId)) {
-
             return ResultUtil.getWarn("存在重复的角色:" + roleName);
         }
 
@@ -234,6 +238,8 @@ public class RoleServiceImpl implements RoleService {
         roleVO.setRoleDesc(roleModel.getRoleDesc());
         roleVO.setRoleId(roleModel.getRoleId());
         roleVO.setRoleName(roleModel.getRoleName());
+        roleVO.setCreateTime(roleModel.getCreateTime());
+        roleVO.setUpdateTime(roleModel.getUpdateTime());
         return ResultUtil.getSuccess(RoleVO.class, roleVO);
     }
 
@@ -413,7 +419,9 @@ public class RoleServiceImpl implements RoleService {
         }
 
         List<Integer> funcIdList = roleAuthorizedDTO.getFuncIdList();
-        Assert.notNull(roleId, "角色ID不能为空！");
+        if(null == roleId){
+            return ResultUtil.getWarn("角色id不能为空！");
+        }
 
         // 本次需要分配的功能查出来
         List<Integer> needAuthFuncIdList = new ArrayList<>();
@@ -434,13 +442,13 @@ public class RoleServiceImpl implements RoleService {
         // 删除的
         Collection<Integer> delList = CollectionUtils.subtract(historyAuthFuncIdList, intersection);
 
-        List<FuncModel> addListModels =  new ArrayList<>();
-        List<FuncModel> delListModels =  new ArrayList<>();
+        List<FuncModel> addListModels = new ArrayList<>();
+        List<FuncModel> delListModels = new ArrayList<>();
 
-        if(CollectionUtils.isNotEmpty(addList)){
-            addListModels =  this.funcService.selectAllByFuncIdList(addList);
+        if (CollectionUtils.isNotEmpty(addList)) {
+            addListModels = this.funcService.selectAllByFuncIdList(addList);
         }
-        if(CollectionUtils.isNotEmpty(delList)){
+        if (CollectionUtils.isNotEmpty(delList)) {
             delListModels = this.funcService.selectAllByFuncIdList(delList);
         }
 

@@ -1,4 +1,4 @@
-package com.coderman.bizedu.controller.dict;
+package com.coderman.bizedu.controller.common;
 
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.constant.ResultConstant;
@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.Set;
 
 
+/**
+ * @author zhangyukang
+ */
 @Api(value = "字典接口", tags = "字典接口")
 @RestController
 @Slf4j

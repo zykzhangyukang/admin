@@ -1,7 +1,6 @@
 package com.coderman.bizedu;
 
 import com.coderman.service.anntation.ISpringBootApplication;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 
 /**

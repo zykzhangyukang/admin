@@ -19,7 +19,7 @@ import java.util.List;
  * @author ：zhangyukang
  * @date ：2023/09/18 17:32
  */
-@Api(value = "课程分类管理", tags = "课程分类管理")
+@Api(value = "课程分类管理", tags = "课程分类")
 @RestController
 @RequestMapping(value = "/edu/catalog")
 public class CatalogController {

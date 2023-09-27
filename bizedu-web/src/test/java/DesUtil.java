@@ -5,7 +5,7 @@
 public class DesUtil {
 
     public static void main(String[] args) {
-        String encrypt = com.coderman.service.util.DesUtil.encrypt("yswg@2019");
+        String encrypt = com.coderman.service.util.DesUtil.encrypt("QM3MjGWByMiifO8VSoEuKlzS7YskZk","Aa123456");
         System.out.println(encrypt);
     }
 }

@@ -211,7 +211,6 @@
 
 
   <resultMap id="pageResultMap" extends="BaseResultMap" type="com.coderman.bizedu.vo.role.RoleVO">
-    <collection property="userNameList" column="role_id" ofType="java.lang.String" select="com.coderman.bizedu.dao.role.RoleDAO.selectUserByRoleId"/>
   </resultMap>
 
 

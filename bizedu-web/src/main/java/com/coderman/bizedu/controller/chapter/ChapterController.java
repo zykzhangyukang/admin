@@ -23,7 +23,7 @@ import java.util.List;
  * @author ：zhangyukang
  * @date ：2023/09/18 16:51
  */
-@Api(value = "课程大章管理", tags = "课程大章管理")
+@Api(value = "课程大章管理", tags = "课程大章")
 @RestController
 @RequestMapping(value = "/edu/chapter")
 public class ChapterController {

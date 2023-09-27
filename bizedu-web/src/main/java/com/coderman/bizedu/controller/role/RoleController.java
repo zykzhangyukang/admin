@@ -151,7 +151,7 @@ public class RoleController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "RoleVO",value = {"roleName","roleDesc","roleId"})
+            @ApiReturnParam(name = "RoleVO",value = {"roleName","roleDesc","roleId","updateTime", "createTime"})
     })
     public ResultVO<RoleVO> selectRoleById(@RequestParam(value = "roleId") Integer roleId) {
         return this.roleService.selectRoleById(roleId);

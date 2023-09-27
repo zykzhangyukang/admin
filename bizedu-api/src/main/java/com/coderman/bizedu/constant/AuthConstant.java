@@ -39,29 +39,34 @@ public interface AuthConstant {
     String LOG_TYPE_GROUP = "log_type_group";
 
     @ConstList(group = LOG_TYPE_GROUP, name = "登录")
-    String LOG_TYPE_LOGIN = "login";
+    Integer LOG_TYPE_LOGIN = 0;
     @ConstList(group = LOG_TYPE_GROUP, name = "注销")
-    String LOG_TYPE_LOGOUT = "logout";
+    Integer LOG_TYPE_LOGOUT = 1;
     @ConstList(group = LOG_TYPE_GROUP, name = "新增用户")
-    String LOG_TYPE_USER_SAVE = "user_save";
+    Integer LOG_TYPE_USER_SAVE = 2;
     @ConstList(group = LOG_TYPE_GROUP, name = "更新用户")
-    String LOG_TYPE_USER_UPDATE = "user_update";
+    Integer LOG_TYPE_USER_UPDATE = 3;
     @ConstList(group = LOG_TYPE_GROUP, name = "启用用户")
-    String LOG_TYPE_USER_ENABLE = "user_enable";
+    Integer LOG_TYPE_USER_ENABLE = 4;
     @ConstList(group = LOG_TYPE_GROUP, name = "禁用用户")
-    String LOG_TYPE_USER_DISABLE = "user_disable";
+    Integer LOG_TYPE_USER_DISABLE = 5;
     @ConstList(group = LOG_TYPE_GROUP, name = "删除用户")
-    String LOG_TYPE_USER_DELETE = "user_delete";
+    Integer LOG_TYPE_USER_DELETE = 6;
+
+    /**
+     * 日志模块
+     */
+    String LOG_MODULE_GROUP = "log_module_group";
 
     /**
      * 项目常量
      */
-    String project_domain = "project_domain";
+    String PROJECT_DOMAIN = "project_domain";
 
-    @ConstList(group = project_domain, name = "权限系统")
+    @ConstList(group = PROJECT_DOMAIN, name = "权限系统")
     String PROJECT_DOMAIN_AUTH = "auth";
 
-    @ConstList(group = project_domain, name = "课程系统")
+    @ConstList(group = PROJECT_DOMAIN, name = "课程系统")
     String PROJECT_DOMAIN_EDU = "edu";
 
 

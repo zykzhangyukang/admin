@@ -16,8 +16,5 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class RoleVO extends RoleModel {
 
-    /**
-     * 用户信息
-     */
-    private List<String> userNameList;
+
 }

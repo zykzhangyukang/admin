@@ -8,8 +8,15 @@ spring:
     password: DES@99D5518076FE8F32214D66F4B59766B7
     url: jdbc:mysql://127.0.0.1:3306/bizedu_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   redis:
-    host: 127.0.0.1
+    host: wx.yswg.com.cn
+    password: DES@37E3CF719471CF2B9A0BC5ADB916BD0F
     port: 6379
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+aliyun:
+  oss:
+    access-key-id: DES@15BF54A5AE211A5CF9D33FBC5F1DC0BBCBB930C2BCC7C3875F2EC4A83FE5B5FD
+    access-key-secret: DES@C198710CB2463E594B6599BE0ABE138AAC0735B5ABBD632655095EBE8F436582
+    end-point: oss-cn-shenzhen.aliyuncs.com
+    bucket-name: ioss-bucket
