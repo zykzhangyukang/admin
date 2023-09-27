@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 public interface UserRoleDAO extends BaseDAO<UserRoleModel, UserRoleExample> {
 

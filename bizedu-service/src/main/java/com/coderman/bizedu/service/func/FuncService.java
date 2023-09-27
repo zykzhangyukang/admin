@@ -33,6 +33,7 @@ public interface FuncService {
 
     /**
      * 功能列表
+     * @param funcPageDTO 查询参数
      * @return
      */
     ResultVO<PageVO<List<FuncVO>>> page(FuncPageDTO funcPageDTO);
@@ -40,6 +41,7 @@ public interface FuncService {
 
     /**
      * 保存功能
+     * @param funcSaveDTO 参数
      * @return
      */
     ResultVO<Void> save(FuncSaveDTO funcSaveDTO);

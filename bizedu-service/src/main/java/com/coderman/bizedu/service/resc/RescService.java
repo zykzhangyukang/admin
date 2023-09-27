@@ -22,6 +22,7 @@ public interface RescService {
 
     /**
      * 资源列表
+     * @param rescPageDTO 查询参数
      * @return
      */
     ResultVO<PageVO<List<RescVO>>> page(RescPageDTO rescPageDTO);

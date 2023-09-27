@@ -22,7 +22,7 @@ public interface RoleService {
 
     /**
      * 角色列表
-     *
+     * @param rolePageDTO 查询参数
      * @return
      */
     ResultVO<PageVO<List<RoleVO>>> page(RolePageDTO rolePageDTO);
@@ -89,7 +89,7 @@ public interface RoleService {
 
     /**
      * 角色分配功能
-     *
+     * @param roleFuncUpdateDTO 参数
      * @return
      */
     ResultVO<Void> updateRoleFunc(RoleFuncUpdateDTO roleFuncUpdateDTO);

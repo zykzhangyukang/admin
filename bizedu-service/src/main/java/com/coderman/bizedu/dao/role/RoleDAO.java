@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 public interface RoleDAO extends BaseDAO<RoleModel, RoleExample> {
 
 
     /**
      * 角色列表
-     *
+     * @param conditionMap
      * @return
      */
     List<RoleVO> page(Map<String,Object> conditionMap);

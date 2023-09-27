@@ -16,7 +16,7 @@ public interface UserService {
 
     /**
      * 用户列表
-     *
+     * @param queryVO 查询参数
      * @return
      */
     ResultVO<PageVO<List<UserVO>>> page(UserPageDTO queryVO);
@@ -93,7 +93,7 @@ public interface UserService {
 
     /**
      * 用户分配角色
-     *
+     * @param userRoleUpdateDTO 参数
      * @return
      */
     ResultVO<Void> updateUserRole(UserRoleUpdateDTO userRoleUpdateDTO);
@@ -127,7 +127,7 @@ public interface UserService {
 
     /**
      * 获取用户信息
-     *
+     * @param token  令牌
      * @return
      */
     ResultVO<UserPermissionVO> info(String token);
@@ -153,7 +153,7 @@ public interface UserService {
 
     /**
      * 用户刷新登录
-     *
+     * @param token 令牌
      * @return
      */
     ResultVO<String> refreshLogin(String token);

@@ -9,6 +9,9 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author zhangyukang
+ */
 public interface UserDAO extends BaseDAO<UserModel, UserExample> {
 
 

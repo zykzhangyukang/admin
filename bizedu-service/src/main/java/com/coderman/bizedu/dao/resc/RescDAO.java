@@ -16,14 +16,14 @@ public interface RescDAO extends BaseDAO<RescModel, RescExample> {
 
     /**
      * 根据url查询资源信息
-     *
+     * @param rescUrl 资源url
      * @return
      */
     RescVO selectByRescUrl(@Param(value = "rescUrl") String rescUrl);
 
     /**
      * 用户列表
-     *
+     * @param conditionMap 查询条件
      * @return
      */
     List<RescVO> page(Map<String, Object> conditionMap);
