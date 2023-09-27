@@ -22,13 +22,13 @@ public class LogServiceImpl implements LogService {
     private LogDAO logDAO;
 
     @Override
-    public void saveLog(Integer logType,Integer userId,String username, String logInfo) {
+    public void saveLog(Integer logModule, Integer userId, String username, String logInfo) {
 
-        Assert.notNull(logType, "logType is null");
+        Assert.notNull(logModule, "logModule is null");
         logInfo = StringUtils.defaultString(logInfo);
 
         LogModel logModel = new LogModel();
-        logModel.setLogType(logType);
+        logModel.setLogModule(logModule);
         logModel.setLogInfo(logInfo);
         logModel.setUserId(userId);
         logModel.setUsername(username);
@@ -38,10 +38,10 @@ public class LogServiceImpl implements LogService {
 
 
     @Override
-    public void saveLog(Integer loginLogType, String logInfo) {
+    public void saveLog(Integer logModule, String logInfo) {
         AuthUserVO current = AuthUtil.getCurrent();
         Assert.notNull(current , "当前登录用户不能为空！");
-        this.saveLog(loginLogType , current.getUserId() ,current.getUsername() , logInfo);
+        this.saveLog(logModule, current.getUserId() ,current.getUsername() , logInfo);
     }
 
 

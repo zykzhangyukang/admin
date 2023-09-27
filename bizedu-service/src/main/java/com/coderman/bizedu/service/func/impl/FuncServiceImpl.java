@@ -21,6 +21,7 @@ import com.coderman.bizedu.model.role.RoleFuncModel;
 import com.coderman.bizedu.model.user.UserRoleExample;
 import com.coderman.bizedu.model.user.UserRoleModel;
 import com.coderman.bizedu.service.func.FuncService;
+import com.coderman.bizedu.service.log.LogService;
 import com.coderman.bizedu.utils.TreeUtils;
 import com.coderman.bizedu.vo.func.FuncTreeVO;
 import com.coderman.bizedu.vo.func.FuncVO;
@@ -46,6 +47,9 @@ public class FuncServiceImpl implements FuncService {
 
     @Resource
     private FuncDAO funcDAO;
+
+    @Resource
+    private LogService logService;
 
     @Resource
     private RoleFuncDAO roleFuncDAO;
@@ -118,7 +122,7 @@ public class FuncServiceImpl implements FuncService {
     }
 
     @Override
-    @LogError(value = "保存功能")
+    @LogError(value = "新增功能信息")
     public ResultVO<Void> save(@LogErrorParam FuncSaveDTO funcSaveDTO) {
 
         Integer parentId = funcSaveDTO.getParentId();
@@ -171,14 +175,16 @@ public class FuncServiceImpl implements FuncService {
         insert.setFuncDirStatus(funcDirStatus);
         insert.setFuncIcon(funcIcon);
         insert.setUpdateTime(new Date());
-
         this.funcDAO.insertSelectiveReturnKey(insert);
+
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "新增功能信息");
 
         return ResultUtil.getSuccess();
     }
 
     @Override
-    @LogError(value = "更新功能")
+    @LogError(value = "更新功能信息")
     public ResultVO<Void> update(@LogErrorParam FuncUpdateDTO funcUpdateDTO) {
 
         Integer funcId = funcUpdateDTO.getFuncId();
@@ -245,11 +251,14 @@ public class FuncServiceImpl implements FuncService {
         update.setUpdateTime(new Date());
         this.funcDAO.updateByPrimaryKeySelective(update);
 
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "更新功能信息");
+
         return ResultUtil.getSuccess();
     }
 
     @Override
-    @LogError(value = "删除功能")
+    @LogError(value = "删除功能信息")
     public ResultVO<Void> delete(Integer funcId) {
 
         if (Objects.isNull(funcId)) {
@@ -292,9 +301,12 @@ public class FuncServiceImpl implements FuncService {
                 return ResultUtil.getWarn("请先解绑用户！");
             }
         }
-
         // 删除功能
         this.funcDAO.deleteByPrimaryKey(funcId);
+
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "删除功能信息");
+
         return ResultUtil.getSuccess();
     }
 
@@ -335,6 +347,9 @@ public class FuncServiceImpl implements FuncService {
 
             this.roleFuncDAO.deleteByFuncIdIn(funcIdList);
         }
+
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "功能解绑用户");
 
         return ResultUtil.getSuccess();
     }
@@ -389,6 +404,9 @@ public class FuncServiceImpl implements FuncService {
 
         // 所谓功能解绑资源,即删除所有该功能-资源的绑定
         this.funcRescDAO.deleteByFuncId(funcId);
+
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "功能解绑资源");
 
         return ResultUtil.getSuccess();
     }

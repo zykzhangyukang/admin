@@ -6,6 +6,7 @@ import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.bizedu.constant.AuthConstant;
 import com.coderman.bizedu.dao.role.RoleDAO;
 import com.coderman.bizedu.dao.role.RoleFuncDAO;
 import com.coderman.bizedu.dao.user.UserDAO;
@@ -22,6 +23,7 @@ import com.coderman.bizedu.model.user.UserModel;
 import com.coderman.bizedu.model.user.UserRoleExample;
 import com.coderman.bizedu.model.user.UserRoleModel;
 import com.coderman.bizedu.service.func.FuncService;
+import com.coderman.bizedu.service.log.LogService;
 import com.coderman.bizedu.service.role.RoleService;
 import com.coderman.bizedu.utils.TreeUtils;
 import com.coderman.bizedu.vo.func.FuncTreeVO;
@@ -34,8 +36,6 @@ import com.coderman.service.anntation.LogErrorParam;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -51,6 +51,9 @@ public class RoleServiceImpl implements RoleService {
 
     @Resource
     private RoleDAO roleDAO;
+
+    @Resource
+    private LogService logService;
 
     @Resource
     private UserRoleDAO userRoleDAO;
@@ -95,6 +98,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @LogError(value = "新增角色信息")
     public ResultVO<Void> save(RoleSaveDTO roleSaveDTO) {
 
         String roleName = roleSaveDTO.getRoleName();
@@ -134,14 +138,16 @@ public class RoleServiceImpl implements RoleService {
         insert.setRoleDesc(roleDesc);
         insert.setCreateTime(currentDate);
         insert.setUpdateTime(currentDate);
-
         this.roleDAO.insertReturnKey(insert);
 
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "新增角色信息");
 
         return ResultUtil.getSuccess();
     }
 
     @Override
+    @LogError(value = "删除角色信息")
     public ResultVO<Void> delete(Integer roleId) {
 
         if (Objects.isNull(roleId)) {
@@ -168,12 +174,14 @@ public class RoleServiceImpl implements RoleService {
 
         // 删除角色
         this.roleDAO.deleteByPrimaryKey(roleId);
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "删除角色信息");
 
         return ResultUtil.getSuccess();
     }
 
     @Override
-    @LogError(value = "更新角色")
+    @LogError(value = "更新角色信息")
     public ResultVO<Void> update(@LogErrorParam RoleUpdateDTO roleUpdateDTO) {
 
         Integer roleId = roleUpdateDTO.getRoleId();
@@ -218,7 +226,8 @@ public class RoleServiceImpl implements RoleService {
         update.setRoleDesc(roleDesc);
         update.setUpdateTime(new Date());
         this.roleDAO.updateByPrimaryKeySelective(update);
-
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "更新角色信息");
 
         return ResultUtil.getSuccess();
     }
@@ -283,13 +292,12 @@ public class RoleServiceImpl implements RoleService {
         UserRoleExample example = new UserRoleExample();
         example.createCriteria().andRoleIdEqualTo(roleId);
         this.userRoleDAO.deleteByExample(example);
-
-
         // 批量新增
         if (CollectionUtils.isNotEmpty(assignedIdList)) {
             this.userRoleDAO.insertBatchByRoleId(roleId, assignedIdList);
         }
-
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "角色分配用户");
         return ResultUtil.getSuccess();
     }
 
@@ -403,6 +411,8 @@ public class RoleServiceImpl implements RoleService {
 
             this.roleFuncDAO.batchInsertByRoleId(roleId, funcIdList);
         }
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "角色分配功能");
 
         return ResultUtil.getSuccess();
     }

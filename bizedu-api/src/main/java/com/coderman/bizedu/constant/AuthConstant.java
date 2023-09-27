@@ -34,29 +34,18 @@ public interface AuthConstant {
     Integer USER_STATUS_ENABLE = 1;
 
     /**
-     * 日志类型
-     */
-    String LOG_TYPE_GROUP = "log_type_group";
-
-    @ConstList(group = LOG_TYPE_GROUP, name = "登录")
-    Integer LOG_TYPE_LOGIN = 0;
-    @ConstList(group = LOG_TYPE_GROUP, name = "注销")
-    Integer LOG_TYPE_LOGOUT = 1;
-    @ConstList(group = LOG_TYPE_GROUP, name = "新增用户")
-    Integer LOG_TYPE_USER_SAVE = 2;
-    @ConstList(group = LOG_TYPE_GROUP, name = "更新用户")
-    Integer LOG_TYPE_USER_UPDATE = 3;
-    @ConstList(group = LOG_TYPE_GROUP, name = "启用用户")
-    Integer LOG_TYPE_USER_ENABLE = 4;
-    @ConstList(group = LOG_TYPE_GROUP, name = "禁用用户")
-    Integer LOG_TYPE_USER_DISABLE = 5;
-    @ConstList(group = LOG_TYPE_GROUP, name = "删除用户")
-    Integer LOG_TYPE_USER_DELETE = 6;
-
-    /**
      * 日志模块
      */
     String LOG_MODULE_GROUP = "log_module_group";
+
+    @ConstList(group = LOG_MODULE_GROUP, name = "用户模块")
+    Integer LOG_MODULE_USER = 0;
+    @ConstList(group = LOG_MODULE_GROUP, name = "角色模块")
+    Integer LOG_MODULE_ROLE = 1;
+    @ConstList(group = LOG_MODULE_GROUP, name = "资源模块")
+    Integer LOG_MODULE_RESC = 2;
+    @ConstList(group = LOG_MODULE_GROUP, name = "功能模块")
+    Integer LOG_MODULE_FUNC = 3;
 
     /**
      * 项目常量

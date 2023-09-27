@@ -165,63 +165,63 @@ public class LogExample {
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeIsNull() {
-            addCriterion("log_type is null");
+        public Criteria andLogModuleIsNull() {
+            addCriterion("log_module is null");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeIsNotNull() {
-            addCriterion("log_type is not null");
+        public Criteria andLogModuleIsNotNull() {
+            addCriterion("log_module is not null");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeEqualTo(Integer value) {
-            addCriterion("log_type =", value, "logType");
+        public Criteria andLogModuleEqualTo(Integer value) {
+            addCriterion("log_module =", value, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeNotEqualTo(Integer value) {
-            addCriterion("log_type <>", value, "logType");
+        public Criteria andLogModuleNotEqualTo(Integer value) {
+            addCriterion("log_module <>", value, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeGreaterThan(Integer value) {
-            addCriterion("log_type >", value, "logType");
+        public Criteria andLogModuleGreaterThan(Integer value) {
+            addCriterion("log_module >", value, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeGreaterThanOrEqualTo(Integer value) {
-            addCriterion("log_type >=", value, "logType");
+        public Criteria andLogModuleGreaterThanOrEqualTo(Integer value) {
+            addCriterion("log_module >=", value, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeLessThan(Integer value) {
-            addCriterion("log_type <", value, "logType");
+        public Criteria andLogModuleLessThan(Integer value) {
+            addCriterion("log_module <", value, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeLessThanOrEqualTo(Integer value) {
-            addCriterion("log_type <=", value, "logType");
+        public Criteria andLogModuleLessThanOrEqualTo(Integer value) {
+            addCriterion("log_module <=", value, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeIn(List<Integer> values) {
-            addCriterion("log_type in", values, "logType");
+        public Criteria andLogModuleIn(List<Integer> values) {
+            addCriterion("log_module in", values, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeNotIn(List<Integer> values) {
-            addCriterion("log_type not in", values, "logType");
+        public Criteria andLogModuleNotIn(List<Integer> values) {
+            addCriterion("log_module not in", values, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeBetween(Integer value1, Integer value2) {
-            addCriterion("log_type between", value1, value2, "logType");
+        public Criteria andLogModuleBetween(Integer value1, Integer value2) {
+            addCriterion("log_module between", value1, value2, "logModule");
             return (Criteria) this;
         }
 
-        public Criteria andLogTypeNotBetween(Integer value1, Integer value2) {
-            addCriterion("log_type not between", value1, value2, "logType");
+        public Criteria andLogModuleNotBetween(Integer value1, Integer value2) {
+            addCriterion("log_module not between", value1, value2, "logModule");
             return (Criteria) this;
         }
 

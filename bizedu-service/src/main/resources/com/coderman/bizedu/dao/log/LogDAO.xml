@@ -3,7 +3,7 @@
 <mapper namespace="com.coderman.bizedu.dao.log.LogDAO">
   <resultMap id="BaseResultMap" type="com.coderman.bizedu.model.log.LogModel">
     <id column="log_id" jdbcType="INTEGER" property="logId" />
-    <result column="log_type" jdbcType="INTEGER" property="logType" />
+    <result column="log_module" jdbcType="INTEGER" property="logModule" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -70,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    log_id, log_type, user_id, username, create_time
+    log_id, log_module, user_id, username, create_time
   </sql>
   <sql id="Blob_Column_List">
     log_info
@@ -124,10 +124,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.bizedu.model.log.LogModel">
-    insert into auth_log (log_id, log_type, user_id, 
+    insert into auth_log (log_id, log_module, user_id, 
       username, create_time, log_info
       )
-    values (#{logId,jdbcType=INTEGER}, #{logType,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+    values (#{logId,jdbcType=INTEGER}, #{logModule,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
       #{username,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{logInfo,jdbcType=LONGVARCHAR}
       )
   </insert>
@@ -137,8 +137,8 @@
       <if test="logId != null">
         log_id,
       </if>
-      <if test="logType != null">
-        log_type,
+      <if test="logModule != null">
+        log_module,
       </if>
       <if test="userId != null">
         user_id,
@@ -157,8 +157,8 @@
       <if test="logId != null">
         #{logId,jdbcType=INTEGER},
       </if>
-      <if test="logType != null">
-        #{logType,jdbcType=INTEGER},
+      <if test="logModule != null">
+        #{logModule,jdbcType=INTEGER},
       </if>
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
@@ -186,8 +186,8 @@
       <if test="record.logId != null">
         log_id = #{record.logId,jdbcType=INTEGER},
       </if>
-      <if test="record.logType != null">
-        log_type = #{record.logType,jdbcType=INTEGER},
+      <if test="record.logModule != null">
+        log_module = #{record.logModule,jdbcType=INTEGER},
       </if>
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=INTEGER},
@@ -209,7 +209,7 @@
   <update id="updateByExampleWithBLOBs" parameterType="map">
     update auth_log
     set log_id = #{record.logId,jdbcType=INTEGER},
-      log_type = #{record.logType,jdbcType=INTEGER},
+      log_module = #{record.logModule,jdbcType=INTEGER},
       user_id = #{record.userId,jdbcType=INTEGER},
       username = #{record.username,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -221,7 +221,7 @@
   <update id="updateByExample" parameterType="map">
     update auth_log
     set log_id = #{record.logId,jdbcType=INTEGER},
-      log_type = #{record.logType,jdbcType=INTEGER},
+      log_module = #{record.logModule,jdbcType=INTEGER},
       user_id = #{record.userId,jdbcType=INTEGER},
       username = #{record.username,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP}
@@ -232,8 +232,8 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.bizedu.model.log.LogModel">
     update auth_log
     <set>
-      <if test="logType != null">
-        log_type = #{logType,jdbcType=INTEGER},
+      <if test="logModule != null">
+        log_module = #{logModule,jdbcType=INTEGER},
       </if>
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
@@ -252,7 +252,7 @@
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.coderman.bizedu.model.log.LogModel">
     update auth_log
-    set log_type = #{logType,jdbcType=INTEGER},
+    set log_module = #{logModule,jdbcType=INTEGER},
       user_id = #{userId,jdbcType=INTEGER},
       username = #{username,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -261,7 +261,7 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.bizedu.model.log.LogModel">
     update auth_log
-    set log_type = #{logType,jdbcType=INTEGER},
+    set log_module = #{logModule,jdbcType=INTEGER},
       user_id = #{userId,jdbcType=INTEGER},
       username = #{username,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP}

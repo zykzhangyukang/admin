@@ -5,6 +5,7 @@ import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.bizedu.constant.AuthConstant;
 import com.coderman.bizedu.dao.func.FuncRescDAO;
 import com.coderman.bizedu.dao.resc.RescDAO;
 import com.coderman.bizedu.dto.resc.RescPageDTO;
@@ -12,6 +13,7 @@ import com.coderman.bizedu.dto.resc.RescSaveDTO;
 import com.coderman.bizedu.dto.resc.RescUpdateDTO;
 import com.coderman.bizedu.model.resc.RescExample;
 import com.coderman.bizedu.model.resc.RescModel;
+import com.coderman.bizedu.service.log.LogService;
 import com.coderman.bizedu.service.resc.RescService;
 import com.coderman.bizedu.vo.resc.RescVO;
 import com.coderman.service.anntation.LogError;
@@ -33,6 +35,8 @@ public class RescServiceImpl implements RescService {
     @Resource
     private RescDAO rescDAO;
 
+    @Resource
+    private LogService logService;
 
     @Resource
     private FuncRescDAO funcRescDAO;
@@ -82,7 +86,7 @@ public class RescServiceImpl implements RescService {
     }
 
     @Override
-    @LogError(value = "新增资源 ")
+    @LogError(value = "新增资源信息 ")
     public ResultVO<Void> save(@LogErrorParam RescSaveDTO rescSaveDTO) {
 
         String rescName = rescSaveDTO.getRescName();
@@ -124,14 +128,16 @@ public class RescServiceImpl implements RescService {
         insert.setRescUrl(rescUrl.trim());
         insert.setRescName(rescName);
         insert.setMethodType(methodType);
-
         this.rescDAO.insertReturnKey(insert);
+
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, "新增资源信息");
 
         return ResultUtil.getSuccess();
     }
 
     @Override
-    @LogError(value = "更新资源")
+    @LogError(value = "更新资源信息")
     public ResultVO<Void> update(@LogErrorParam RescUpdateDTO rescUpdateDTO) {
 
         String rescName = rescUpdateDTO.getRescName();
@@ -179,13 +185,16 @@ public class RescServiceImpl implements RescService {
         update.setRescUrl(rescUrl);
         update.setUpdateTime(new Date());
         update.setMethodType(methodType);
-
         this.rescDAO.updateByPrimaryKeySelective(update);
+
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, "更新资源信息");
+
         return ResultUtil.getSuccess();
     }
 
     @Override
-    @LogError(value = "删除资源")
+    @LogError(value = "删除资源信息")
     public ResultVO<Void> delete(Integer rescId) {
 
         if (Objects.isNull(rescId)) {
@@ -195,13 +204,13 @@ public class RescServiceImpl implements RescService {
 
         // 校验该资源是否绑定了功能.
         Long count = this.funcRescDAO.countByRescId(rescId);
-
         if (count > 0) {
-
             return ResultUtil.getWarn("资源已被功能引用 ！");
         }
 
         this.rescDAO.deleteByPrimaryKey(rescId);
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, "删除资源信息");
 
         return ResultUtil.getSuccess();
     }

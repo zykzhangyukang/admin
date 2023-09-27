@@ -182,8 +182,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             // 签发token
             UserLoginRespVO response = this.generateAndStoreToken(dbUser);
             // 记录日志
-            this.logService.saveLog(AuthConstant.LOG_TYPE_LOGIN, dbUser.getUserId(), dbUser.getUsername(),String.format("用户%s于%s登录系统" , dbUser.getRealName() ,
-                    DateFormatUtils.format(new Date() , "yyyy-MM-dd HH:mm:ss")));
+            this.logService.saveLog(AuthConstant.LOG_MODULE_USER, dbUser.getUserId(), dbUser.getUsername(), "用户登录系统");
 
             return ResultUtil.getSuccess(UserLoginRespVO.class, response);
         } catch (Exception e) {
@@ -323,7 +322,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             if (Objects.nonNull(authUserVO)) {
 
                 this.redisService.del(redisKey, RedisDbConstant.REDIS_DB_AUTH);
-                this.logService.saveLog(AuthConstant.LOG_TYPE_LOGOUT, authUserVO.getUserId(), authUserVO.getUsername(), "用户注销登录");
+                this.logService.saveLog(AuthConstant.LOG_MODULE_USER, authUserVO.getUserId(), authUserVO.getUsername(), "用户注销登录");
             }
         }
 
@@ -481,8 +480,8 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 新增用户
         this.userDAO.insertReturnKey(insertModel);
-        // 日志记录
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_SAVE, String.format("%s新增用户%s", current.getRealName(), insertModel.getRealName()));
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, "新增用户信息");
 
         return ResultUtil.getSuccess();
     }
@@ -515,7 +514,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 删除用户
         this.userDAO.deleteByPrimaryKey(userId);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DELETE, String.format("%s删除用户%s", current.getRealName(), dbUserModel.getRealName()));
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER,  "删除用户信息");
 
         return ResultUtil.getSuccess();
     }
@@ -566,7 +565,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 更新用户
         this.userDAO.updateByPrimaryKeySelective(updateModel);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DELETE, String.format("%s更新用户%s", current.getRealName(), userModel.getRealName()));
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, "更新用户信息");
 
         return ResultUtil.getSuccess();
     }
@@ -616,9 +615,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         return ResultUtil.getSuccess(UserVO.class, userVO);
     }
 
-    @Resource
-    private AliYunOssUtil aliYunOssUtil;
-
     @Override
     @LogError(value = "启用用户")
     public ResultVO<Void> updateEnable(Integer userId) {
@@ -643,7 +639,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setUpdateTime(new Date());
         this.userDAO.updateByPrimaryKeySelective(updateModel);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_ENABLE, String.format("%s启用用户%s", current.getRealName(), userModel.getRealName()));
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER,  "启用用户账号");
 
         return ResultUtil.getSuccess();
     }
@@ -673,7 +669,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.userDAO.updateByPrimaryKeySelective(updateModel);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_TYPE_USER_DISABLE, String.format("%s禁用用户%s", current.getRealName(), userModel.getRealName()));
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, "禁用用户账号");
 
         return ResultUtil.getSuccess();
     }
@@ -729,12 +725,12 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 清空之前的权限
         this.userRoleDAO.deleteByUserId(userId);
-
         // 批量新增
         if (!CollectionUtils.isEmpty(roleIdList)) {
-
             this.userRoleDAO.insertBatchByUserId(userId, roleIdList);
         }
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER , "用户分配角色");
 
         return ResultUtil.getSuccess();
     }
@@ -780,6 +776,8 @@ public class UserServiceImpl extends BaseService implements UserService {
         record.setUpdateTime(new Date());
         this.userDAO.updateByPrimaryKeySelective(record);
 
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER , "修改用户密码");
         return ResultUtil.getSuccess();
     }
 
