@@ -1,6 +1,7 @@
 package com.coderman.bizedu.vo.catalog;
 
 import com.coderman.api.model.BaseModel;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,5 +33,6 @@ public class CatalogTreeVO extends BaseModel {
     private Date updateTime;
 
     @ApiModelProperty(value = "子级分类")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<CatalogTreeVO> children;
 }

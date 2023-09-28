@@ -3,7 +3,7 @@ package com.coderman.bizedu.service.role;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.bizedu.dto.func.RoleFuncUpdateDTO;
+import com.coderman.bizedu.dto.role.RoleFuncUpdateDTO;
 import com.coderman.bizedu.dto.role.RolePageDTO;
 import com.coderman.bizedu.dto.role.RoleSaveDTO;
 import com.coderman.bizedu.dto.role.RoleUpdateDTO;

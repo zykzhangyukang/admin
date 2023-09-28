@@ -102,12 +102,10 @@ public class TreeUtils {
         }
 
         Map<Integer, CatalogTreeVO> funcTreeVoMap = treeVoList.stream().collect(Collectors.toMap(CatalogTreeVO::getCatalogId, e -> e, (k1, k2) -> k2));
-
         for (CatalogTreeVO catalogTreeVO : treeVoList) {
             Integer parentId = catalogTreeVO.getParentId();
 
             if (funcTreeVoMap.containsKey(parentId)) {
-
                 CatalogTreeVO parentFuncTreeNode = funcTreeVoMap.get(parentId);
                 List<CatalogTreeVO> childrenList = Optional.ofNullable(parentFuncTreeNode.getChildren()).orElse(new ArrayList<>());
                 childrenList.add(catalogTreeVO);

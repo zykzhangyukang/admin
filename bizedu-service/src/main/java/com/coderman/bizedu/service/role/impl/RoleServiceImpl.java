@@ -11,7 +11,7 @@ import com.coderman.bizedu.dao.role.RoleDAO;
 import com.coderman.bizedu.dao.role.RoleFuncDAO;
 import com.coderman.bizedu.dao.user.UserDAO;
 import com.coderman.bizedu.dao.user.UserRoleDAO;
-import com.coderman.bizedu.dto.func.RoleFuncUpdateDTO;
+import com.coderman.bizedu.dto.role.RoleFuncUpdateDTO;
 import com.coderman.bizedu.dto.role.RolePageDTO;
 import com.coderman.bizedu.dto.role.RoleSaveDTO;
 import com.coderman.bizedu.dto.role.RoleUpdateDTO;

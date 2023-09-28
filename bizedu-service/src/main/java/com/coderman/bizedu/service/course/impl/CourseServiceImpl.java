@@ -65,12 +65,15 @@ public class CourseServiceImpl implements CourseService {
         if (StringUtils.isNotBlank(creatorName)) {
             conditionMap.put("creatorName", creatorName);
         }
+        List<Integer> catalogIdList = queryVO.getCatalogIdList();
+        if (CollectionUtils.isNotEmpty(catalogIdList)) {
+            conditionMap.put("catalogIdList", catalogIdList);
+        }
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
 
         // 总条数
         Long count = this.courseDAO.countPage(conditionMap);
-
         List<CourseVO> voArrayList = new ArrayList<>();
         if (count > 0) {
             voArrayList = this.courseDAO.selectPage(conditionMap);
@@ -86,7 +89,7 @@ public class CourseServiceImpl implements CourseService {
         AuthUserVO current = AuthUtil.getCurrent();
         String courseName = courseSaveDTO.getCourseName();
         String description = courseSaveDTO.getDescription();
-        List<CatalogVO> catalogVOList = courseSaveDTO.getCatalogVOList();
+        List<Integer> catalogIdList = courseSaveDTO.getCatalogIdList();
 
         Assert.notNull(current, "currentUser is null");
 
@@ -108,21 +111,22 @@ public class CourseServiceImpl implements CourseService {
         this.courseDAO.insertSelectiveReturnKey(courseModel);
 
         // 保存课程分类关系
-        if (CollectionUtils.isNotEmpty(catalogVOList)) {
-            List<Integer> catalogIds = catalogVOList.stream().map(CatalogVO::getCatalogId).distinct().collect(Collectors.toList());
-            Map<Integer, CatalogVO> catalogVoMap = this.catalogService.selectCatalogVoMapByIds(catalogIds);
-            for (Integer catalogId : catalogIds) {
+        if (CollectionUtils.isNotEmpty(catalogIdList)) {
+
+            if(CollectionUtils.size(catalogIdList) > 3){
+                return ResultUtil.getWarn("最多选择3个分类！");
+            }
+            Map<Integer, CatalogVO> catalogVoMap = this.catalogService.selectCatalogVoMapByIds(catalogIdList);
+            for (Integer catalogId : catalogIdList) {
                 CatalogVO catalogVO = catalogVoMap.get(catalogId);
                 if (Objects.isNull(catalogVO)) {
                     throw new BusinessException("课程分类不存在！【" + catalogId + "】");
                 }
             }
-
-            // 保持课程标签关系
-
-
-            this.courseCatalogDAO.insertBatch(courseModel.getCourseId(), catalogIds);
+            this.courseCatalogDAO.insertBatch(courseModel.getCourseId(), catalogIdList);
         }
+
+
 
         return ResultUtil.getSuccess();
     }

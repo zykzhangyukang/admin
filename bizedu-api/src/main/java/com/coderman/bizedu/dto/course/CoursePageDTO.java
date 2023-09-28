@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * @author zhangyukang
  */
@@ -26,4 +28,7 @@ public class CoursePageDTO extends BaseModel {
 
     @ApiModelProperty(value = "课程状态")
     private String status;
+
+    @ApiModelProperty(value = "分类id")
+    private List<Integer> catalogIdList;
 }

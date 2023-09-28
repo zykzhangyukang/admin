@@ -32,5 +32,5 @@ public class CourseSaveDTO extends BaseModel {
     private String description;
 
     @ApiModelProperty(value = "课程分类")
-    private List<CatalogVO> catalogVOList;
+    private List<Integer> catalogIdList;
 }

@@ -1,4 +1,4 @@
-package com.coderman.bizedu.dto.func;
+package com.coderman.bizedu.dto.role;
 
 import com.coderman.api.model.BaseModel;
 import io.swagger.annotations.ApiModel;

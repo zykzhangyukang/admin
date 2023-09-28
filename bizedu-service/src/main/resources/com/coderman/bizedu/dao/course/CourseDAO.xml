@@ -300,6 +300,17 @@
       <if test="status!=null and status!=''">
         and ec.status = #{status}
       </if>
+      <if test="catalogIdList!=null and catalogIdList.size() >0">
+            and exists (
+              select 1
+              from edu_course_catalog ecc
+              where ecc.course_id = ec.course_id
+              and  ecc.catalog_id in
+              <foreach collection="catalogIdList" open="(" close=")" item="item" separator=",">
+                #{item}
+              </foreach>
+        )
+      </if>
     </where>
   </sql>
 

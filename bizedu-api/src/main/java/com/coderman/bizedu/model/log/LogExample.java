@@ -165,6 +165,76 @@ public class LogExample {
             return (Criteria) this;
         }
 
+        public Criteria andLogInfoIsNull() {
+            addCriterion("log_info is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoIsNotNull() {
+            addCriterion("log_info is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoEqualTo(String value) {
+            addCriterion("log_info =", value, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoNotEqualTo(String value) {
+            addCriterion("log_info <>", value, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoGreaterThan(String value) {
+            addCriterion("log_info >", value, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoGreaterThanOrEqualTo(String value) {
+            addCriterion("log_info >=", value, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoLessThan(String value) {
+            addCriterion("log_info <", value, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoLessThanOrEqualTo(String value) {
+            addCriterion("log_info <=", value, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoLike(String value) {
+            addCriterion("log_info like", value, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoNotLike(String value) {
+            addCriterion("log_info not like", value, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoIn(List<String> values) {
+            addCriterion("log_info in", values, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoNotIn(List<String> values) {
+            addCriterion("log_info not in", values, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoBetween(String value1, String value2) {
+            addCriterion("log_info between", value1, value2, "logInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogInfoNotBetween(String value1, String value2) {
+            addCriterion("log_info not between", value1, value2, "logInfo");
+            return (Criteria) this;
+        }
+
         public Criteria andLogModuleIsNull() {
             addCriterion("log_module is null");
             return (Criteria) this;
@@ -222,6 +292,66 @@ public class LogExample {
 
         public Criteria andLogModuleNotBetween(Integer value1, Integer value2) {
             addCriterion("log_module not between", value1, value2, "logModule");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelIsNull() {
+            addCriterion("log_level is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelIsNotNull() {
+            addCriterion("log_level is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelEqualTo(Integer value) {
+            addCriterion("log_level =", value, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelNotEqualTo(Integer value) {
+            addCriterion("log_level <>", value, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelGreaterThan(Integer value) {
+            addCriterion("log_level >", value, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelGreaterThanOrEqualTo(Integer value) {
+            addCriterion("log_level >=", value, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelLessThan(Integer value) {
+            addCriterion("log_level <", value, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelLessThanOrEqualTo(Integer value) {
+            addCriterion("log_level <=", value, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelIn(List<Integer> values) {
+            addCriterion("log_level in", values, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelNotIn(List<Integer> values) {
+            addCriterion("log_level not in", values, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelBetween(Integer value1, Integer value2) {
+            addCriterion("log_level between", value1, value2, "logLevel");
+            return (Criteria) this;
+        }
+
+        public Criteria andLogLevelNotBetween(Integer value1, Integer value2) {
+            addCriterion("log_level not between", value1, value2, "logLevel");
             return (Criteria) this;
         }
 
@@ -352,6 +482,76 @@ public class LogExample {
 
         public Criteria andUsernameNotBetween(String value1, String value2) {
             addCriterion("username not between", value1, value2, "username");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameIsNull() {
+            addCriterion("real_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameIsNotNull() {
+            addCriterion("real_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameEqualTo(String value) {
+            addCriterion("real_name =", value, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameNotEqualTo(String value) {
+            addCriterion("real_name <>", value, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameGreaterThan(String value) {
+            addCriterion("real_name >", value, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameGreaterThanOrEqualTo(String value) {
+            addCriterion("real_name >=", value, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameLessThan(String value) {
+            addCriterion("real_name <", value, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameLessThanOrEqualTo(String value) {
+            addCriterion("real_name <=", value, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameLike(String value) {
+            addCriterion("real_name like", value, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameNotLike(String value) {
+            addCriterion("real_name not like", value, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameIn(List<String> values) {
+            addCriterion("real_name in", values, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameNotIn(List<String> values) {
+            addCriterion("real_name not in", values, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameBetween(String value1, String value2) {
+            addCriterion("real_name between", value1, value2, "realName");
+            return (Criteria) this;
+        }
+
+        public Criteria andRealNameNotBetween(String value1, String value2) {
+            addCriterion("real_name not between", value1, value2, "realName");
             return (Criteria) this;
         }
 
