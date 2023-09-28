@@ -2,10 +2,12 @@ package com.coderman.bizedu.service.catalog.impl;
 
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.bizedu.dao.course.CourseCatalogDAO;
 import com.coderman.bizedu.dto.catalog.CatalogSaveDTO;
 import com.coderman.bizedu.dto.catalog.CatalogUpdateDTO;
 import com.coderman.bizedu.model.catalog.CatalogExample;
 import com.coderman.bizedu.model.catalog.CatalogModel;
+import com.coderman.bizedu.model.course.CourseCatalogExample;
 import com.coderman.bizedu.utils.TreeUtils;
 import com.coderman.bizedu.dao.catalog.CatalogDAO;
 import com.coderman.bizedu.service.catalog.CatalogService;
@@ -31,6 +33,9 @@ public class CatalogServiceImpl implements CatalogService {
 
     @Resource
     private CatalogDAO catalogDAO;
+
+    @Resource
+    private CourseCatalogDAO courseCatalogDAO;
 
     @Override
     @LogError(value = "获取课程分类树")
@@ -63,6 +68,11 @@ public class CatalogServiceImpl implements CatalogService {
             return ResultUtil.getWarn("课程分类最多30个字符！");
         }
 
+        CatalogModel dbModel = this.catalogDAO.selectOneByCatalogName(catalogName);
+        if (null != dbModel) {
+            return ResultUtil.getWarn("分类名称已存在！");
+        }
+
         CatalogModel catalogModel = new CatalogModel();
         catalogModel.setCatalogName(catalogName);
         catalogModel.setCreateTime(new Date());
@@ -93,6 +103,11 @@ public class CatalogServiceImpl implements CatalogService {
             return ResultUtil.getWarn("课程分类不能为空！");
         }
 
+        CatalogModel dbModel = this.catalogDAO.selectOneByCatalogName(catalogName);
+        if(Objects.nonNull(dbModel) && !Objects.equals(dbModel.getCatalogId() , catalogUpdateDTO.getCatalogId())){
+            return ResultUtil.getWarn("分类名称已存在！");
+        }
+
         CatalogModel catalogModel = new CatalogModel();
         catalogModel.setCatalogId(catalogId);
         catalogModel.setCatalogName(catalogName);
@@ -121,6 +136,14 @@ public class CatalogServiceImpl implements CatalogService {
         Long count = this.catalogDAO.countByExample(example);
         if (count > 0) {
             return ResultUtil.getWarn("当前分类存在子分类！");
+        }
+
+        // 判断分类是否已经关联了课程
+        CourseCatalogExample example1 = new CourseCatalogExample();
+        example1.createCriteria().andCatalogIdEqualTo(catalogId);
+        Long count1 = this.courseCatalogDAO.countByExample(example1);
+        if(count1 > 0){
+            return ResultUtil.getWarn("分类关联了课程, 无法删除！");
         }
 
         this.catalogDAO.deleteByPrimaryKey(catalogId);

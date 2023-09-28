@@ -96,9 +96,12 @@ public class CourseServiceImpl implements CourseService {
         if (StringUtils.isBlank(courseName) || StringUtils.length(courseName) < 5 || StringUtils.length(courseName) > 30) {
             return ResultUtil.getWarn("课程标题必填，字数限制5-30字符！");
         }
-
         if (StringUtils.isBlank(description)) {
             return ResultUtil.getWarn("课程描述信息必填！");
+        }
+        if(CollectionUtils.isEmpty(catalogIdList) || CollectionUtils.size(catalogIdList) > 3) {
+
+            return ResultUtil.getWarn("课程分类不能为空，且最多选择3个分类！");
         }
 
         // 保存课程信息
@@ -112,10 +115,6 @@ public class CourseServiceImpl implements CourseService {
 
         // 保存课程分类关系
         if (CollectionUtils.isNotEmpty(catalogIdList)) {
-
-            if(CollectionUtils.size(catalogIdList) > 3){
-                return ResultUtil.getWarn("最多选择3个分类！");
-            }
             Map<Integer, CatalogVO> catalogVoMap = this.catalogService.selectCatalogVoMapByIds(catalogIdList);
             for (Integer catalogId : catalogIdList) {
                 CatalogVO catalogVO = catalogVoMap.get(catalogId);
@@ -125,8 +124,6 @@ public class CourseServiceImpl implements CourseService {
             }
             this.courseCatalogDAO.insertBatch(courseModel.getCourseId(), catalogIdList);
         }
-
-
 
         return ResultUtil.getSuccess();
     }

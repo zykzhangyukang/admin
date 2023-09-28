@@ -229,4 +229,10 @@
     </foreach>
   </select>
 
+  <select id="selectOneByCatalogName" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from edu_catalog where catalog_name = #{catalogName}
+  </select>
+
 </mapper>

@@ -30,4 +30,13 @@ public interface CatalogDAO extends BaseDAO<CatalogModel, CatalogExample> {
      */
     @MapKey(value = "catalogId")
     Map<Integer, CatalogVO> selectCatalogVoMapByIds(@Param(value = "catalogIds") List<Integer> catalogIds);
+
+
+    /**
+     * 根据分类名称查询
+     *
+     * @param catalogName
+     * @return
+     */
+    CatalogModel selectOneByCatalogName(@Param(value = "catalogName") String catalogName);
 }
