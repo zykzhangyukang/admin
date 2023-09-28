@@ -182,7 +182,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             // 签发token
             UserLoginRespVO response = this.generateAndStoreToken(dbUser);
             // 记录日志
-            this.logService.saveLog(AuthConstant.LOG_MODULE_USER, dbUser.getUserId(), dbUser.getUsername(), "用户登录系统");
+            this.logService.saveLog(AuthConstant.LOG_MODULE_USER,AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(),  "用户登录系统");
 
             return ResultUtil.getSuccess(UserLoginRespVO.class, response);
         } catch (Exception e) {
@@ -322,7 +322,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             if (Objects.nonNull(authUserVO)) {
 
                 this.redisService.del(redisKey, RedisDbConstant.REDIS_DB_AUTH);
-                this.logService.saveLog(AuthConstant.LOG_MODULE_USER, authUserVO.getUserId(), authUserVO.getUsername(), "用户注销登录");
+                this.logService.saveLog(AuthConstant.LOG_MODULE_USER,  AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(),authUserVO.getRealName(), "用户注销登录");
             }
         }
 
@@ -481,7 +481,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 新增用户
         this.userDAO.insertReturnKey(insertModel);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, "新增用户信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE,"新增用户信息");
 
         return ResultUtil.getSuccess();
     }
@@ -514,7 +514,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 删除用户
         this.userDAO.deleteByPrimaryKey(userId);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER,  "删除用户信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_IMPORTANT, "删除用户信息");
 
         return ResultUtil.getSuccess();
     }
@@ -565,7 +565,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 更新用户
         this.userDAO.updateByPrimaryKeySelective(updateModel);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, "更新用户信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE, "更新用户信息");
 
         return ResultUtil.getSuccess();
     }
@@ -639,7 +639,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setUpdateTime(new Date());
         this.userDAO.updateByPrimaryKeySelective(updateModel);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER,  "启用用户账号");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL,  "启用用户账号");
 
         return ResultUtil.getSuccess();
     }
@@ -669,7 +669,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.userDAO.updateByPrimaryKeySelective(updateModel);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, "禁用用户账号");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, "禁用用户账号");
 
         return ResultUtil.getSuccess();
     }
@@ -730,7 +730,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             this.userRoleDAO.insertBatchByUserId(userId, roleIdList);
         }
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER , "用户分配角色");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER , AuthConstant.LOG_MODULE_IMPORTANT,"用户分配角色");
 
         return ResultUtil.getSuccess();
     }
@@ -777,7 +777,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.userDAO.updateByPrimaryKeySelective(record);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER , "修改用户密码");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER,AuthConstant.LOG_MODULE_IMPORTANT , "修改用户密码");
         return ResultUtil.getSuccess();
     }
 

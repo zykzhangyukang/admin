@@ -22,6 +22,9 @@ public class LogPageDTO extends BaseModel {
     @ApiModelProperty(value = "日志模块")
     private String logModule;
 
+    @ApiModelProperty(value = "日志等级")
+    private String logLevel;
+
     @ApiModelProperty(value = "用户名")
     private String username;
 }

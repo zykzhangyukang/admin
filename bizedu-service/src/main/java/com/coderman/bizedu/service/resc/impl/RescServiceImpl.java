@@ -131,7 +131,7 @@ public class RescServiceImpl implements RescService {
         this.rescDAO.insertReturnKey(insert);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, "新增资源信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, AuthConstant.LOG_MODULE_MIDDLE,"新增资源信息");
 
         return ResultUtil.getSuccess();
     }
@@ -188,7 +188,7 @@ public class RescServiceImpl implements RescService {
         this.rescDAO.updateByPrimaryKeySelective(update);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, "更新资源信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, AuthConstant.LOG_MODULE_MIDDLE, "更新资源信息");
 
         return ResultUtil.getSuccess();
     }
@@ -210,7 +210,7 @@ public class RescServiceImpl implements RescService {
 
         this.rescDAO.deleteByPrimaryKey(rescId);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, "删除资源信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_RESC,AuthConstant.LOG_MODULE_IMPORTANT,  "删除资源信息");
 
         return ResultUtil.getSuccess();
     }

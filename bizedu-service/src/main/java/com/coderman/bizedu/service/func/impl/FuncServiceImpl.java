@@ -178,7 +178,7 @@ public class FuncServiceImpl implements FuncService {
         this.funcDAO.insertSelectiveReturnKey(insert);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "新增功能信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_MIDDLE, "新增功能信息");
 
         return ResultUtil.getSuccess();
     }
@@ -252,7 +252,7 @@ public class FuncServiceImpl implements FuncService {
         this.funcDAO.updateByPrimaryKeySelective(update);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "更新功能信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_MIDDLE,"更新功能信息");
 
         return ResultUtil.getSuccess();
     }
@@ -305,7 +305,7 @@ public class FuncServiceImpl implements FuncService {
         this.funcDAO.deleteByPrimaryKey(funcId);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "删除功能信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT, "删除功能信息");
 
         return ResultUtil.getSuccess();
     }
@@ -349,7 +349,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "功能解绑用户");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT,"功能解绑用户");
 
         return ResultUtil.getSuccess();
     }
@@ -406,7 +406,7 @@ public class FuncServiceImpl implements FuncService {
         this.funcRescDAO.deleteByFuncId(funcId);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, "功能解绑资源");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT,"功能解绑资源");
 
         return ResultUtil.getSuccess();
     }

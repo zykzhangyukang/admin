@@ -141,7 +141,7 @@ public class RoleServiceImpl implements RoleService {
         this.roleDAO.insertReturnKey(insert);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "新增角色信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_MIDDLE,"新增角色信息");
 
         return ResultUtil.getSuccess();
     }
@@ -175,7 +175,7 @@ public class RoleServiceImpl implements RoleService {
         // 删除角色
         this.roleDAO.deleteByPrimaryKey(roleId);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "删除角色信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_IMPORTANT, "删除角色信息");
 
         return ResultUtil.getSuccess();
     }
@@ -227,7 +227,7 @@ public class RoleServiceImpl implements RoleService {
         update.setUpdateTime(new Date());
         this.roleDAO.updateByPrimaryKeySelective(update);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "更新角色信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_MIDDLE, "更新角色信息");
 
         return ResultUtil.getSuccess();
     }
@@ -297,7 +297,7 @@ public class RoleServiceImpl implements RoleService {
             this.userRoleDAO.insertBatchByRoleId(roleId, assignedIdList);
         }
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "角色分配用户");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE,AuthConstant.LOG_MODULE_IMPORTANT, "角色分配用户");
         return ResultUtil.getSuccess();
     }
 
@@ -412,7 +412,7 @@ public class RoleServiceImpl implements RoleService {
             this.roleFuncDAO.batchInsertByRoleId(roleId, funcIdList);
         }
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, "角色分配功能");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE,AuthConstant.LOG_MODULE_IMPORTANT, "角色分配功能");
 
         return ResultUtil.getSuccess();
     }

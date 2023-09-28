@@ -3,13 +3,13 @@
 <mapper namespace="com.coderman.bizedu.dao.log.LogDAO">
   <resultMap id="BaseResultMap" type="com.coderman.bizedu.model.log.LogModel">
     <id column="log_id" jdbcType="INTEGER" property="logId" />
+    <result column="log_info" jdbcType="VARCHAR" property="logInfo" />
     <result column="log_module" jdbcType="INTEGER" property="logModule" />
+    <result column="log_level" jdbcType="INTEGER" property="logLevel" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-  </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.coderman.bizedu.model.log.LogModel">
-    <result column="log_info" jdbcType="LONGVARCHAR" property="logInfo" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -70,27 +70,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    log_id, log_module, user_id, username, create_time
+    log_id, log_info, log_module, log_level, user_id, username, real_name, create_time
   </sql>
-  <sql id="Blob_Column_List">
-    log_info
-  </sql>
-  <select id="selectByExampleWithBLOBs" parameterType="com.coderman.bizedu.model.log.LogExample" resultMap="ResultMapWithBLOBs">
-    select
-    <if test="distinct">
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from auth_log
-    <if test="_parameter != null">
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null">
-      order by ${orderByClause}
-    </if>
-  </select>
   <select id="selectByExample" parameterType="com.coderman.bizedu.model.log.LogExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -105,11 +86,9 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from auth_log
     where log_id = #{logId,jdbcType=INTEGER}
   </select>
@@ -124,12 +103,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.bizedu.model.log.LogModel">
-    insert into auth_log (log_id, log_module, user_id, 
-      username, create_time, log_info
-      )
-    values (#{logId,jdbcType=INTEGER}, #{logModule,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
-      #{username,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{logInfo,jdbcType=LONGVARCHAR}
-      )
+    insert into auth_log (log_id, log_info, log_module, 
+      log_level, user_id, username, 
+      real_name, create_time)
+    values (#{logId,jdbcType=INTEGER}, #{logInfo,jdbcType=VARCHAR}, #{logModule,jdbcType=INTEGER}, 
+      #{logLevel,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, 
+      #{realName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.bizedu.model.log.LogModel">
     insert into auth_log
@@ -137,8 +116,14 @@
       <if test="logId != null">
         log_id,
       </if>
+      <if test="logInfo != null">
+        log_info,
+      </if>
       <if test="logModule != null">
         log_module,
+      </if>
+      <if test="logLevel != null">
+        log_level,
       </if>
       <if test="userId != null">
         user_id,
@@ -146,19 +131,25 @@
       <if test="username != null">
         username,
       </if>
+      <if test="realName != null">
+        real_name,
+      </if>
       <if test="createTime != null">
         create_time,
-      </if>
-      <if test="logInfo != null">
-        log_info,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="logId != null">
         #{logId,jdbcType=INTEGER},
       </if>
+      <if test="logInfo != null">
+        #{logInfo,jdbcType=VARCHAR},
+      </if>
       <if test="logModule != null">
         #{logModule,jdbcType=INTEGER},
+      </if>
+      <if test="logLevel != null">
+        #{logLevel,jdbcType=INTEGER},
       </if>
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
@@ -166,11 +157,11 @@
       <if test="username != null">
         #{username,jdbcType=VARCHAR},
       </if>
+      <if test="realName != null">
+        #{realName,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="logInfo != null">
-        #{logInfo,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -186,8 +177,14 @@
       <if test="record.logId != null">
         log_id = #{record.logId,jdbcType=INTEGER},
       </if>
+      <if test="record.logInfo != null">
+        log_info = #{record.logInfo,jdbcType=VARCHAR},
+      </if>
       <if test="record.logModule != null">
         log_module = #{record.logModule,jdbcType=INTEGER},
+      </if>
+      <if test="record.logLevel != null">
+        log_level = #{record.logLevel,jdbcType=INTEGER},
       </if>
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=INTEGER},
@@ -195,25 +192,13 @@
       <if test="record.username != null">
         username = #{record.username,jdbcType=VARCHAR},
       </if>
+      <if test="record.realName != null">
+        real_name = #{record.realName,jdbcType=VARCHAR},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.logInfo != null">
-        log_info = #{record.logInfo,jdbcType=LONGVARCHAR},
-      </if>
     </set>
-    <if test="_parameter != null">
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExampleWithBLOBs" parameterType="map">
-    update auth_log
-    set log_id = #{record.logId,jdbcType=INTEGER},
-      log_module = #{record.logModule,jdbcType=INTEGER},
-      user_id = #{record.userId,jdbcType=INTEGER},
-      username = #{record.username,jdbcType=VARCHAR},
-      create_time = #{record.createTime,jdbcType=TIMESTAMP},
-      log_info = #{record.logInfo,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -221,9 +206,12 @@
   <update id="updateByExample" parameterType="map">
     update auth_log
     set log_id = #{record.logId,jdbcType=INTEGER},
+      log_info = #{record.logInfo,jdbcType=VARCHAR},
       log_module = #{record.logModule,jdbcType=INTEGER},
+      log_level = #{record.logLevel,jdbcType=INTEGER},
       user_id = #{record.userId,jdbcType=INTEGER},
       username = #{record.username,jdbcType=VARCHAR},
+      real_name = #{record.realName,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -232,8 +220,14 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.coderman.bizedu.model.log.LogModel">
     update auth_log
     <set>
+      <if test="logInfo != null">
+        log_info = #{logInfo,jdbcType=VARCHAR},
+      </if>
       <if test="logModule != null">
         log_module = #{logModule,jdbcType=INTEGER},
+      </if>
+      <if test="logLevel != null">
+        log_level = #{logLevel,jdbcType=INTEGER},
       </if>
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
@@ -241,29 +235,23 @@
       <if test="username != null">
         username = #{username,jdbcType=VARCHAR},
       </if>
+      <if test="realName != null">
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="logInfo != null">
-        log_info = #{logInfo,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where log_id = #{logId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.coderman.bizedu.model.log.LogModel">
-    update auth_log
-    set log_module = #{logModule,jdbcType=INTEGER},
-      user_id = #{userId,jdbcType=INTEGER},
-      username = #{username,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      log_info = #{logInfo,jdbcType=LONGVARCHAR}
-    where log_id = #{logId,jdbcType=INTEGER}
-  </update>
   <update id="updateByPrimaryKey" parameterType="com.coderman.bizedu.model.log.LogModel">
     update auth_log
-    set log_module = #{logModule,jdbcType=INTEGER},
+    set log_info = #{logInfo,jdbcType=VARCHAR},
+      log_module = #{logModule,jdbcType=INTEGER},
+      log_level = #{logLevel,jdbcType=INTEGER},
       user_id = #{userId,jdbcType=INTEGER},
       username = #{username,jdbcType=VARCHAR},
+      real_name = #{realName,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where log_id = #{logId,jdbcType=INTEGER}
   </update>
@@ -278,12 +266,8 @@
   </select>
 
   <select id="page" resultMap="pageResultMap">
-    select log_id,
-           log_module,
-           user_id,
-           username,
-           create_time,
-           log_info
+    select
+    log_id, log_info, log_module, log_level, user_id, username, real_name, create_time
     from auth_log al
     <include refid="pageWhere"/>
     order by log_id desc
@@ -297,6 +281,9 @@
       </if>
       <if test="logModule!=null and logModule!=''">
         and al.log_module  = #{logModule}
+      </if>
+      <if test="logLevel!=null and logLevel!=''">
+        and al.log_level  = #{logLevel}
       </if>
     </where>
   </sql>

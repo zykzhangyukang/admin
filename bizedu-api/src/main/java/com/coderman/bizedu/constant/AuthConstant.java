@@ -16,7 +16,7 @@ public interface AuthConstant {
     /**
      * 登录会话过期时间 - 12个小时
      */
-    Integer AUTH_EXPIRED_SECOND = 60 * 60 * 12;  // 60 * 60 * 2
+    Integer AUTH_EXPIRED_SECOND = 60 * 60 * 12;
 
     /**
      * 用户会话redis key 前缀
@@ -48,13 +48,24 @@ public interface AuthConstant {
     Integer LOG_MODULE_FUNC = 3;
 
     /**
+     * 日志等级
+     */
+    String LOG_LEVEL_GROUP = "log_level_group";
+
+    @ConstList(group = LOG_LEVEL_GROUP, name = "普通")
+    Integer LOG_LEVEL_NORMAL = 0;
+    @ConstList(group = LOG_LEVEL_GROUP, name = "中等")
+    Integer LOG_MODULE_MIDDLE = 1;
+    @ConstList(group = LOG_LEVEL_GROUP, name = "高级")
+    Integer LOG_MODULE_IMPORTANT = 2;
+
+    /**
      * 项目常量
      */
     String PROJECT_DOMAIN = "project_domain";
 
     @ConstList(group = PROJECT_DOMAIN, name = "权限系统")
     String PROJECT_DOMAIN_AUTH = "auth";
-
     @ConstList(group = PROJECT_DOMAIN, name = "课程系统")
     String PROJECT_DOMAIN_EDU = "edu";
 

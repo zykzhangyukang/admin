@@ -31,7 +31,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     @LogError(value = "保存权限系统日志")
-    public void saveLog(Integer logModule, Integer userId, String username, String logInfo) {
+    public void saveLog(Integer logModule, Integer userId, String username, String realName, String logInfo) {
 
         Assert.notNull(logModule, "logModule is null");
         logInfo = StringUtils.defaultString(logInfo);
@@ -41,6 +41,27 @@ public class LogServiceImpl implements LogService {
         logModel.setLogInfo(logInfo);
         logModel.setUserId(userId);
         logModel.setUsername(username);
+        logModel.setRealName(realName);
+        logModel.setCreateTime(new Date());
+        this.logDAO.insertSelective(logModel);
+    }
+
+    @Override
+    @LogError(value = "保存权限系统日志")
+    public void saveLog(Integer logModule, Integer logLevel, Integer userId, String username, String realName, String logInfo) {
+
+        logInfo = StringUtils.defaultString(logInfo);
+
+        Assert.notNull(logModule, "logModule is null");
+        Assert.notNull(logLevel, "logLevel is null");
+
+        LogModel logModel = new LogModel();
+        logModel.setLogModule(logModule);
+        logModel.setLogInfo(logInfo);
+        logModel.setUserId(userId);
+        logModel.setLogLevel(logLevel);
+        logModel.setUsername(username);
+        logModel.setRealName(realName);
         logModel.setCreateTime(new Date());
         this.logDAO.insertSelective(logModel);
     }
@@ -51,7 +72,14 @@ public class LogServiceImpl implements LogService {
     public void saveLog(Integer logModule, String logInfo) {
         AuthUserVO current = AuthUtil.getCurrent();
         Assert.notNull(current, "当前登录用户不能为空！");
-        this.saveLog(logModule, current.getUserId(), current.getUsername(), logInfo);
+        this.saveLog(logModule, current.getUserId(), current.getUsername(), current.getRealName(), logInfo);
+    }
+
+    @Override
+    public void saveLog(Integer logModule, Integer logLevel, String logInfo) {
+        AuthUserVO current = AuthUtil.getCurrent();
+        Assert.notNull(current, "当前登录用户不能为空！");
+        this.saveLog(logModule, logLevel, current.getUserId(), current.getUsername(), current.getRealName(), logInfo);
     }
 
     @Override
@@ -65,6 +93,9 @@ public class LogServiceImpl implements LogService {
 
         if (StringUtils.isNotBlank(logPageDTO.getLogModule())) {
             conditionMap.put("logModule", logPageDTO.getLogModule());
+        }
+        if (StringUtils.isNotBlank(logPageDTO.getLogLevel())) {
+            conditionMap.put("logLevel", logPageDTO.getLogLevel());
         }
         if (StringUtils.isNotBlank(logPageDTO.getUsername())) {
             conditionMap.put("username", logPageDTO.getUsername());
