@@ -95,7 +95,7 @@ public class AuthAspect {
     /**
      * 刷新系统资源
      */
-    private void refreshSystemAllRescMap() {
+    public void refreshSystemAllRescMap() {
         systemAllResourceMap = this.rescApi.getSystemAllRescMap(null).getResult();
     }
 

@@ -7,6 +7,7 @@ import com.coderman.bizedu.dto.resc.RescSaveDTO;
 import com.coderman.bizedu.dto.resc.RescUpdateDTO;
 import com.coderman.bizedu.service.resc.RescService;
 import com.coderman.bizedu.vo.resc.RescVO;
+import com.coderman.limiter.annotation.RateLimit;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
@@ -76,6 +77,16 @@ public class RescController {
     public ResultVO<List<RescVO>> search(@RequestParam(value = "keyword") String keyword) {
 
         return this.rescService.search(keyword);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_PUT, value = "刷新系统资源")
+    @PutMapping(value = "/refresh")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    @RateLimit
+    public ResultVO<Void> refresh() {
+        return this.rescService.refresh();
     }
 
 

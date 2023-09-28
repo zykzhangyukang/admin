@@ -279,6 +279,9 @@
       <if test="username!=null and username!=''">
         and al.username like concat('%',#{username},'%')
       </if>
+      <if test="realName!=null and realName!=''">
+        and al.real_name like concat('%',#{realName},'%')
+      </if>
       <if test="logModule!=null and logModule!=''">
         and al.log_module  = #{logModule}
       </if>

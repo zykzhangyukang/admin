@@ -5,6 +5,7 @@ import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.bizedu.aop.AuthAspect;
 import com.coderman.bizedu.constant.AuthConstant;
 import com.coderman.bizedu.dao.func.FuncRescDAO;
 import com.coderman.bizedu.dao.resc.RescDAO;
@@ -18,6 +19,7 @@ import com.coderman.bizedu.service.resc.RescService;
 import com.coderman.bizedu.vo.resc.RescVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
+import com.coderman.service.util.SpringContextUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -290,5 +292,13 @@ public class RescServiceImpl implements RescService {
         resultVO.setResult(map);
 
         return resultVO;
+    }
+
+    @Override
+    @LogError(value = "刷新系统资源")
+    public ResultVO<Void> refresh() {
+        AuthAspect authAspect = SpringContextUtil.getBean(AuthAspect.class);
+        authAspect.refreshSystemAllRescMap();
+        return ResultUtil.getSuccess();
     }
 }

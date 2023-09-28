@@ -61,7 +61,6 @@ public class UserController {
     @PostMapping(value = "/refresh/login")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "AuthUserVO", value = {"realName", "deptCode", "username", "token"})
     })
     public ResultVO<String> refreshLogin(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME) String token) {
         return this.userService.refreshLogin(token);
@@ -70,14 +69,13 @@ public class UserController {
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "注销登录")
     @PostMapping(value = "/logout")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = SwaggerConstant.PARAM_HEADER, dataType = SwaggerConstant.DATA_STRING, value = "用户token")
+            @ApiImplicitParam(name = "token", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_STRING, value = "用户token")
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "AuthUserVO", value = {"realName", "deptCode", "username", "token"})
     })
-    public ResultVO<Void> logout(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME, required = false) String token) {
-        return this.userService.logout(token);
+    public ResultVO<Void> logout(@RequestBody UserLogoutDTO userLogoutDTO) {
+        return this.userService.logout(userLogoutDTO.getToken());
     }
 
     @GetMapping(value = "/info")

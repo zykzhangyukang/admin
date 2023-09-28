@@ -2,10 +2,8 @@ package com.coderman.bizedu.controller.log;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.bizedu.dto.func.FuncPageDTO;
 import com.coderman.bizedu.dto.log.LogPageDTO;
 import com.coderman.bizedu.service.log.LogService;
-import com.coderman.bizedu.vo.func.FuncVO;
 import com.coderman.bizedu.vo.log.LogVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
@@ -37,7 +35,7 @@ public class LogController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "LogVO", value = {"username", "logModule", "userId", "createTime", "logId","logInfo","logLevel","realName"})
+            @ApiReturnParam(name = "LogVO", value = {"username", "logModule", "userId", "createTime", "logId", "logInfo", "logLevel", "realName"})
     })
     public ResultVO<PageVO<List<LogVO>>> page(@RequestBody LogPageDTO logPageDTO) {
 

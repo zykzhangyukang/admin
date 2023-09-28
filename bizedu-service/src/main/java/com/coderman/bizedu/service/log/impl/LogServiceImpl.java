@@ -100,6 +100,9 @@ public class LogServiceImpl implements LogService {
         if (StringUtils.isNotBlank(logPageDTO.getUsername())) {
             conditionMap.put("username", logPageDTO.getUsername());
         }
+        if (StringUtils.isNotBlank(logPageDTO.getRealName())) {
+            conditionMap.put("realName", logPageDTO.getRealName());
+        }
 
         List<LogVO> logVOList = new ArrayList<>();
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
