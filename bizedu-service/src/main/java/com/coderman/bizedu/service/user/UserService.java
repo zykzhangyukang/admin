@@ -5,6 +5,7 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.bizedu.dto.user.*;
 import com.coderman.bizedu.vo.user.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -157,4 +158,12 @@ public interface UserService {
      * @return
      */
     ResultVO<String> refreshLogin(String token);
+
+    /**
+     * 上传用户头像
+     *
+     * @param multipartFile
+     * @return
+     */
+    ResultVO<String> uploadAvatar(MultipartFile multipartFile);
 }

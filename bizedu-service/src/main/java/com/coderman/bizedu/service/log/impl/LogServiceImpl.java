@@ -13,6 +13,7 @@ import com.coderman.bizedu.vo.log.LogVO;
 import com.coderman.bizedu.vo.user.AuthUserVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
+import com.coderman.service.service.BaseService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -24,27 +25,10 @@ import java.util.*;
  * @author zhangyukang
  */
 @Service
-public class LogServiceImpl implements LogService {
+public class LogServiceImpl extends BaseService implements LogService {
 
     @Resource
     private LogDAO logDAO;
-
-    @Override
-    @LogError(value = "保存权限系统日志")
-    public void saveLog(Integer logModule, Integer userId, String username, String realName, String logInfo) {
-
-        Assert.notNull(logModule, "logModule is null");
-        logInfo = StringUtils.defaultString(logInfo);
-
-        LogModel logModel = new LogModel();
-        logModel.setLogModule(logModule);
-        logModel.setLogInfo(logInfo);
-        logModel.setUserId(userId);
-        logModel.setUsername(username);
-        logModel.setRealName(realName);
-        logModel.setCreateTime(new Date());
-        this.logDAO.insertSelective(logModel);
-    }
 
     @Override
     @LogError(value = "保存权限系统日志")
@@ -63,19 +47,11 @@ public class LogServiceImpl implements LogService {
         logModel.setUsername(username);
         logModel.setRealName(realName);
         logModel.setCreateTime(new Date());
-        this.logDAO.insertSelective(logModel);
-    }
-
-
-    @Override
-    @LogError(value = "保存权限系统日志")
-    public void saveLog(Integer logModule, String logInfo) {
-        AuthUserVO current = AuthUtil.getCurrent();
-        Assert.notNull(current, "当前登录用户不能为空！");
-        this.saveLog(logModule, current.getUserId(), current.getUsername(), current.getRealName(), logInfo);
+        logDAO.insertSelective(logModel);
     }
 
     @Override
+    @LogError(value = "保存日志信息")
     public void saveLog(Integer logModule, Integer logLevel, String logInfo) {
         AuthUserVO current = AuthUtil.getCurrent();
         Assert.notNull(current, "当前登录用户不能为空！");

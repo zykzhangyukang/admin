@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -82,7 +83,7 @@ public class UserController {
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取菜单权限")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserPermissionVO", value = {"realName", "deptCode", "deptName", "username", "token", "userId", "buttons", "menus","expiredTime"}),
+            @ApiReturnParam(name = "UserPermissionVO", value = {"realName", "deptCode", "deptName", "username", "token", "userId", "buttons", "menus", "expiredTime"}),
     })
     public ResultVO<UserPermissionVO> info(String token) {
         return this.userService.info(token);
@@ -178,6 +179,18 @@ public class UserController {
     })
     public ResultVO<Void> save(@RequestBody UserSaveDTO userSaveDTO) {
         return this.userService.save(userSaveDTO);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "上传用户头像")
+    @PostMapping(value = "/upload/avatar")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "file", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_INT, value = "用户头像")
+    })
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
+    })
+    public ResultVO<String> uploadAvatar(@RequestPart(value = "file",required = false) MultipartFile multipartFile) {
+        return this.userService.uploadAvatar(multipartFile);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_DELETE, value = "删除用户")

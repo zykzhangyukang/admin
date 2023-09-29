@@ -8,6 +8,7 @@ import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.bizedu.constant.AuthConstant;
+import com.coderman.bizedu.constant.FileConstant;
 import com.coderman.bizedu.dao.role.RoleDAO;
 import com.coderman.bizedu.dao.user.UserDAO;
 import com.coderman.bizedu.dao.user.UserRoleDAO;
@@ -25,6 +26,7 @@ import com.coderman.bizedu.utils.PasswordUtils;
 import com.coderman.bizedu.vo.func.FuncTreeVO;
 import com.coderman.bizedu.vo.resc.RescVO;
 import com.coderman.bizedu.vo.user.*;
+import com.coderman.oss.enums.FileModuleEnum;
 import com.coderman.oss.util.AliYunOssUtil;
 import com.coderman.redis.RedisService;
 import com.coderman.service.anntation.LogError;
@@ -34,18 +36,18 @@ import com.coderman.service.util.HttpContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,6 +81,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Resource
     private LogService logService;
+
+    @Resource
+    private AliYunOssUtil aliYunOssUtil;
 
 
     @Override
@@ -352,6 +357,22 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.redisService.del(this.getRedisKey(oldToken), RedisDbConstant.REDIS_DB_AUTH);
 
         return ResultUtil.getSuccess(String.class, response.getToken());
+    }
+
+    @Override
+    @LogError(value = "上传用户头像")
+    public ResultVO<String> uploadAvatar(MultipartFile multipartFile) {
+
+        if (null == multipartFile || multipartFile.isEmpty()) {
+            return ResultUtil.getWarn("上传的用户头像不能为空！");
+        }
+        String filePath = this.aliYunOssUtil.genFilePath(multipartFile.getOriginalFilename(), FileModuleEnum.USER_MODULE);
+        try {
+            this.aliYunOssUtil.uploadStream(multipartFile.getInputStream(), filePath);
+        } catch (IOException e) {
+            log.error("上传用户头像失败:{}", e.getMessage(), e);
+        }
+        return ResultUtil.getSuccess(String.class, FileConstant.OSS_FILE_DOMAIN + filePath);
     }
 
     private String getRedisKey(String userToken) {

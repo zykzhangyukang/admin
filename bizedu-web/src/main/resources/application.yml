@@ -1,12 +1,3 @@
-server:
-  port: 8989
-spring:
-  application:
-    name: bizedu
-  datasource:
-    username: root
-    password: DES@99D5518076FE8F32214D66F4B59766B7
-    url: jdbc:mysql://localhost:3306/bizedu_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
