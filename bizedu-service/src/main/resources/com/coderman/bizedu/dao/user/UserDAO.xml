@@ -277,7 +277,15 @@
       auth_user u
       LEFT JOIN auth_dept d ON u.dept_code = d.dept_code
       <include refid="pageCondition"/>
-      ORDER BY u.create_time DESC
+      ORDER BY
+       <choose>
+         <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
+           ${sortField} ${sortType}
+         </when>
+         <otherwise>
+           u.create_time DESC
+         </otherwise>
+       </choose>
       limit #{offset}, #{size}
   </select>
 

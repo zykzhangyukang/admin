@@ -18,4 +18,9 @@ public class RolePageDTO extends BaseModel {
     @ApiModelProperty(value = "角色名称")
     private String roleName;
 
+    @ApiModelProperty(value = "排序类型")
+    private String sortType;
+
+    @ApiModelProperty(value = "排序字段")
+    private String sortField;
 }

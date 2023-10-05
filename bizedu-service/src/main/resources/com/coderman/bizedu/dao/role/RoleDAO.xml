@@ -236,7 +236,15 @@
     left join auth_user u on u.user_id  = ur.user_id
     <include refid="pageWhere"/>
     group by r.role_id, r.role_name, r.role_desc, r.create_time, r.update_time
-    order by r.create_time desc
+    order by
+    <choose>
+      <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
+        ${sortField} ${sortType}
+      </when>
+      <otherwise>
+        r.create_time desc
+      </otherwise>
+    </choose>
     limit #{offset}, #{size}
   </select>
 

@@ -412,6 +412,22 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (StringUtils.isNotBlank(queryVO.getDeptCode())) {
             conditionMap.put("deptCode", queryVO.getDeptCode());
         }
+        // 字段排序
+        String sortType = queryVO.getSortType();
+        String sortField = queryVO.getSortField();
+        String val = StringUtils.EMPTY;
+        if (StringUtils.isNotBlank(sortType)) {
+
+            if (StringUtils.equals(sortField, "username")) {
+                val = "username";
+            } else if (StringUtils.equals(sortField, "updateTime")) {
+                val = "update_time";
+            } else if (StringUtils.equals(sortField, "createTime")) {
+                val = "create_time";
+            }
+            conditionMap.put("sortType", sortType);
+            conditionMap.put("sortField", val);
+        }
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
 

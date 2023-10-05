@@ -59,17 +59,34 @@ public class RescServiceImpl implements RescService {
         if (StringUtils.isNotBlank(rescUrl)) {
             conditionMap.put("rescUrl", rescUrl.trim());
         }
-
         if (StringUtils.isNotBlank(rescName)) {
             conditionMap.put("rescName", rescName.trim());
         }
-
         if (StringUtils.isNotBlank(rescDomain)) {
             conditionMap.put("rescDomain", rescDomain);
         }
-
         if (StringUtils.isNotBlank(methodType)) {
             conditionMap.put("methodType", methodType);
+        }
+        // 字段排序
+        String val = StringUtils.EMPTY;
+        String sortField = rescPageDTO.getSortField();
+        String sortType = rescPageDTO.getSortType();
+        if (StringUtils.isNotBlank(sortType)) {
+
+            if (StringUtils.equals(sortField, "rescUrl")) {
+                val = "resc_url";
+            }else if (StringUtils.equals(sortField, "methodType")) {
+                val = "method_type";
+            } else if (StringUtils.equals(sortField, "rescDomain")) {
+                val = "resc_domain";
+            } else if (StringUtils.equals(sortField, "createTime")) {
+                val = "create_time";
+            } else if (StringUtils.equals(sortField, "updateTime")) {
+                val = "update_time";
+            }
+            conditionMap.put("sortType", sortType);
+            conditionMap.put("sortField", val);
         }
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);

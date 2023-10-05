@@ -35,4 +35,10 @@ public class FuncPageDTO extends BaseModel {
 
     @ApiModelProperty("父级功能id")
     private Integer parentId;
+
+    @ApiModelProperty(value = "排序类型")
+    private String sortType;
+
+    @ApiModelProperty(value = "排序字段")
+    private String sortField;
 }

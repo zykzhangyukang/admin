@@ -82,6 +82,20 @@ public class RoleServiceImpl implements RoleService {
 
             conditionMap.put("roleName", roleName);
         }
+        // 字段排序
+        String sortType = rolePageDTO.getSortType();
+        String sortField = rolePageDTO.getSortField();
+        String val = StringUtils.EMPTY;
+        if (StringUtils.isNotBlank(sortType)) {
+
+            if (StringUtils.equals(sortField, "updateTime")) {
+                val = "update_time";
+            } else if (StringUtils.equals(sortField, "createTime")) {
+                val = "create_time";
+            }
+            conditionMap.put("sortType", sortType);
+            conditionMap.put("sortField", val);
+        }
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
 

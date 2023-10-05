@@ -27,4 +27,9 @@ public class RescPageDTO extends BaseModel {
     @ApiModelProperty(value = "请求方式")
     private String methodType;
 
+    @ApiModelProperty(value = "排序类型")
+    private String sortType;
+
+    @ApiModelProperty(value = "排序字段")
+    private String sortField;
 }

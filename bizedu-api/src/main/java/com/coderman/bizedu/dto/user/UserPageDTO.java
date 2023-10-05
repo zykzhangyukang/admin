@@ -30,4 +30,9 @@ public class UserPageDTO extends BaseModel {
     @ApiModelProperty(value = "状态")
     private Integer userStatus;
 
+    @ApiModelProperty(value = "排序类型")
+    private String sortType;
+
+    @ApiModelProperty(value = "排序字段")
+    private String sortField;
 }

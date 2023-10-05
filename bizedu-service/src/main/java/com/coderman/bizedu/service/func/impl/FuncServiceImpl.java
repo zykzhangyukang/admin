@@ -87,26 +87,41 @@ public class FuncServiceImpl implements FuncService {
         if (StringUtils.isNotBlank(funcName)) {
             conditionMap.put("funcName", funcName.trim());
         }
-
         if (StringUtils.isNotBlank(funcType)) {
             conditionMap.put("funcType", funcType);
         }
-
         if (StringUtils.isNotBlank(funcDirStatus)) {
             conditionMap.put("funcDirStatus", funcDirStatus);
         }
-
         if (StringUtils.isNotBlank(funcKey)) {
             conditionMap.put("funcKey", funcKey.trim());
         }
-
         if (StringUtils.isNotBlank(rescUrl)) {
             conditionMap.put("rescUrl", rescUrl.trim());
         }
-
         if (Objects.nonNull(parentId)) {
 
             conditionMap.put("parentId", parentId);
+        }
+        // 字段排序
+        String sortType = funcPageDTO.getSortType();
+        String sortField = funcPageDTO.getSortField();
+        String val = StringUtils.EMPTY;
+        if (StringUtils.isNotBlank(sortType)) {
+
+            if (StringUtils.equals(sortField, "funcKey")) {
+                val = "func_key";
+            } else if (StringUtils.equals(sortField, "funcName")) {
+                val = "func_name";
+            } else if (StringUtils.equals(sortField, "funcType")) {
+                val = "func_type";
+            } else if (StringUtils.equals(sortField, "updateTime")) {
+                val = "update_time";
+            } else if (StringUtils.equals(sortField, "funcSort")) {
+                val = "func_sort";
+            }
+            conditionMap.put("sortType", sortType);
+            conditionMap.put("sortField", val);
         }
 
         List<FuncVO> funcVOList = new ArrayList<>();
@@ -195,7 +210,7 @@ public class FuncServiceImpl implements FuncService {
         String funcDirStatus = funcUpdateDTO.getFuncDirStatus();
         String funcIcon = funcUpdateDTO.getFuncIcon();
 
-        if(Objects.isNull(funcId)){
+        if (Objects.isNull(funcId)) {
 
             return ResultUtil.getWarn("功能id不能为空！");
         }
@@ -252,7 +267,7 @@ public class FuncServiceImpl implements FuncService {
         this.funcDAO.updateByPrimaryKeySelective(update);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_MIDDLE,"更新功能信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_MIDDLE, "更新功能信息");
 
         return ResultUtil.getSuccess();
     }
@@ -349,7 +364,7 @@ public class FuncServiceImpl implements FuncService {
         }
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT,"功能解绑用户");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT, "功能解绑用户");
 
         return ResultUtil.getSuccess();
     }
@@ -406,7 +421,7 @@ public class FuncServiceImpl implements FuncService {
         this.funcRescDAO.deleteByFuncId(funcId);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT,"功能解绑资源");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT, "功能解绑资源");
 
         return ResultUtil.getSuccess();
     }
@@ -419,7 +434,7 @@ public class FuncServiceImpl implements FuncService {
             return ResultUtil.getWarn("用户id不能为空！");
         }
         // 查询目录类型的功能
-        List<FuncTreeVO> funcTreeVOList = this.funcDAO.selectAllByUserIdAndFuncType(userId,AuthConstant.FUNC_TYPE_DIR);
+        List<FuncTreeVO> funcTreeVOList = this.funcDAO.selectAllByUserIdAndFuncType(userId, AuthConstant.FUNC_TYPE_DIR);
         List<FuncTreeVO> treeVos = TreeUtils.buildFuncTreeByList(funcTreeVOList);
         return ResultUtil.getSuccessList(FuncTreeVO.class, treeVos);
     }
