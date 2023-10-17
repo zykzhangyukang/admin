@@ -28,6 +28,7 @@ import com.coderman.bizedu.vo.resc.RescVO;
 import com.coderman.bizedu.vo.user.*;
 import com.coderman.oss.enums.FileModuleEnum;
 import com.coderman.oss.util.AliYunOssUtil;
+import com.coderman.redis.service.RedisLockService;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
@@ -72,6 +73,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Resource
     private RedisService redisService;
+
+    @Resource
+    private RedisLockService redisLockService;
 
     @Resource
     private RescService rescService;
@@ -157,8 +161,6 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "用户登录")
     public ResultVO<UserLoginRespVO> login(@LogErrorParam UserLoginDTO userLoginDTO) {
 
-        this.redisService.sendMessage("DEMO_EVENT", userLoginDTO);
-
         try {
 
             String username = userLoginDTO.getUsername();
@@ -168,6 +170,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
                 return ResultUtil.getWarn("用户名不能为空！");
             }
+
             if (StringUtils.isBlank(password)) {
 
                 return ResultUtil.getWarn("登录密码不能为空！");
@@ -175,19 +178,21 @@ public class UserServiceImpl extends BaseService implements UserService {
 
             UserVO dbUser = this.userDAO.selectByUsernameVos(username);
             if (Objects.isNull(dbUser)) {
-
                 return ResultUtil.getWarn("用户名或密码错误！");
             }
+
             if (!StringUtils.equals(PasswordUtils.encryptSHA256(password), dbUser.getPassword())) {
-
                 return ResultUtil.getWarn("用户名或密码错误！");
             }
+
             if (Objects.equals(dbUser.getUserStatus(), AuthConstant.USER_STATUS_DISABLE)) {
 
                 return ResultUtil.getWarn("用户已被锁定！");
             }
+
             // 签发token
             UserLoginRespVO response = this.generateAndStoreToken(dbUser);
+
             // 记录日志
             this.logService.saveLog(AuthConstant.LOG_MODULE_USER,AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(),  "用户登录系统");
 
