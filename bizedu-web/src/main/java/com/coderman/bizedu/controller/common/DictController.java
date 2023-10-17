@@ -3,7 +3,7 @@ package com.coderman.bizedu.controller.common;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.redis.RedisService;
+import com.coderman.redis.service.RedisService;
 import com.coderman.service.dict.ConstItems;
 import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;

@@ -28,7 +28,7 @@ import com.coderman.bizedu.vo.resc.RescVO;
 import com.coderman.bizedu.vo.user.*;
 import com.coderman.oss.enums.FileModuleEnum;
 import com.coderman.oss.util.AliYunOssUtil;
-import com.coderman.redis.RedisService;
+import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.service.BaseService;
@@ -156,6 +156,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     @LogError(value = "用户登录")
     public ResultVO<UserLoginRespVO> login(@LogErrorParam UserLoginDTO userLoginDTO) {
+
+        this.redisService.sendMessage("DEMO_EVENT", userLoginDTO);
 
         try {
 
