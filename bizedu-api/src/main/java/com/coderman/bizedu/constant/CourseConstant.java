@@ -3,6 +3,9 @@ package com.coderman.bizedu.constant;
 import com.coderman.api.anntation.ConstList;
 import com.coderman.api.anntation.Constant;
 
+/**
+ * @author zhangyukang
+ */
 @Constant
 public interface CourseConstant {
 

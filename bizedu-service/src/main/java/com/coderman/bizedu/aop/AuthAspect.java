@@ -1,12 +1,15 @@
 package com.coderman.bizedu.aop;
 
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.api.constant.AopConstant;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.ResultConstant;
+import com.coderman.bizedu.constant.RedisChannelConstant;
 import com.coderman.bizedu.service.resc.RescService;
 import com.coderman.bizedu.service.user.UserService;
 import com.coderman.bizedu.utils.AuthUtil;
 import com.coderman.bizedu.vo.user.AuthUserVO;
+import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.service.util.HttpContextUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -191,4 +194,14 @@ public class AuthAspect {
         return null;
     }
 
+    @RedisChannelListener(channelName = RedisChannelConstant.CHANNEL_REFRESH_RESC, envDiff = false)
+    public void doRefresh(String msgContent) {
+
+        log.warn("doRefresh start - > {}" ,msgContent);
+
+        // 刷新系统资源
+        this.refreshSystemAllRescMap();
+
+        log.warn("doRefresh end - > {}" ,msgContent);
+    }
 }
