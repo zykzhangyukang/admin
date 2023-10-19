@@ -23,6 +23,8 @@ public class CorsConfig {
         config.addAllowedMethod("*");
         // 当前跨域请求最大有效时长，单位：秒
         config.setMaxAge(1800L);
+        // 允许携带cookie
+        config.setAllowCredentials(true);
         // 跨域路径配置
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
