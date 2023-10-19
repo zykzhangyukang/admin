@@ -16,11 +16,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.user.SimpUser;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author coderman
@@ -36,6 +40,9 @@ public class UserController {
     private UserService userService;
 
 
+    @Resource
+    private SimpUserRegistry userRegistry;
+
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "用户登录")
     @PostMapping(value = "/login")
     @ApiReturnParams({
@@ -43,6 +50,9 @@ public class UserController {
             @ApiReturnParam(name = "UserLoginRespVO", value = {"realName", "deptCode", "username", "token", "deptName"})
     })
     public ResultVO<UserLoginRespVO> login(@RequestBody UserLoginDTO userLoginDTO) {
+
+        Set<SimpUser> users = this.userRegistry.getUsers();
+
         return this.userService.login(userLoginDTO);
     }
 

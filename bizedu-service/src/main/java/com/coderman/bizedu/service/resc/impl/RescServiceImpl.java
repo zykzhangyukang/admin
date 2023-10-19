@@ -5,9 +5,8 @@ import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.bizedu.aop.AuthAspect;
 import com.coderman.bizedu.constant.AuthConstant;
-import com.coderman.bizedu.constant.RedisChannelConstant;
+import com.coderman.bizedu.constant.RedisConstant;
 import com.coderman.bizedu.dao.func.FuncRescDAO;
 import com.coderman.bizedu.dao.resc.RescDAO;
 import com.coderman.bizedu.dto.resc.RescPageDTO;
@@ -19,14 +18,11 @@ import com.coderman.bizedu.service.log.LogService;
 import com.coderman.bizedu.service.resc.RescService;
 import com.coderman.bizedu.utils.AuthUtil;
 import com.coderman.bizedu.vo.resc.RescVO;
-import com.coderman.bizedu.vo.user.AuthUserVO;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
-import com.coderman.service.util.SpringContextUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -324,7 +320,7 @@ public class RescServiceImpl implements RescService {
     @LogError(value = "刷新系统资源")
     public ResultVO<Void> refresh() {
         String msg = Objects.requireNonNull(AuthUtil.getCurrent()).getUsername() + "刷新系统资源：" + DateFormatUtils.format(new Date(), "yyyy-MM dd HH:mm:ss");
-        this.redisService.sendMessage(RedisChannelConstant.CHANNEL_REFRESH_RESC, msg);
+        this.redisService.sendMessage(RedisConstant.CHANNEL_REFRESH_RESC, msg);
         return ResultUtil.getSuccess();
     }
 }
