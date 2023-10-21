@@ -9,6 +9,8 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.bizedu.constant.AuthConstant;
 import com.coderman.bizedu.constant.FileConstant;
+import com.coderman.bizedu.constant.RedisConstant;
+import com.coderman.bizedu.constant.WebSocketChannelEnum;
 import com.coderman.bizedu.dao.role.RoleDAO;
 import com.coderman.bizedu.dao.user.UserDAO;
 import com.coderman.bizedu.dao.user.UserRoleDAO;
@@ -21,6 +23,7 @@ import com.coderman.bizedu.service.func.FuncService;
 import com.coderman.bizedu.service.log.LogService;
 import com.coderman.bizedu.service.resc.RescService;
 import com.coderman.bizedu.service.user.UserService;
+import com.coderman.bizedu.service.websocket.WebSocketService;
 import com.coderman.bizedu.utils.AuthUtil;
 import com.coderman.bizedu.utils.PasswordUtils;
 import com.coderman.bizedu.vo.func.FuncTreeVO;
@@ -34,6 +37,7 @@ import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.service.BaseService;
 import com.coderman.service.util.HttpContextUtil;
+import com.coderman.service.util.UUIDUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -85,6 +89,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Resource
     private LogService logService;
+
+    @Resource
+    private WebSocketService webSocketService;
 
     @Resource
     private AliYunOssUtil aliYunOssUtil;
@@ -610,6 +617,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.userDAO.updateByPrimaryKeySelective(updateModel);
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE, "更新用户信息");
+        // 消息推送测试
+        Set<String> singleton = Collections.singleton("您收到一条系统消息，请注意查收！" + UUIDUtils.getPrimaryValue());
+        webSocketService.sendToUser(-1, userId , singleton);
 
         return ResultUtil.getSuccess();
     }
@@ -823,6 +833,23 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER,AuthConstant.LOG_MODULE_IMPORTANT , "修改用户密码");
         return ResultUtil.getSuccess();
+    }
+
+    @Override
+    @LogError(value = "用户离线消息拉取")
+    public ResultVO<List<Object>> pullNotify(Integer userId) {
+
+        Assert.notNull(userId , "userId is null");
+
+        // 离线消息key
+        String target = String.format(WebSocketChannelEnum.USER_SYS_MSG.getSubscribeUrl(), userId);
+        String listKey = RedisConstant.REDIS_UNREAD_MSG_PREFIX + ":" + userId + ":" + target;
+        // 拉取消息
+        List<Object> list = this.redisService.getListData(listKey, Object.class, RedisDbConstant.REDIS_DB_DEFAULT);
+        // 删除消息
+        this.redisService.del(listKey,RedisDbConstant.REDIS_DB_DEFAULT);
+
+        return ResultUtil.getSuccessList(Object.class, list);
     }
 
 

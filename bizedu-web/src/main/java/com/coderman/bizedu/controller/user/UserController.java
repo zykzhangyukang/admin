@@ -5,6 +5,7 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.bizedu.dto.user.*;
 import com.coderman.bizedu.service.user.UserService;
+import com.coderman.bizedu.utils.AuthUtil;
 import com.coderman.bizedu.vo.user.UserLoginRespVO;
 import com.coderman.bizedu.vo.user.UserPermissionVO;
 import com.coderman.bizedu.vo.user.UserRoleInitVO;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author coderman
@@ -56,6 +58,14 @@ public class UserController {
         return this.userService.switchLogin(userSwitchLoginDTO);
     }
 
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "用户离线消息拉取")
+    @PostMapping(value = "/pull/notify")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<List<Object>> pullNotify() {
+        return this.userService.pullNotify(Objects.requireNonNull(AuthUtil.getCurrent()).getUserId());
+    }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "刷新会话")
     @PostMapping(value = "/refresh/login")
