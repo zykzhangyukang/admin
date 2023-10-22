@@ -15,7 +15,7 @@ public class WebsocketRedisMsg<T> {
      */
     private String receiver;
     /**
-     * 消息对应的订阅频道的CODE，参考{@link WebSocketChannelEnum}的code字段
+     * 消息对应的订阅频道的CODE，参考{@link WebSocketChannelEnum}的subscribeUrl字段
      */
     private String destination;
     /**

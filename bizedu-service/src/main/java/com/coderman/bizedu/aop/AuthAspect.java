@@ -196,7 +196,7 @@ public class AuthAspect {
         return null;
     }
 
-    @RedisChannelListener(channelName = RedisConstant.CHANNEL_REFRESH_RESC, envDiff = false)
+    @RedisChannelListener(channelName = RedisConstant.CHANNEL_REFRESH_RESC)
     public void doRefresh(String msgContent) {
 
         log.warn("doRefresh start - > {}" ,msgContent);

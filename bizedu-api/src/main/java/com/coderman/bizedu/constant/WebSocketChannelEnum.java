@@ -1,5 +1,7 @@
 package com.coderman.bizedu.constant;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author Administrator
  */
@@ -10,7 +12,7 @@ public enum WebSocketChannelEnum {
      */
     USER_SYS_MSG("USER_SYS_MSG", "用户系统消息", "/user/%d/sysMsg"),
     /**
-     * 系统广播消息
+     * 系统广播消息 (广播类型)
      */
     TOPIC_SYS_MSG("TOPIC_SYS_MSG", "系统广播消息", "/topic/sysMsg");
 
@@ -18,6 +20,17 @@ public enum WebSocketChannelEnum {
     WebSocketChannelEnum(String code, String description, String subscribeUrl) {
         this.description = description;
         this.subscribeUrl = subscribeUrl;
+    }
+
+    public static WebSocketChannelEnum getBySubUrl(String destination){
+
+        for (WebSocketChannelEnum value : WebSocketChannelEnum.values()) {
+
+            if(StringUtils.equals(destination, value.getSubscribeUrl())){
+                return value;
+            }
+        }
+        return null;
     }
 
     /**

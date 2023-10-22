@@ -603,7 +603,8 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE, "更新用户信息");
         // 消息推送测试
         Set<String> singleton = Collections.singleton("您收到一条系统消息，请注意查收！" + UUIDUtils.getPrimaryValue());
-        webSocketService.sendToUser(-1, userId, singleton);
+//        webSocketService.sendToUser(-1, userId, singleton);
+        webSocketService.sendToTopic(-1, singleton);
 
         return ResultUtil.getSuccess();
     }

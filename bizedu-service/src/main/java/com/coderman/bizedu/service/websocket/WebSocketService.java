@@ -18,4 +18,11 @@ public interface WebSocketService {
      * @param payload    消息内容
      */
     public void sendToUser(Integer senderId, Integer receiverId, Object payload);
+
+    /**
+     * websocket 广播主题消息
+     * @param senderId   发送人id
+     * @param payload 消息内容
+     */
+    public void sendToTopic(Integer senderId,Object payload);
 }

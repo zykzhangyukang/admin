@@ -66,27 +66,52 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
+    /**
+     *
+     * 广播主题消息
+     * @param senderId   发送人id
+     * @param payload 消息内容
+     */
+    @Override
+    public void sendToTopic(Integer senderId, Object payload) {
+
+        String destination = WebSocketChannelEnum.TOPIC_SYS_MSG.getSubscribeUrl();
+        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(null, destination,payload);
+        // 广播消息
+        redisService.sendMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
+    }
+
 
     /**
      * 订阅redis主题，解决分布式多节点websocket连接问题。
      *
      * @param websocketRedisMsg 消息内容
      */
-    @RedisChannelListener(channelName = RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, clazz = WebsocketRedisMsg.class, envDiff = false)
+    @RedisChannelListener(channelName = RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, clazz = WebsocketRedisMsg.class)
     public void handWebSocketNotify(WebsocketRedisMsg<Object> websocketRedisMsg) {
 
-        log.info("Received Message: {}", JSON.toJSONString(websocketRedisMsg));
         String receiver = websocketRedisMsg.getReceiver();
         Object content = websocketRedisMsg.getContent();
         String destination = websocketRedisMsg.getDestination();
 
-        // 取出用户名并判断是否连接到当前应用节点的WebSocket
-        SimpUser simpUser = simpUserRegistry.getUser(receiver);
-        if (simpUser != null && StringUtils.isNoneBlank(simpUser.getName()) && StringUtils.isNotBlank(destination)) {
+        // 广播类型
+        WebSocketChannelEnum webSocketChannelEnum = WebSocketChannelEnum.getBySubUrl(destination);
+        if(WebSocketChannelEnum.TOPIC_SYS_MSG.equals(webSocketChannelEnum)){
 
-            //  给WebSocket客户端发送消息
+            //  广播发送
             simpMessagingTemplate.convertAndSend(destination, content);
-            log.info("handWebSocketNotify-websocket推送消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
+            log.info("handWebSocketNotify-websocket推送广播消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
+
+        }else {
+
+            // 取出用户名并判断是否连接到当前应用节点的WebSocket
+            SimpUser simpUser = simpUserRegistry.getUser(receiver);
+            if (simpUser != null && StringUtils.isNoneBlank(simpUser.getName()) && StringUtils.isNotBlank(destination)) {
+
+                //  给WebSocket客户端发送消息
+                simpMessagingTemplate.convertAndSend(destination, content);
+                log.info("handWebSocketNotify-websocket推送点对点消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
+            }
         }
     }
 }
