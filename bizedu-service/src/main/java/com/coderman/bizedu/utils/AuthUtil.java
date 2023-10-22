@@ -1,14 +1,21 @@
 package com.coderman.bizedu.utils;
 
 import com.coderman.api.constant.CommonConstant;
+import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.bizedu.constant.AuthConstant;
 import com.coderman.bizedu.vo.user.AuthUserVO;
+import com.coderman.redis.service.RedisService;
 import com.coderman.service.util.HttpContextUtil;
+import com.coderman.service.util.SpringContextUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author zhangyukang
  */
+@Slf4j
 public class AuthUtil {
 
 
@@ -25,8 +32,26 @@ public class AuthUtil {
         if (obj instanceof AuthUserVO) {
 
             return (AuthUserVO) obj;
-        }
 
+        } else {
+
+            // 如果用户的token存在，则尝试从redis中获取
+            String token = httpServletRequest.getHeader(CommonConstant.USER_TOKEN_NAME);
+            if (StringUtils.isNotBlank(token)) {
+
+                AuthUserVO authUserVO = null;
+                try {
+
+                    RedisService redisService = SpringContextUtil.getBean(RedisService.class);
+
+                    authUserVO = redisService.getObject(AuthConstant.AUTH_TOKEN_NAME + token, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+
+                } catch (Exception e) {
+                    log.error("从redis获取用户信息失败！error:{}", e.getMessage(), e);
+                }
+                return authUserVO;
+            }
+        }
         return null;
     }
 

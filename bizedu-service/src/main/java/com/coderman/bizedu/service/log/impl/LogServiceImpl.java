@@ -1,5 +1,6 @@
 package com.coderman.bizedu.service.log.impl;
 
+import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
@@ -53,8 +54,13 @@ public class LogServiceImpl extends BaseService implements LogService {
     @Override
     @LogError(value = "保存日志信息")
     public void saveLog(Integer logModule, Integer logLevel, String logInfo) {
+
         AuthUserVO current = AuthUtil.getCurrent();
-        Assert.notNull(current, "当前登录用户不能为空！");
+        if (current == null) {
+
+            throw new BusinessException("请先登录后访问！");
+        }
+
         this.saveLog(logModule, logLevel, current.getUserId(), current.getUsername(), current.getRealName(), logInfo);
     }
 

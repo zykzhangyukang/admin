@@ -105,7 +105,11 @@ public class UserServiceImpl extends BaseService implements UserService {
         String username = userSwitchLoginDTO.getUsername();
         AuthUserVO current = AuthUtil.getCurrent();
 
-        Assert.notNull(current, "current is null!");
+        if (current == null) {
+
+            return ResultUtil.getFail("请先登录后访问！");
+        }
+
         Assert.isTrue(StringUtils.isNotBlank(username), "登录账号不能为空！");
 
         ResultVO<UserVO> resultVO = this.selectUserByName(username);
@@ -202,7 +206,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             UserLoginRespVO response = this.generateAndStoreToken(dbUser);
 
             // 记录日志
-            this.logService.saveLog(AuthConstant.LOG_MODULE_USER,AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(),  "用户登录系统");
+            this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(), "用户登录系统");
 
             return ResultUtil.getSuccess(UserLoginRespVO.class, response);
         } catch (Exception e) {
@@ -252,9 +256,9 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<UserPermissionVO> info(String token) {
 
         AuthUserVO authUserVO = AuthUtil.getCurrent();
-        if (Objects.isNull(authUserVO)) {
+        if(authUserVO == null){
 
-            return ResultUtil.getFail("用户信息为空！");
+            return ResultUtil.getFail("请先登录后访问！");
         }
 
         // 这里查一下数据库,获取实时的用户信息
@@ -318,7 +322,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             if (Objects.nonNull(authUserVO)) {
 
                 this.redisService.del(redisKey, RedisDbConstant.REDIS_DB_AUTH);
-                this.logService.saveLog(AuthConstant.LOG_MODULE_USER,  AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(),authUserVO.getRealName(), "用户注销登录");
+                this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "用户注销登录");
             }
         }
 
@@ -509,7 +513,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 新增用户
         this.userDAO.insertReturnKey(insertModel);
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE,"新增用户信息");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE, "新增用户信息");
 
         return ResultUtil.getSuccess();
     }
@@ -525,7 +529,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<Void> delete(Integer userId) {
 
         AuthUserVO current = AuthUtil.getCurrent();
-        Assert.notNull(current, "current is null!");
+        if (current == null) {
+
+            return ResultUtil.getFail("请您先登录！");
+        }
 
         UserModel dbUserModel = this.userDAO.selectByPrimaryKey(userId);
         if (dbUserModel == null) {
@@ -563,7 +570,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getWarn("用户id不能为空！");
         }
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
-        if(null == userModel){
+        if (null == userModel) {
             return ResultUtil.getWarn("用户不存在！");
         }
         if (StringUtils.isBlank(deptCode)) {
@@ -596,7 +603,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE, "更新用户信息");
         // 消息推送测试
         Set<String> singleton = Collections.singleton("您收到一条系统消息，请注意查收！" + UUIDUtils.getPrimaryValue());
-        webSocketService.sendToUser(-1, userId , singleton);
+        webSocketService.sendToUser(-1, userId, singleton);
 
         return ResultUtil.getSuccess();
     }
@@ -651,7 +658,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<Void> updateEnable(Integer userId) {
 
         AuthUserVO current = AuthUtil.getCurrent();
-        Assert.notNull(current, "current is null!");
+        if(current == null){
+
+            return ResultUtil.getFail("请先登录后访问！");
+        }
 
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
         if (Objects.isNull(userModel)) {
@@ -669,8 +679,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setUserStatus(AuthConstant.USER_STATUS_ENABLE);
         updateModel.setUpdateTime(new Date());
         this.userDAO.updateByPrimaryKeySelective(updateModel);
+
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL,  "启用用户账号");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, "启用用户账号");
 
         return ResultUtil.getSuccess();
     }
@@ -680,7 +691,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<Void> updateDisable(Integer userId) {
 
         AuthUserVO current = AuthUtil.getCurrent();
-        Assert.notNull(current, "current is null!");
+        if(current == null){
+
+            return ResultUtil.getFail("请先登录后访问！");
+        }
 
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
         if (Objects.isNull(userModel)) {
@@ -756,12 +770,15 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 清空之前的权限
         this.userRoleDAO.deleteByUserId(userId);
+
         // 批量新增
         if (!CollectionUtils.isEmpty(roleIdList)) {
+
             this.userRoleDAO.insertBatchByUserId(userId, roleIdList);
         }
+
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER , AuthConstant.LOG_MODULE_IMPORTANT,"用户分配角色");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_IMPORTANT, "用户分配角色");
 
         return ResultUtil.getSuccess();
     }
@@ -808,7 +825,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.userDAO.updateByPrimaryKeySelective(record);
 
         // 记录日志
-        this.logService.saveLog(AuthConstant.LOG_MODULE_USER,AuthConstant.LOG_MODULE_IMPORTANT , "修改用户密码");
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_IMPORTANT, "修改用户密码");
         return ResultUtil.getSuccess();
     }
 
@@ -823,7 +840,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 拉取消息
         List<Object> list = this.redisService.getListData(listKey, Object.class, RedisDbConstant.REDIS_DB_DEFAULT);
         // 删除消息
-        this.redisService.del(listKey,RedisDbConstant.REDIS_DB_DEFAULT);
+        this.redisService.del(listKey, RedisDbConstant.REDIS_DB_DEFAULT);
 
         return ResultUtil.getSuccessList(Object.class, list);
     }

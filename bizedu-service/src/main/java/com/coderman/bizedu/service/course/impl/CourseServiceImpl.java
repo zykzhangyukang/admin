@@ -91,7 +91,10 @@ public class CourseServiceImpl implements CourseService {
         String description = courseSaveDTO.getDescription();
         List<Integer> catalogIdList = courseSaveDTO.getCatalogIdList();
 
-        Assert.notNull(current, "currentUser is null");
+        if(current == null){
+
+            return ResultUtil.getFail("请先登录后访问！");
+        }
 
         if (StringUtils.isBlank(courseName) || StringUtils.length(courseName) < 5 || StringUtils.length(courseName) > 30) {
             return ResultUtil.getWarn("课程标题必填，字数限制5-30字符！");
