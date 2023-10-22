@@ -3,6 +3,7 @@ package com.coderman.bizedu.service.user.impl;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.constant.ResultConstant;
+import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
@@ -248,72 +249,48 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     @LogError(value = "获取用户信息")
-    public ResultVO<UserPermissionVO> info(String defaultToken) {
+    public ResultVO<UserPermissionVO> info(String token) {
 
-        HttpServletRequest httpServletRequest = HttpContextUtil.getHttpServletRequest();
-        HttpServletResponse httpServletResponse = HttpContextUtil.getHttpServletResponse();
-        String token = StringUtils.defaultString(httpServletRequest.getHeader(CommonConstant.USER_TOKEN_NAME), defaultToken);
+        AuthUserVO authUserVO = AuthUtil.getCurrent();
+        if (Objects.isNull(authUserVO)) {
 
-        try {
-
-            // 校验用户登录的token
-            if (StringUtils.isBlank(token) || StringUtils.length(token.trim()) != 32) {
-
-                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                return ResultUtil.getFail(ResultConstant.RESULT_CODE_401, "登录令牌不存在！");
-            }
-
-            // 获取会话信息
-            ResultVO<AuthUserVO> resultVO = this.getUserByToken(token);
-            AuthUserVO authUserVO = resultVO.getResult();
-
-            if (!ResultConstant.RESULT_CODE_200.equals(resultVO.getCode()) || Objects.isNull(authUserVO)) {
-                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                return ResultUtil.getFail(ResultConstant.RESULT_CODE_401, resultVO.getMsg());
-            }
-
-            // 获取用户信息
-            String username = authUserVO.getUsername();
-            ResultVO<UserVO> voResultVO = this.selectUserByName(username);
-            UserVO userVO = voResultVO.getResult();
-
-            if (!ResultConstant.RESULT_CODE_200.equals(voResultVO.getCode()) || Objects.isNull(userVO) || !AuthConstant.USER_STATUS_ENABLE.equals(userVO.getUserStatus())) {
-
-                httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-                return ResultUtil.getFail(ResultConstant.RESULT_CODE_401, String.format("登录用户[%s]不存在！", username));
-            }
-
-            // 查询菜单
-            ResultVO<List<FuncTreeVO>> r1 = this.funcService.selectMenusTreeByUserId(userVO.getUserId());
-            if (!ResultConstant.RESULT_CODE_200.equals(r1.getCode())) {
-
-                return ResultUtil.getFail(ResultConstant.RESULT_CODE_500, "获取菜单失败！");
-            }
-
-            // 查询功能
-            ResultVO<List<String>> vo = this.funcService.selectFuncKeyListByUserId(userVO.getUserId());
-            if (!ResultConstant.RESULT_CODE_200.equals(vo.getCode())) {
-
-                return ResultUtil.getFail(ResultConstant.RESULT_CODE_500, "获取功能失败！");
-            }
-
-            UserPermissionVO userPermissionVO = new UserPermissionVO();
-            userPermissionVO.setUserId(authUserVO.getUserId());
-            userPermissionVO.setUsername(username);
-            userPermissionVO.setDeptCode(authUserVO.getDeptCode());
-            userPermissionVO.setDeptName(authUserVO.getDeptName());
-            userPermissionVO.setRealName(authUserVO.getRealName());
-            userPermissionVO.setExpiredTime(new Date(authUserVO.getExpiredTime()));
-            userPermissionVO.setMenus(r1.getResult());
-            userPermissionVO.setButtons(vo.getResult());
-            return ResultUtil.getSuccess(UserPermissionVO.class, userPermissionVO);
-
-        } catch (Exception e) {
-
-            logger.error("获取用户信息异常:{},token:{}", e.getMessage(), token, e);
-
-            return ResultUtil.getFail(ResultConstant.RESULT_CODE_500, "获取用户信息异常！");
+            return ResultUtil.getFail("用户信息为空！");
         }
+
+        // 这里查一下数据库,获取实时的用户信息
+        String username = authUserVO.getUsername();
+        ResultVO<UserVO> voResultVO = this.selectUserByName(username);
+        if (!ResultConstant.RESULT_CODE_200.equals(voResultVO.getCode()) || Objects.isNull(voResultVO.getResult())) {
+
+            return ResultUtil.getFail(ResultConstant.RESULT_CODE_401, String.format("登录用户[%s]不存在！", username));
+        }
+
+        Integer userId = authUserVO.getUserId();
+
+        // 查询菜单
+        ResultVO<List<FuncTreeVO>> r1 = this.funcService.selectMenusTreeByUserId(userId);
+        if (!ResultConstant.RESULT_CODE_200.equals(r1.getCode())) {
+
+            return ResultUtil.getFail("获取菜单失败！");
+        }
+
+        // 查询功能
+        ResultVO<List<String>> vo = this.funcService.selectFuncKeyListByUserId(userId);
+        if (!ResultConstant.RESULT_CODE_200.equals(vo.getCode())) {
+
+            return ResultUtil.getFail("获取功能失败！");
+        }
+
+        UserPermissionVO userPermissionVO = new UserPermissionVO();
+        userPermissionVO.setUserId(userId);
+        userPermissionVO.setUsername(username);
+        userPermissionVO.setDeptCode(authUserVO.getDeptCode());
+        userPermissionVO.setDeptName(authUserVO.getDeptName());
+        userPermissionVO.setRealName(authUserVO.getRealName());
+        userPermissionVO.setExpiredTime(new Date(authUserVO.getExpiredTime()));
+        userPermissionVO.setMenus(r1.getResult());
+        userPermissionVO.setButtons(vo.getResult());
+        return ResultUtil.getSuccess(UserPermissionVO.class, userPermissionVO);
     }
 
     @Override
@@ -839,11 +816,10 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "用户离线消息拉取")
     public ResultVO<List<Object>> pullNotify(Integer userId) {
 
-        Assert.notNull(userId , "userId is null");
-
         // 离线消息key
         String target = String.format(WebSocketChannelEnum.USER_SYS_MSG.getSubscribeUrl(), userId);
         String listKey = RedisConstant.REDIS_UNREAD_MSG_PREFIX + ":" + userId + ":" + target;
+
         // 拉取消息
         List<Object> list = this.redisService.getListData(listKey, Object.class, RedisDbConstant.REDIS_DB_DEFAULT);
         // 删除消息

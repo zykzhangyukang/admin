@@ -74,8 +74,8 @@ public class AuthAspect {
             .maximumSize(500)
             //多线程并发数
             .concurrencyLevel(5)
-            //过期时间，写入后30分钟过期
-            .expireAfterWrite(30, TimeUnit.MINUTES)
+            //过期时间，写入后5分钟过期
+            .expireAfterWrite(5, TimeUnit.MINUTES)
             // 过期监听
             .removalListener((RemovalListener<String, AuthUserVO>) removalNotification -> {
                 log.debug("过期会话缓存清除 token:{} is removed cause:{}", removalNotification.getKey(), removalNotification.getCause());
@@ -87,8 +87,11 @@ public class AuthAspect {
     @PostConstruct
     public void init() {
 
-        // 白名单
-        whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout", "/auth/user/info", "/auth/user/refresh/login", "/auth/const/all"));
+        // 白名单URL
+        whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout"));
+
+        // 无需拦截且有会话信息URL
+        unFilterHasLoginInfoUrl.addAll(Arrays.asList("/auth/user/info", "/auth/user/refresh/login", "/auth/const/all", "/auth/user/pull/notify"));
 
         // 刷新系统资源
         refreshSystemAllRescMap();

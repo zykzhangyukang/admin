@@ -1,5 +1,7 @@
 package com.coderman.bizedu.dto.websocket;
 
+import com.coderman.bizedu.constant.WebSocketChannelEnum;
+
 /**
  * Redis中存储WebSocket消息
  *

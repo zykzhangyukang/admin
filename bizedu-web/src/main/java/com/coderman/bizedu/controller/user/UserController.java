@@ -72,8 +72,8 @@ public class UserController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
-    public ResultVO<String> refreshLogin(@RequestHeader(value = CommonConstant.USER_TOKEN_NAME) String token) {
-        return this.userService.refreshLogin(token);
+    public ResultVO<String> refreshLogin() {
+        return this.userService.refreshLogin(Objects.requireNonNull(AuthUtil.getCurrent()).getToken());
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "注销登录")
@@ -94,8 +94,8 @@ public class UserController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "UserPermissionVO", value = {"realName", "deptCode", "deptName", "username", "token", "userId", "buttons", "menus", "expiredTime"}),
     })
-    public ResultVO<UserPermissionVO> info(String token) {
-        return this.userService.info(token);
+    public ResultVO<UserPermissionVO> info() {
+        return this.userService.info(Objects.requireNonNull(AuthUtil.getCurrent()).getToken());
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "分配角色初始化")
