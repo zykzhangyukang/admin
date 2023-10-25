@@ -1,6 +1,5 @@
 package com.coderman.bizedu.controller.user;
 
-import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.bizedu.dto.user.*;

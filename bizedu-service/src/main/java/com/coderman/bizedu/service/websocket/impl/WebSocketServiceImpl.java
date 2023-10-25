@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
+/**
+ * @author Administrator
+ */
 @Service
 @Slf4j
 public class WebSocketServiceImpl implements WebSocketService {
@@ -38,6 +41,7 @@ public class WebSocketServiceImpl implements WebSocketService {
      * @param payload    消息内容
      * @return void
      */
+    @Override
     public void sendToUser(Integer senderId, Integer receiverId, Object payload) {
 
         String sender = String.valueOf(senderId);
