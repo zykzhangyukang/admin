@@ -49,6 +49,11 @@
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.coderman</groupId>
+            <artifactId>base-sync-callback</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
