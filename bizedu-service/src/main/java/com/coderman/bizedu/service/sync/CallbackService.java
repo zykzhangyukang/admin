@@ -12,4 +12,12 @@ public interface CallbackService {
      * @return
      */
     public ResultVO<Void> updateUserCallback(SyncMsg syncMsg);
+
+    /**
+     * 更新资源回调
+     *
+     * @param syncMsg
+     * @return
+     */
+    public ResultVO<Void> updateRescCallback(SyncMsg syncMsg);
 }

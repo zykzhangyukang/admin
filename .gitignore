@@ -20,3 +20,4 @@ webstorm.config.js
 #/tools/ffprobe-win.exe
 #/tools/key_info_file.keyinfo
 #/tools/keyfile.key
+/activemq-data/*
