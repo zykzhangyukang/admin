@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Random;
 
 @Service
 @Slf4j
@@ -24,8 +25,10 @@ public class CallbackServiceImpl implements CallbackService {
     @SyncCallback(value = "update_auth_bizedu_user")
     public ResultVO<Void> updateUserCallback(SyncMsg syncMsg) {
 
+        int nextInt = new Random().nextInt(5);
+
         long count = this.redisService.incr(syncMsg.getMsgId(), RedisDbConstant.REDIS_DB_DEFAULT);
-        if (count >= 4) {
+        if (count >= nextInt) {
 
             this.redisService.del(syncMsg.getMsgId(), RedisDbConstant.REDIS_DB_DEFAULT);
             log.error("回调成功，msgId:{}", syncMsg.getMsgId());
