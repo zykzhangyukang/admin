@@ -15,6 +15,8 @@ public class ActiveMQServer {
     @Bean
     public BrokerService brokerService() throws Exception {
         BrokerService broker = new BrokerService();
+
+        // 这里要使用服务器端内网ip
         broker.addConnector("tcp://10.41.188.160:61616");
         log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ActiveMQServer启动>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         return broker;

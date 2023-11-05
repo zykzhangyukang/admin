@@ -7,7 +7,7 @@ import javax.jms.*;
 public class ActiveMQTest {
 
     //url路径
-    private static final String ACTRIVE_URL="tcp://165.154.133.250:9999";
+    private static final String ACTRIVE_URL="tcp://165.154.133.250:61616";
     //队列名称
     private static final String QUEUE_NAME="queue01";
 
