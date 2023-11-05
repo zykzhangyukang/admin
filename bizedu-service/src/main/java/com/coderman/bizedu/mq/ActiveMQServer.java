@@ -15,7 +15,7 @@ public class ActiveMQServer {
     @Bean
     public BrokerService brokerService() throws Exception {
         BrokerService broker = new BrokerService();
-        broker.addConnector("tcp://localhost:61616");
+        broker.addConnector("tcp://165.154.133.250:61616");
         log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>ActiveMQServer启动>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         return broker;
     }
