@@ -1,5 +1,7 @@
 package com.coderman.bizedu.mq;
 
+import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import javax.jms.*;
@@ -11,6 +13,7 @@ import javax.jms.*;
  * @Date: 2020/1/3 8:47
  * @Version: 1.0
  */
+@Slf4j
 public class ActiveMQConsumer {
     //url路径
     private static final String ACTRIVE_URL="tcp://165.154.133.250:61616";
@@ -46,7 +49,9 @@ public class ActiveMQConsumer {
                 //TextMessage message=(TextMessage)consumer.receive(4000L);
 
                 if(null != message){
-                    System.out.println("接受的消息为------>"+message.getText());
+
+                    log.info("接受到消息:{} ,id:{}", message.getText(), message.getJMSMessageID());
+
                 }else{
                     break;
                 }
