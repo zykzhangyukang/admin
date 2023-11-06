@@ -1,8 +1,8 @@
 package com.coderman.bizedu.mq;
 
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.pool.PooledConnectionFactory;
 
 import javax.jms.*;
 
@@ -16,20 +16,28 @@ import javax.jms.*;
 @Slf4j
 public class ActiveMQConsumer {
     //url路径
-    private static final String ACTRIVE_URL="tcp://165.154.133.250:61616";
+    private static final String ACTRIVE_URL="tcp://localhost:61616";
     //队列名称
-    private static final String QUEUE_NAME="queue01";
+    private static final String QUEUE_NAME="SYNC_QUEUE_DEV";
+
 
     public static void main(String[] args) {
+
         //1、创建连接工厂
         //如果账号密码没有修改的话，账号密码默认均为admin
-        ActiveMQConnectionFactory activeMQConnectionFactory=new ActiveMQConnectionFactory(ACTRIVE_URL);
+        ActiveMQConnectionFactory connectionFactory=new ActiveMQConnectionFactory(ACTRIVE_URL);
+
+        PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
+        pooledConnectionFactory.setConnectionFactory(connectionFactory);
+        pooledConnectionFactory.setMaxConnections(5);
+        pooledConnectionFactory.setReconnectOnException(true);
+
         //如果账号密码修改的话
         //第一个参数为账号，第二个为密码，第三个为请求的url
         //ActiveMQConnectionFactory activeMQConnectionFactory1=new ActiveMQConnectionFactory("admin","admin",ACTRIVE_URL);
         try {
             //2、通过连接工厂获取连接
-            Connection connection = activeMQConnectionFactory.createConnection();
+            Connection connection = pooledConnectionFactory.createConnection();
             connection.start();
             //3、创建session会话
             //里面会有两个参数，第一个为事物，第二个是签收
