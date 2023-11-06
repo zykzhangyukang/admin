@@ -34,7 +34,7 @@ public class ActiveMQServer implements SmartLifecycle {
                 brokerService.setUseJmx(true);
 
                 //为指定地址添加新的传输连接器
-                brokerService.addConnector("tcp://localhost:61616");
+                brokerService.addConnector("nio://localhost:61616");
 
                 // 启动服务
                 brokerService.start();

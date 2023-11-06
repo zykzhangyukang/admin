@@ -30,9 +30,10 @@ sync:
     retryTimes: 16
     instantName: BASE_AUTH_INSTANT_DEV
   activemq:
-    brokerUrl: tcp://localhost:61616
+    brokerUrl: failover:(nio://localhost:61616)
     queueName: SYNC_QUEUE_DEV
 logging:
   level:
      root: info
      com.coderman.sync: info
+     org.apache.activemq: info

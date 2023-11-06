@@ -2,7 +2,10 @@ package com.coderman.bizedu.mq;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.security.Escape;
 
 import javax.jms.*;
 
@@ -16,7 +19,7 @@ import javax.jms.*;
 @Slf4j
 public class ActiveMQConsumer {
     //url路径
-    private static final String ACTRIVE_URL="tcp://localhost:61616";
+    private static final String ACTRIVE_URL="failover:(nio://localhost:61616)";
     //队列名称
     private static final String QUEUE_NAME="SYNC_QUEUE_DEV";
 
@@ -27,10 +30,21 @@ public class ActiveMQConsumer {
         //如果账号密码没有修改的话，账号密码默认均为admin
         ActiveMQConnectionFactory connectionFactory=new ActiveMQConnectionFactory(ACTRIVE_URL);
 
+        // RedeliveryPolicy redeliveryPolicy = connectionFactory.getRedeliveryPolicy();
+        // 是否每次尝试重新发送失败后，增长这个等待时间
+        // redeliveryPolicy.setUseExponentialBackOff(true);
+        // 最大重试次数
+        // redeliveryPolicy.setMaximumRedeliveries(8);
+        // 重发时间间隔，默认1秒
+        // redeliveryPolicy.setInitialRedeliveryDelay(1000);
+        // 第一次失败后重新发送之前等待500毫秒，第二次失败再等待 500*2 毫秒，这里的2是value
+        // redeliveryPolicy.setBackOffMultiplier(2);
+        // 最大传送延迟
+        // redeliveryPolicy.setRedeliveryDelay(1000L);
+
         PooledConnectionFactory pooledConnectionFactory = new PooledConnectionFactory();
         pooledConnectionFactory.setConnectionFactory(connectionFactory);
         pooledConnectionFactory.setMaxConnections(5);
-        pooledConnectionFactory.setReconnectOnException(true);
 
         //如果账号密码修改的话
         //第一个参数为账号，第二个为密码，第三个为请求的url
@@ -41,7 +55,7 @@ public class ActiveMQConsumer {
             connection.start();
             //3、创建session会话
             //里面会有两个参数，第一个为事物，第二个是签收
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
             //4、这里接受的queue的名称要和发送者的一致
             Queue queue = session.createQueue(QUEUE_NAME);
             //5、创建消费者
@@ -58,7 +72,25 @@ public class ActiveMQConsumer {
 
                 if(null != message){
 
-                    log.info("接受到消息:{} ,id:{}", message.getText(), message.getJMSMessageID());
+                    int redeliveryCount = message.getIntProperty("JMSXDeliveryCount");
+                    if(redeliveryCount > 8){
+
+                        log.info("超过重试8次数自动ack,id:{}", message.getJMSMessageID());
+                        message.acknowledge();
+                    }else {
+
+                        log.info("接受到消息:{} ,id:{},redeliveryCount:{}", message.getText(), message.getJMSMessageID(),redeliveryCount);
+
+                        if(StringUtils.equals(message.getText() , "error")){
+
+                            session.recover();
+
+
+                        }else {
+
+                            message.acknowledge();
+                        }
+                    }
 
                 }else{
                     break;
