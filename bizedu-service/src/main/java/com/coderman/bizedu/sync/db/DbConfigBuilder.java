@@ -17,11 +17,11 @@ public class DbConfigBuilder {
     private static SyncDBConfig config;
 
 
-    public static List<AbstractDbConfig> build(SyncDBConfig syncDBConfig) {
+    public static List<AbstractDbConfig> build(SyncDBConfig syncDbConfig) {
 
-        config = syncDBConfig;
+        config = syncDbConfig;
 
-        List<SyncDBConfig.SyncDbConfig> dbList = syncDBConfig.getDbList();
+        List<SyncDBConfig.SyncDbConfig> dbList = syncDbConfig.getDbList();
 
         if(CollectionUtils.isEmpty(dbList)){
 
