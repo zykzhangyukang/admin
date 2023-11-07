@@ -1,5 +1,13 @@
 package com.coderman.bizedu.sync.db;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @author Administrator
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class MSSQLConfig extends JdbcConfig{
 
     public static final String DRIVER_JTDS = "net.sourceforge.jtds.jdbc.Driver";

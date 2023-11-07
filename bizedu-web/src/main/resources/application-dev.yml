@@ -24,8 +24,8 @@ sync:
   # es 配置
   elasticsearch:
     cluster-name: sync
-    # hosts: 127.0.0.1:9200
-    hosts: 165.154.133.250:9200
+    hosts: 127.0.0.1:9200
+    # hosts: 165.154.133.250:9200
     scheme: http
     connect-time-out: 5000
     socket-time-out: 60000
@@ -35,9 +35,9 @@ sync:
   # rocketMQ配置
   rocketmq:
     namesrv-addr: 127.0.0.1:9876
-    instance-name: SyncServer
-    consumer-group: SyncConsumer
-    consumer-order-group: SyncOrderConsumer
+    instance-name: SYNC_SERVER
+    consumer-group: SYNC_CONSUMER
+    consumer-order-group: SYNC_ORDER_CONSUMER
     topic: SYNC_TOPIC_DEV
     order-topic: SYNC_ORDER_TOPIC_DEV
     consume-thread-min: 20
@@ -63,30 +63,30 @@ sync:
     mysqlTestOnReturn: false
     mysqlTestWhileIdle: true
     dbList:
+    - dbname: base_auth_sync
+      url: jdbc:mysql://localhost:3306/base_auth_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: DES@2120FA78BC6EB99B019C119BD8067DB0
 
-      - dbname: base_auth_sync
-        url: jdbc:mysql://localhost:3306/base_auth_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-        username: root
-        password: DES@2120FA78BC6EB99B019C119BD8067DB0
+    - dbname: base_auth
+      url: jdbc:mysql://localhost:3306/base_auth?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: DES@2120FA78BC6EB99B019C119BD8067DB0
+      message: true
 
-      - dbname: base_auth
-        url: jdbc:mysql://localhost:3306/base_auth?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-        username: root
-        password: DES@2120FA78BC6EB99B019C119BD8067DB0
-        message: true
+    - dbname:  ecp_cart_dev
+      url: 127.0.0.1:27017
+      connectionsPerHost: 50
+      connectTimeout: 1000
+      type: mongo
+      maxWaitTime: 1500
+      serverSelectionTimeout: 10000
+      socketKeepAlive: true
+      socketTimeout: 600000
+      threadsAllowedToBlockForConnectionMultiplier: 20
+      password:  DES@2120FA78BC6EB99B019C119BD8067DB0
+      username: root
 
-      - dbname:  ecp_cart_dev
-        url: 127.0.0.1:27017
-        connectionsPerHost: 50
-        connectTimeout: 1000
-        type: mongo
-        maxWaitTime: 1500
-        serverSelectionTimeout: 10000
-        socketKeepAlive: true
-        socketTimeout: 600000
-        threadsAllowedToBlockForConnectionMultiplier: 20
-        username: root
-        password:  DES@2120FA78BC6EB99B019C119BD8067DB0
 logging:
   level:
     root: info

@@ -1,5 +1,13 @@
 package com.coderman.bizedu.sync.db;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * @author Administrator
+ */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class MongoConfig extends AbstractDbConfig{
 
     private String db;

@@ -30,7 +30,7 @@ public class SyncDBConfig {
     private String mysqlTestWhileIdle;
 
     @Data
-    public static final class SyncDbConfig {
+    public  static  final class SyncDbConfig {
         private String dbname;
         private String url;
         private String type;
@@ -51,15 +51,21 @@ public class SyncDBConfig {
         private String testOnReturn;
         private String testWhileIdle;
 
-        // mysql
+        /**
+         * mysql
+         */
         private String initialSize;
 
-        // sqlServer
+        /**
+         * sqlServer
+         */
         private String logAbandoned;
         private String removeAbandoned;
         private String removeAbandonedTimeout;
 
-        // mongo
+        /**
+         * mongo
+         */
         private String db;
         private Integer connectionsPerHost;
         private Integer connectTimeout;
@@ -68,14 +74,10 @@ public class SyncDBConfig {
         private String socketKeepAlive;
         private Integer socketTimeout;
         private Integer threadsAllowedToBlockForConnectionMultiplier;
-
-        // callback
-        private Boolean callback;
-
-        // mq_message
-        public Boolean message;
-
     }
+
 
     private List<SyncDbConfig> dbList;
 }
+
+

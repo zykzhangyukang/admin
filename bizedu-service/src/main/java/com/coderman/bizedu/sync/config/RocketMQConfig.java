@@ -5,6 +5,7 @@ import com.coderman.bizedu.sync.listener.RocketMqOrderListener;
 import lombok.Data;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
  */
 @Configuration
 @ConfigurationProperties(prefix = "sync.rocketmq")
+@ConditionalOnProperty(name = "sync.store.type", havingValue = "rocketmq")
 @Data
 public class RocketMQConfig {
 
