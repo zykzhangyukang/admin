@@ -21,6 +21,8 @@ aliyun:
 
 #服务端配置
 sync:
+  store:
+    type: rocketmq
   # es 配置
   elasticsearch:
     clusterName: sync
