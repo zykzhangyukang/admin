@@ -18,7 +18,6 @@ import javax.jms.Session;
  */
 @Configuration
 @ConfigurationProperties(prefix = "sync.activemq")
-@ConditionalOnProperty(name = "sync.mq.type", havingValue = "activemq")
 @Data
 public class ActiveMQConfig {
 

@@ -21,8 +21,6 @@ aliyun:
 
 #服务端配置
 sync:
-  mq:
-    type: activemq
   # es 配置
   elasticsearch:
     clusterName: sync
@@ -34,17 +32,6 @@ sync:
     connectionRequestTimeOut: 500
     maxConnectNum: 100
     maxConnectNumPerRoute: 100
-  # rocketMQ配置
-  rocketmq:
-    namesrvAddr: 127.0.0.1:9876
-    instancename: SYNC_SERVER
-    consumerGroup: SYNC_CONSUMER
-    consumerOrderGroup: SYNC_ORDER_CONSUMER
-    topic: SYNC_TOPIC_DEV
-    orderTopic: SYNC_ORDER_TOPIC_DEV
-    consumeThreadMin: 20
-    consumeThreadMax: 40
-  # activeMQ配置
   activemq:
     queueName: SYNC_QUEUE_DEV
     brokerUrl: nio://127.0.0.1:61616
