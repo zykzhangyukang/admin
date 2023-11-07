@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @JobHandler(value = "repeatSyncHandler")
 @Component

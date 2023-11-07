@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  * @date ：2023/10/17 11:33
  */
 @Component(value = "bizEduRedisConfig")

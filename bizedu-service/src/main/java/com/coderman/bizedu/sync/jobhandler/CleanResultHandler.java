@@ -15,7 +15,7 @@ import java.util.Date;
 
 /**
  * 清空同步记录冗余数据
- * @author Administrator
+ * @author zhangyukang
  */
 @JobHandler(value = "cleanResultHandler")
 @Component

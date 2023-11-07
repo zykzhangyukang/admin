@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Component
 @Lazy(false)

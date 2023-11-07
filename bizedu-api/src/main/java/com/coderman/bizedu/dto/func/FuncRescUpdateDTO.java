@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @ApiModel(value = "FuncRescUpdateDTO",description = "功能分配资源DTO")
 @EqualsAndHashCode(callSuper = true)

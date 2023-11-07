@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Service
 public class MessageServiceImpl extends BaseService implements MessageService {

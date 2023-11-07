@@ -3,7 +3,7 @@ package com.coderman.bizedu.constant;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 public enum WebSocketChannelEnum {
 

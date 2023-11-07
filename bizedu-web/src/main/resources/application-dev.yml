@@ -22,7 +22,7 @@ aliyun:
 #服务端配置
 sync:
   store:
-    type: rocketmq
+    type: activemq
   # es 配置
   elasticsearch:
     clusterName: sync
@@ -44,6 +44,10 @@ sync:
     orderTopic: SYNC_ORDER_TOPIC_DEV
     consumeThreadMin: 20
     consumeThreadMax: 40
+  # activeMQ配置
+  activemq:
+    queueName: SYNC_QUEUE_DEV
+    brokerUrl: nio://127.0.0.1:61616
   # 同步回调配置
   callback:
     destList:
@@ -72,20 +76,21 @@ sync:
       password: DES@99D5518076FE8F32214D66F4B59766B7
       message: true
 
-#    - dbname:  ecp_cart_dev
-#      url: 127.0.0.1:27017
-#      connectionsPerHost: 50
-#      connectTimeout: 1000
-#      type: mongo
-#      maxWaitTime: 1500
-#      serverSelectionTimeout: 10000
-#      socketKeepAlive: true
-#      socketTimeout: 600000
-#      threadsAllowedToBlockForConnectionMultiplier: 20
-#      password:  DES@99D5518076FE8F32214D66F4B59766B7
-#      username: root
+    - dbname:  ecp_cart_dev
+      url: 127.0.0.1:27017
+      connectionsPerHost: 50
+      connectTimeout: 1000
+      type: mongo
+      maxWaitTime: 1500
+      serverSelectionTimeout: 10000
+      socketKeepAlive: true
+      socketTimeout: 600000
+      threadsAllowedToBlockForConnectionMultiplier: 20
+      password:  DES@99D5518076FE8F32214D66F4B59766B7
+      username: root
 
 logging:
   level:
     root: info
     com.coderman.bizedu.sync: info
+    com.coderman.sync: info

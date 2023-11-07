@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @JobHandler(value = "cleanMessageHandler")
 @Component

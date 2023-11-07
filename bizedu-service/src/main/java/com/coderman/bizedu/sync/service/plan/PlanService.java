@@ -11,7 +11,7 @@ import com.coderman.bizedu.vo.sync.PlanVO;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 public interface PlanService {
 

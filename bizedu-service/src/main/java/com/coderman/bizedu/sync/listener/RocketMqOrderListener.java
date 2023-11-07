@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Component
 public class RocketMqOrderListener implements MessageListenerOrderly {

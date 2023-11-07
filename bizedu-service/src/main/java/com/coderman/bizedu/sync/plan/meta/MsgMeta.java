@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * MQ消息元数据
- * @author Administrator
+ * @author zhangyukang
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

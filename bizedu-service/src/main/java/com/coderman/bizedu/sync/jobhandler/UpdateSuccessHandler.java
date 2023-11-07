@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @JobHandler(value = "updateSuccessHandler")
 @Component

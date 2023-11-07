@@ -3,7 +3,7 @@ package com.coderman.bizedu.sync.pair;
 import lombok.Data;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Data
 public class SyncPair<K,V> {

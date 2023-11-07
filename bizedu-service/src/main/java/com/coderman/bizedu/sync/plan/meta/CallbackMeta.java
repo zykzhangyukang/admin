@@ -3,7 +3,7 @@ package com.coderman.bizedu.sync.plan.meta;
 import lombok.Data;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Data
 public class CallbackMeta {

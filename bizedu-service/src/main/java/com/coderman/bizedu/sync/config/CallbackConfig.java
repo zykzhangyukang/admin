@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Configuration
 @ConfigurationProperties(prefix = "sync.callback")

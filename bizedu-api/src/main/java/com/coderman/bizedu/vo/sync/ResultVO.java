@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

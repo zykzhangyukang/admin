@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * 当前登入用户信息
- * @author Administrator
+ * @author zhangyukang
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

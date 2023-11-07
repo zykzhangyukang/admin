@@ -1,7 +1,7 @@
 package com.coderman.bizedu.sync.exception;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 
 public enum  ErrorCodeEnum {

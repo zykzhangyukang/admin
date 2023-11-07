@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * 同步计划元数据
- * @author Administrator
+ * @author zhangyukang
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

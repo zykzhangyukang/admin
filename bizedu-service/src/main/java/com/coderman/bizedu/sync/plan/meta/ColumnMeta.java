@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import java.util.Map;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

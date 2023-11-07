@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.Resource;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Configuration
 @ConfigurationProperties(prefix = "sync.rocketmq")

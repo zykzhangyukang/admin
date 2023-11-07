@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * 数据库连接基本配置
- * @author Administrator
+ * @author zhangyukang
  */
 @Data
 public abstract class AbstractDbConfig {

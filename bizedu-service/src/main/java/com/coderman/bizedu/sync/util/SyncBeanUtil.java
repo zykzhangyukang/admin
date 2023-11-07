@@ -26,7 +26,7 @@ import java.util.List;
 
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Slf4j
 public class SyncBeanUtil {

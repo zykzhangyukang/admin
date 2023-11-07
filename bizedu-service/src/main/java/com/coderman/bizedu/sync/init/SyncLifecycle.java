@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @author Administrator
+ * @author zhangyukang
  */
 @Lazy(value = false)
 @Component
