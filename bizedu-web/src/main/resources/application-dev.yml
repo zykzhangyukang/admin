@@ -18,22 +18,76 @@ aliyun:
     end-point: oss-cn-shenzhen.aliyuncs.com
     bucket-name: ioss-bucket
 
-# 同步系统客户端
+
+#服务端配置
 sync:
+  # es 配置
+  elasticsearch:
+    cluster-name: sync
+    # hosts: 127.0.0.1:9200
+    hosts: 165.154.133.250:9200
+    scheme: http
+    connect-time-out: 5000
+    socket-time-out: 60000
+    connection-request-time-out: 500
+    max-connect-num: 100
+    max-connect-num-per-route: 100
+  # rocketMQ配置
   rocketmq:
-    syncTopic: SYNC_TOPIC_DEV
-    syncOrderTopic: SYNC_ORDER_TOPIC_DEV
-    producerGroup: BASE_AUTH_GROUP_DEV
-    producerOrderGroup: BASE_AUTH_ORDER_GROUP_DEV
-    namesrvAddr: 127.0.0.1:9876
-    sendMsgTimeoutMillis: 5000
-    retryTimes: 16
-    instantName: BASE_AUTH_INSTANT_DEV
-  activemq:
-    brokerUrl: failover:(nio://localhost:61616)
-    queueName: SYNC_QUEUE_DEV
+    namesrv-addr: 127.0.0.1:9876
+    instance-name: SyncServer
+    consumer-group: SyncConsumer
+    consumer-order-group: SyncOrderConsumer
+    topic: SYNC_TOPIC_DEV
+    order-topic: SYNC_ORDER_TOPIC_DEV
+    consume-thread-min: 20
+    consume-thread-max: 40
+  # 同步回调配置
+  callback:
+    dest-list:
+      - project: demo
+        url: http://127.0.0.1:8084
+  # 同步系统jdbc配置
+  jdbc:
+    commonMaxIdle: 20
+    commonMaxWait: 1000
+    commonMinIdle: 10
+    commonMaxActive: 800
+    commonTimeout: 20
+    mysqlUsername: root
+    mysqlPassword: 123456
+    mysqlInitialSize: 10
+    mysqlMinEvictableIdleTimeMillis: 40000
+    mysqlTimeBetweenEvictionRunsMillis: 10000
+    mysqlTestOnBorrow: false
+    mysqlTestOnReturn: false
+    mysqlTestWhileIdle: true
+    dbList:
+
+      - dbname: base_auth_sync
+        url: jdbc:mysql://localhost:3306/base_auth_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: DES@2120FA78BC6EB99B019C119BD8067DB0
+
+      - dbname: base_auth
+        url: jdbc:mysql://localhost:3306/base_auth?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: DES@2120FA78BC6EB99B019C119BD8067DB0
+        message: true
+
+      - dbname:  ecp_cart_dev
+        url: 127.0.0.1:27017
+        connectionsPerHost: 50
+        connectTimeout: 1000
+        type: mongo
+        maxWaitTime: 1500
+        serverSelectionTimeout: 10000
+        socketKeepAlive: true
+        socketTimeout: 600000
+        threadsAllowedToBlockForConnectionMultiplier: 20
+        username: root
+        password:  DES@2120FA78BC6EB99B019C119BD8067DB0
 logging:
   level:
-     root: info
-     com.coderman.sync: info
-     org.apache.activemq: info
+    root: info
+    com.coderman.bizedu.sync: info

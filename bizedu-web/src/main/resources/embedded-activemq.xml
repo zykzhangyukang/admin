@@ -23,19 +23,32 @@
                 http://activemq.apache.org/schema/core/activemq-core-5.15.13.xsd
         ">
 
+
     <!--
         The <broker> element is used to configure the ActiveMQ broker.
     -->
     <broker xmlns="http://activemq.apache.org/schema/core"
             brokerName="localhost"
-            persistent="false"
+            persistent="true"
             useJmx="false"
             enableStatistics="false">
 
         <transportConnectors>
-            <transportConnector name="nio" uri="nio://0.0.0.0:61616"/>
+            <transportConnector name="auto+nio" uri="nio://0.0.0.0:61616"/>
         </transportConnectors>
 
+
+        <!-- 使用jdbc加缓冲区的方式写消息 -->
+        <persistenceFactory>
+            <journalPersistenceAdapterFactory
+                    journalLogFiles="4"
+                    journalLogFileSize="32768"
+                    useJournal="true"
+                    useQuickJournal="true"
+                    dataSource="#dataSource"
+                    createTablesOnStartup="false"
+                    dataDirectory="${basedir}/../activemq-data" />
+        </persistenceFactory>
 
         <destinationPolicy>
             <policyMap>

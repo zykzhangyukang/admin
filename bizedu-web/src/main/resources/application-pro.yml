@@ -17,3 +17,20 @@ aliyun:
     access-key-secret: DES@C198710CB2463E594B6599BE0ABE138AAC0735B5ABBD632655095EBE8F436582
     end-point: oss-cn-shenzhen.aliyuncs.com
     bucket-name: ioss-bucket
+
+  # 同步系统客户端
+sync:
+  store:
+    type: activemq
+  rocketmq:
+    syncTopic: SYNC_TOPIC_DEV
+    syncOrderTopic: SYNC_ORDER_TOPIC_DEV
+    producerGroup: BASE_AUTH_GROUP_DEV
+    producerOrderGroup: BASE_AUTH_ORDER_GROUP_DEV
+    namesrvAddr: 127.0.0.1:9876
+    sendMsgTimeoutMillis: 5000
+    retryTimes: 16
+    instantName: BASE_AUTH_INSTANT_DEV
+  activemq:
+    brokerUrl: failover:(nio://localhost:61616)
+    queueName: SYNC_QUEUE_DEV
