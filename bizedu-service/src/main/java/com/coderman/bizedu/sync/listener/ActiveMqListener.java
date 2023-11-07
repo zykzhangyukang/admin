@@ -18,5 +18,7 @@ public class ActiveMqListener implements SessionAwareMessageListener<TextMessage
 
 
         log.info("接受到消息------------------："+ textMessage.getText());
+
+        textMessage.acknowledge();
     }
 }
