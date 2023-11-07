@@ -17,7 +17,7 @@ import javax.annotation.Resource;
  */
 @Configuration
 @ConfigurationProperties(prefix = "sync.rocketmq")
-@ConditionalOnProperty(name = "sync.store.type", havingValue = "rocketmq")
+@ConditionalOnProperty(name = "sync.mq.type", havingValue = "rocketmq")
 @Data
 public class RocketMQConfig {
 

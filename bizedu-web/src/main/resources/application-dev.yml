@@ -21,7 +21,7 @@ aliyun:
 
 #服务端配置
 sync:
-  store:
+  mq:
     type: activemq
   # es 配置
   elasticsearch:

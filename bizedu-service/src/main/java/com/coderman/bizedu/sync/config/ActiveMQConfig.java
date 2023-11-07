@@ -8,11 +8,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import javax.annotation.Resource;
-import javax.jms.ConnectionFactory;
 import javax.jms.Session;
 
 /**
@@ -20,7 +18,7 @@ import javax.jms.Session;
  */
 @Configuration
 @ConfigurationProperties(prefix = "sync.activemq")
-@ConditionalOnProperty(name = "sync.store.type", havingValue = "activemq")
+@ConditionalOnProperty(name = "sync.mq.type", havingValue = "activemq")
 @Data
 public class ActiveMQConfig {
 
