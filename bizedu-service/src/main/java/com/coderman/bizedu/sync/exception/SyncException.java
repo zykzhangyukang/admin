@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * 同步系统异常
+ * @author Administrator
  */
 @EqualsAndHashCode(callSuper = true)
 @Data

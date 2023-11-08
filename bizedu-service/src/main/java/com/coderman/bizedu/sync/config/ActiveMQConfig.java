@@ -2,15 +2,22 @@ package com.coderman.bizedu.sync.config;
 
 import com.coderman.bizedu.sync.listener.ActiveMqListener;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.SimpleMessageConverter;
 import org.springframework.lang.NonNull;
+import org.springframework.util.ErrorHandler;
 
 import javax.annotation.Resource;
+import javax.jms.DeliveryMode;
 import javax.jms.Session;
 
 /**
@@ -19,6 +26,7 @@ import javax.jms.Session;
 @Configuration
 @ConfigurationProperties(prefix = "sync.activemq")
 @Data
+@Slf4j
 public class ActiveMQConfig {
 
     private String queueName;
@@ -71,6 +79,23 @@ public class ActiveMQConfig {
         container.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
         container.setSessionTransacted(false);
         container.setPubSubDomain(false);
+        container.setErrorHandler(new ErrorHandler() {
+            @Override
+            public void handleError(@NonNull Throwable throwable) {
+                log.error("消息者监听器消费失败：{}", throwable.getMessage());
+            }
+        });
         return container;
+    }
+
+    @Bean
+    public JmsTemplate jmsTemplate(PooledConnectionFactory pooledConnectionFactory) {
+        JmsTemplate jmsTemplate = new JmsTemplate();
+        jmsTemplate.setConnectionFactory(pooledConnectionFactory);
+        jmsTemplate.setDefaultDestinationName(queueName);
+        jmsTemplate.setDeliveryMode(DeliveryMode.PERSISTENT);
+        jmsTemplate.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
+        jmsTemplate.setSessionTransacted(false);
+        return jmsTemplate;
     }
 }
