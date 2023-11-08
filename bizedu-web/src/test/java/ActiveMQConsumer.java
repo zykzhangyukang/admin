@@ -41,7 +41,7 @@ public class ActiveMQConsumer {
             connection.start();
             //3、创建session会话
             //里面会有两个参数，第一个为事物，第二个是签收
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
             //4、这里接受的queue的名称要和发送者的一致
             Queue queue = session.createQueue(QUEUE_NAME);
             //5、创建消费者
@@ -59,6 +59,7 @@ public class ActiveMQConsumer {
                 if(null != message){
 
                     log.info("接受到消息:{} ,id:{}", message.getText(), message.getJMSMessageID());
+                     //message.acknowledge();
 
                 }else{
                     break;

@@ -24,7 +24,7 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: sync
-    hosts: 127.0.0.1:9200
+    hosts: 165.154.133.250:9200
     # hosts: 165.154.133.250:9200
     scheme: http
     connectTimeOut: 5000
@@ -34,7 +34,7 @@ sync:
     maxConnectNumPerRoute: 100
   activemq:
     queueName: SYNC_QUEUE_DEV
-    brokerUrl: nio://127.0.0.1:61616
+    brokerUrl: vm://localhost
   # 同步回调配置
   callback:
     destList:

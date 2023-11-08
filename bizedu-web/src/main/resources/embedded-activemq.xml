@@ -37,21 +37,17 @@
             <transportConnector name="auto+nio" uri="nio://0.0.0.0:61616"/>
         </transportConnectors>
 
-        <persistenceAdapter>
-            <jdbcPersistenceAdapter dataSource="#dataSource" createTablesOnStartup="false"/>
-        </persistenceAdapter>
-
         <!-- 使用jdbc加缓冲区的方式写消息 -->
-<!--        <persistenceFactory>-->
-<!--            <journalPersistenceAdapterFactory-->
-<!--                    journalLogFiles="4"-->
-<!--                    journalLogFileSize="32768"-->
-<!--                    useJournal="true"-->
-<!--                    useQuickJournal="true"-->
-<!--                    dataSource="#dataSource"-->
-<!--                    createTablesOnStartup="true"-->
-<!--                    dataDirectory="${basedir}/../activemq-data" />-->
-<!--        </persistenceFactory>-->
+        <persistenceFactory>
+            <journalPersistenceAdapterFactory
+                    journalLogFiles="4"
+                    journalLogFileSize="32768"
+                    useJournal="true"
+                    useQuickJournal="true"
+                    dataSource="#dataSource"
+                    createTablesOnStartup="true"
+                    dataDirectory="${basedir}/../activemq-data" />
+        </persistenceFactory>
 
         <destinationPolicy>
             <policyMap>

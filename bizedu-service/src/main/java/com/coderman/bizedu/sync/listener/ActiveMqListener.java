@@ -9,6 +9,9 @@ import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
+/**
+ * @author Administrator
+ */
 @Component
 @Slf4j
 public class ActiveMqListener implements SessionAwareMessageListener<TextMessage> {
