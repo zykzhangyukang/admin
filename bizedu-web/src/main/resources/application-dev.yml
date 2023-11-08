@@ -35,6 +35,8 @@ sync:
   activemq:
     queueName: SYNC_QUEUE_DEV
     brokerUrl: vm://localhost
+    username: admin
+    password: 123456
   # 同步回调配置
   callback:
     destList:

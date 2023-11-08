@@ -491,7 +491,7 @@ public class FuncServiceImpl implements FuncService {
     @Override
     @LogError(value = "根据功能ids查询功能列表")
     public List<FuncModel> selectAllByFuncIdList(Collection<Integer> funcIdList) {
-        Assert.noNullElements(funcIdList, "funcIdList is empty");
+        Assert.notEmpty(funcIdList, "funcIdList is empty");
         return this.funcDAO.selectAllByFuncIdList(funcIdList);
     }
 }

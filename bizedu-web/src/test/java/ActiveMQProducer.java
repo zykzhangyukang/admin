@@ -12,10 +12,14 @@ public class ActiveMQProducer {
     //队列名称
     private static final String QUEUE_NAME="SYNC_QUEUE_DEV";
 
+    private static final String USERNAME = "admin";
+
+    private static final String PASSWORD = "123456";
+
     public static void main(String[] args) {
         //1、创建连接工厂
         //如果账号密码没有修改的话，账号密码默认均为admin
-        ActiveMQConnectionFactory activeMQConnectionFactory=new ActiveMQConnectionFactory(ACTRIVE_URL);
+        ActiveMQConnectionFactory activeMQConnectionFactory=new ActiveMQConnectionFactory(USERNAME, PASSWORD , ACTRIVE_URL);
 
         try {
             //2、通过连接工厂获取连接

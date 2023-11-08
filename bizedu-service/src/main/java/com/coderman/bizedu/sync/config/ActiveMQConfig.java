@@ -4,11 +4,11 @@ import com.coderman.bizedu.sync.listener.ActiveMqListener;
 import lombok.Data;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.pool.PooledConnectionFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.lang.NonNull;
 
 import javax.annotation.Resource;
 import javax.jms.Session;
@@ -25,18 +25,22 @@ public class ActiveMQConfig {
 
     private String brokerUrl;
 
+    private String username;
+
+    private String password;
+
     @Resource
     private ActiveMqListener activeMqListener;
 
     /**
      * 连接池的连接工厂，优化Mq的性能
      *
-     * @param activeMQConnectionFactory
+     * @param activeMqConnectionFactory
      * @return
      */
     @Bean
-    public PooledConnectionFactory pooledConnectionFactory(ActiveMQConnectionFactory activeMQConnectionFactory) {
-        PooledConnectionFactory cachingConnectionFactory = new PooledConnectionFactory(activeMQConnectionFactory);
+    public PooledConnectionFactory pooledConnectionFactory(@NonNull ActiveMQConnectionFactory activeMqConnectionFactory) {
+        PooledConnectionFactory cachingConnectionFactory = new PooledConnectionFactory(activeMqConnectionFactory);
         cachingConnectionFactory.setMaxConnections(3);
         return cachingConnectionFactory;
     }
@@ -47,8 +51,8 @@ public class ActiveMQConfig {
      * @return
      */
     @Bean
-    public ActiveMQConnectionFactory activeMQConnectionFactory() {
-        return new ActiveMQConnectionFactory(brokerUrl);
+    public ActiveMQConnectionFactory activeMqConnectionFactory() {
+        return new ActiveMQConnectionFactory(username, password, brokerUrl);
     }
 
     /**

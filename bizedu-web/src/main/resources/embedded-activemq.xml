@@ -23,7 +23,6 @@
                 http://activemq.apache.org/schema/core/activemq-core-5.15.13.xsd
         ">
 
-
     <!--
         The <broker> element is used to configure the ActiveMQ broker.
     -->
@@ -36,6 +35,8 @@
         <transportConnectors>
             <transportConnector name="auto+nio" uri="nio://0.0.0.0:61616"/>
         </transportConnectors>
+
+
 
         <!-- 使用jdbc加缓冲区的方式写消息 -->
         <persistenceFactory>
@@ -92,6 +93,14 @@
         <shutdownHooks>
             <bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.hooks.SpringContextHook" />
         </shutdownHooks>
+
+        <plugins>
+            <simpleAuthenticationPlugin>
+                <users>
+                    <authenticationUser username="${sync.activemq.username}" password="${sync.activemq.password}" groups="users,admins"/>
+                </users>
+            </simpleAuthenticationPlugin>
+        </plugins>
 
     </broker>
 
