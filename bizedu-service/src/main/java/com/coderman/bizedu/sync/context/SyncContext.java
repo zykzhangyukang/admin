@@ -124,7 +124,7 @@ public class SyncContext {
 
         } catch (Exception e) {
 
-            logger.error("同步数据出错:", e);
+            logger.error("同步数据出错: {}",e.getMessage(), e);
 
         } finally {
 

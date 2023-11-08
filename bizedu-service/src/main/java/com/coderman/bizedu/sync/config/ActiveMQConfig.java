@@ -4,6 +4,7 @@ import com.coderman.bizedu.sync.listener.ActiveMqListener;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -49,7 +50,7 @@ public class ActiveMQConfig {
     @Bean
     public PooledConnectionFactory pooledConnectionFactory(@NonNull ActiveMQConnectionFactory activeMqConnectionFactory) {
         PooledConnectionFactory cachingConnectionFactory = new PooledConnectionFactory(activeMqConnectionFactory);
-        cachingConnectionFactory.setMaxConnections(3);
+        cachingConnectionFactory.setMaxConnections(6);
         return cachingConnectionFactory;
     }
 
@@ -60,7 +61,10 @@ public class ActiveMQConfig {
      */
     @Bean
     public ActiveMQConnectionFactory activeMqConnectionFactory() {
-        return new ActiveMQConnectionFactory(username, password, brokerUrl);
+        ActiveMQConnectionFactory connectionFactory  = new ActiveMQConnectionFactory(username, password, brokerUrl);
+        // 重试次数设置为16次
+        connectionFactory.getRedeliveryPolicy().setMaximumRedeliveries(16);
+        return connectionFactory;
     }
 
     /**
@@ -75,16 +79,11 @@ public class ActiveMQConfig {
         container.setConnectionFactory(pooledConnectionFactory);
         container.setDestinationName(queueName);
         container.setMessageListener(activeMqListener);
-        container.setConcurrentConsumers(3);
+        container.setConcurrentConsumers(6);
         container.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
         container.setSessionTransacted(false);
         container.setPubSubDomain(false);
-        container.setErrorHandler(new ErrorHandler() {
-            @Override
-            public void handleError(@NonNull Throwable throwable) {
-                log.error("消息者监听器消费失败：{}", throwable.getMessage());
-            }
-        });
+        container.setErrorHandler(new ActiveMqListener.LogErrorHandle());
         return container;
     }
 
