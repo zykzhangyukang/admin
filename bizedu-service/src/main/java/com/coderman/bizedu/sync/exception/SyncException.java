@@ -17,7 +17,7 @@ public class SyncException extends RuntimeException{
 
     public SyncException(ErrorCodeEnum codeEnum){
 
-        super();
+        super(codeEnum.getMessage());
         this.errorCodeEnum = codeEnum;
     }
 

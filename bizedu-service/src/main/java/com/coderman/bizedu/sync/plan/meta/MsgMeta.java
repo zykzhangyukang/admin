@@ -6,6 +6,8 @@ import com.alibaba.fastjson.parser.Feature;
 import com.coderman.api.model.BaseModel;
 import com.coderman.bizedu.constant.SyncConstant;
 import com.coderman.bizedu.sync.context.SyncContext;
+import com.coderman.bizedu.sync.exception.ErrorCodeEnum;
+import com.coderman.bizedu.sync.exception.SyncException;
 import com.coderman.bizedu.sync.task.SyncConvert;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,6 +19,7 @@ import java.util.List;
 
 /**
  * MQ消息元数据
+ *
  * @author zhangyukang
  */
 @EqualsAndHashCode(callSuper = true)
@@ -63,109 +66,113 @@ public class MsgMeta extends BaseModel {
 
     /**
      * 构建消息元数据
-     * {"plan":"insert_sku_pim_catalog","tables":[{"code":"insert_sku_pim_catalog","unique":["1","2"]}],
-     * "createTime":"2022-10-30 10:32:02","src":"demo","msgId":"93af36808b614a028365faea9a014c05"}
+     *
      * @param msg 消息内容
      * @return 消息元数据
      */
-    public static MsgMeta build(String msg) {
-
-        JSONObject msgJson = (JSONObject) JSONObject.parse(msg, Feature.OrderedField);
-
-        String planCode = msgJson.getString("plan");
-
-        PlanMeta planMeta = SyncContext.getContext().getPlanMeta(planCode);
-
-        List<MsgTableMeta> tableMetaList = new ArrayList<>();
+    public static MsgMeta build(String msg) throws SyncException{
 
         MsgMeta msgMeta = new MsgMeta();
-        msgMeta.setMsg(msg);
-        msgMeta.setPlanCode(planCode);
 
-        // 消息类型
-        if (msgJson.containsKey("type")) {
+        try {
 
-            msgMeta.setMsgType(msgJson.getString("type"));
-        } else {
+            JSONObject msgJson = (JSONObject) JSONObject.parse(msg, Feature.OrderedField);
 
-            msgMeta.setMsgType(SyncConstant.MSG_TYPE_SYNC);
-        }
+            String planCode = msgJson.getString("plan");
+            PlanMeta planMeta = SyncContext.getContext().getPlanMeta(planCode);
 
-        // MQ消息id
-        if (msgJson.containsKey("msgId")) {
+            List<MsgTableMeta> tableMetaList = new ArrayList<>();
+            msgMeta.setMsg(msg);
+            msgMeta.setPlanCode(planCode);
 
-            msgMeta.setMsgId(msgJson.getString("msgId"));
-        }
+            // 消息类型
+            if (msgJson.containsKey("type")) {
 
-        // 消息来源
-        if (msgJson.containsKey("src")) {
+                msgMeta.setMsgType(msgJson.getString("type"));
+            } else {
 
-            msgMeta.setSrcProject(msgJson.getString("src"));
-        }
-
-        // 创建时间
-        if (msgJson.containsKey("createTime")) {
-
-            msgMeta.setCreateDate(msgJson.getDate("createTime"));
-        }
-
-        JSONArray tablesJson = msgJson.getJSONArray("tables");
-
-        for (int i = 0; i < tablesJson.size(); i++) {
-
-
-            JSONObject json = tablesJson.getJSONObject(i);
-
-            List<Object> uniqueList = new ArrayList<>();
-
-            MsgTableMeta tableMeta = new MsgTableMeta();
-            tableMeta.setCode(json.getString("code"));
-            tableMeta.setUniqueList(uniqueList);
-
-
-            // 结果影响行数
-            if (json.containsKey("affectNum")) {
-
-                tableMeta.setAffectNum(Integer.valueOf(json.getString("affectNum")));
+                msgMeta.setMsgType(SyncConstant.MSG_TYPE_SYNC);
             }
 
-            // 获取计划中的指定的unique数据类型
-            String originUnitType = null;
+            // MQ消息id
+            if (msgJson.containsKey("msgId")) {
 
-            try {
-
-                if (planMeta != null) {
-                    originUnitType = planMeta.getUniqueTypeByCode(json.getString("code"));
-                }
-
-            } catch (Exception ignored) {
-
+                msgMeta.setMsgId(msgJson.getString("msgId"));
             }
 
-            for (int j = 0; j < ((JSONArray) json.get("unique")).size(); j++) {
+            // 消息来源
+            if (msgJson.containsKey("src")) {
 
-                String unique = ((JSONArray) json.get("unique")).get(j).toString();
-
-                if (!SyncConvert.DATA_TYPE_STRING.equals(tableMeta.getUniqueType()) && StringUtils.isNumeric(unique)) {
-                    tableMeta.setUniqueType(SyncConvert.DATA_TYPE_INT);
-                } else {
-                    tableMeta.setUniqueType(SyncConvert.DATA_TYPE_STRING);
-                }
-
-                if (originUnitType != null) {
-
-                    tableMeta.setUniqueType(originUnitType);
-                }
-
-                if (!uniqueList.contains(unique)) {
-                    uniqueList.add(unique);
-                }
+                msgMeta.setSrcProject(msgJson.getString("src"));
             }
 
-            tableMetaList.add(tableMeta);
+            // 创建时间
+            if (msgJson.containsKey("createTime")) {
+
+                msgMeta.setCreateDate(msgJson.getDate("createTime"));
+            }
+
+            JSONArray tablesJson = msgJson.getJSONArray("tables");
+
+            for (int i = 0; i < tablesJson.size(); i++) {
+
+
+                JSONObject json = tablesJson.getJSONObject(i);
+
+                List<Object> uniqueList = new ArrayList<>();
+                MsgTableMeta tableMeta = new MsgTableMeta();
+                tableMeta.setCode(json.getString("code"));
+                tableMeta.setUniqueList(uniqueList);
+
+
+                // 结果影响行数
+                if (json.containsKey("affectNum")) {
+
+                    tableMeta.setAffectNum(Integer.valueOf(json.getString("affectNum")));
+                }
+
+                // 获取计划中的指定的unique数据类型
+                String originUnitType = null;
+
+                try {
+
+                    if (planMeta != null) {
+                        originUnitType = planMeta.getUniqueTypeByCode(json.getString("code"));
+                    }
+
+                } catch (Exception ignored) {
+
+                }
+
+                for (int j = 0; j < ((JSONArray) json.get("unique")).size(); j++) {
+
+                    String unique = ((JSONArray) json.get("unique")).get(j).toString();
+
+                    if (!SyncConvert.DATA_TYPE_STRING.equals(tableMeta.getUniqueType()) && StringUtils.isNumeric(unique)) {
+                        tableMeta.setUniqueType(SyncConvert.DATA_TYPE_INT);
+                    } else {
+                        tableMeta.setUniqueType(SyncConvert.DATA_TYPE_STRING);
+                    }
+
+                    if (originUnitType != null) {
+
+                        tableMeta.setUniqueType(originUnitType);
+                    }
+
+                    if (!uniqueList.contains(unique)) {
+                        uniqueList.add(unique);
+                    }
+                }
+
+                tableMetaList.add(tableMeta);
+            }
+
+            msgMeta.setTableMetaList(tableMetaList);
+
+        } catch (Exception e) {
+
+            throw new SyncException(ErrorCodeEnum.PARSE_MSG_ERROR);
         }
-
-        msgMeta.setTableMetaList(tableMetaList);
 
         return msgMeta;
     }
