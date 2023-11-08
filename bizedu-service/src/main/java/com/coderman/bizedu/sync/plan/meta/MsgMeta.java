@@ -171,7 +171,7 @@ public class MsgMeta extends BaseModel {
 
         } catch (Exception e) {
 
-            throw new SyncException(ErrorCodeEnum.PARSE_MSG_ERROR);
+            throw new SyncException(ErrorCodeEnum.PARSE_MSG_ERROR, "解析同步消息错误, msg:" + msg);
         }
 
         return msgMeta;
