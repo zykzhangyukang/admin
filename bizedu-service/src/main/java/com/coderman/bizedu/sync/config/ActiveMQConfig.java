@@ -4,18 +4,13 @@ import com.coderman.bizedu.sync.listener.ActiveMqListener;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.RedeliveryPolicy;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
-import org.springframework.jms.support.converter.SimpleMessageConverter;
 import org.springframework.lang.NonNull;
-import org.springframework.util.ErrorHandler;
 
 import javax.annotation.Resource;
 import javax.jms.DeliveryMode;

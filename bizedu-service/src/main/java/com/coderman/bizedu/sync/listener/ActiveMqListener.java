@@ -41,13 +41,13 @@ public class ActiveMqListener implements MessageListener {
                 String messageId = message.getJMSMessageID();
 
                 if (resultService.successMsgExistRedis(messageId)) {
-                    log.error("consumeMessage-重复消息,标记成功:" + messageId);
+                    log.warn("consumeMessage-重复消息,标记成功:" + messageId);
                     message.acknowledge();
                     return;
                 }
 
                 if (deliveryCount > retryTimeLimit) {
-                    log.error("投送次数超过:" + retryTimeLimit + "次,不处理当前消息,当前" + deliveryCount + "次,msgID:" + messageId);
+                    log.warn("投送次数超过:" + retryTimeLimit + "次,不处理当前消息,当前" + deliveryCount + "次,msgID:" + messageId);
                     message.acknowledge();
                     return;
                 }
