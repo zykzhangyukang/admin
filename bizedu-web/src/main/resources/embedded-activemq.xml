@@ -30,6 +30,7 @@
             brokerName="localhost"
             persistent="true"
             useJmx="false"
+            schedulerSupport="true"
             enableStatistics="false">
 
         <transportConnectors>
@@ -37,30 +38,30 @@
         </transportConnectors>
 
         <!-- 使用jdbc的方式写消息 -->
-<!--        <persistenceAdapter>-->
-<!--            <jdbcPersistenceAdapter dataSource="#dataSource" createTablesOnStartup="false">-->
-<!--                <statements>-->
-<!--                    <statements stringIdDataType="VARCHAR(128)" tablePrefix="sync_"/>-->
-<!--                </statements>-->
-<!--            </jdbcPersistenceAdapter>-->
-<!--        </persistenceAdapter>-->
+        <persistenceAdapter>
+            <jdbcPersistenceAdapter dataSource="#dataSource" createTablesOnStartup="false">
+                <statements>
+                    <statements stringIdDataType="VARCHAR(128)" tablePrefix="sync_"/>
+                </statements>
+            </jdbcPersistenceAdapter>
+        </persistenceAdapter>
 
 
         <!-- 使用jdbc加缓冲区的方式写消息 -->
-        <persistenceFactory>
-            <journalPersistenceAdapterFactory
-                    journalLogFiles="4"
-                    journalLogFileSize="32768"
-                    useJournal="true"
-                    useQuickJournal="true"
-                    dataSource="#dataSource"
-                    createTablesOnStartup="false"
-                    dataDirectory="${basedir}/../activemq-data" >
-                <statements>
-                    <statements stringIdDataType ="VARCHAR(128)" tablePrefix ="sync_"/>
-                </statements>
-            </journalPersistenceAdapterFactory>
-        </persistenceFactory>
+<!--        <persistenceFactory>-->
+<!--            <journalPersistenceAdapterFactory-->
+<!--                    journalLogFiles="4"-->
+<!--                    journalLogFileSize="32768"-->
+<!--                    useJournal="true"-->
+<!--                    useQuickJournal="true"-->
+<!--                    dataSource="#dataSource"-->
+<!--                    createTablesOnStartup="false"-->
+<!--                    dataDirectory="${basedir}/../activemq-data" >-->
+<!--                <statements>-->
+<!--                    <statements stringIdDataType ="VARCHAR(128)" tablePrefix ="sync_"/>-->
+<!--                </statements>-->
+<!--            </journalPersistenceAdapterFactory>-->
+<!--        </persistenceFactory>-->
 
         <destinationPolicy>
             <policyMap>
@@ -114,6 +115,7 @@
             </simpleAuthenticationPlugin>
         </plugins>
 
+        <!-- 配置死信队列 -->
         <destinationPolicy>
             <policyMap>
                 <policyEntries>
@@ -124,12 +126,29 @@
                               Use the prefix 'DLQ.' for the destination name, and make
                               the DLQ a queue rather than a topic
                             -->
-                            <individualDeadLetterStrategy queuePrefix="DLQ." useQueueForQueueMessages="true" processExpired="true" expiration="60000"/>
+                            <individualDeadLetterStrategy queuePrefix="DLQ." useQueueForQueueMessages="true" processExpired="true"/>
                         </deadLetterStrategy>
                     </policyEntry>
                 </policyEntries>
             </policyMap>
         </destinationPolicy>
+
+        <plugins>
+            <redeliveryPlugin fallbackToDeadLetter="true" sendToDlqIfMaxRetriesExceeded="true">
+                <redeliveryPolicyMap>
+                    <redeliveryPolicyMap>
+                        <redeliveryPolicyEntries>
+                            <!-- a destination specific policy -->
+                            <redeliveryPolicy queue="SpecialQueue" maximumRedeliveries="4" redeliveryDelay="10000" />
+                        </redeliveryPolicyEntries>
+                        <!-- the fallback policy for all other destinations -->
+                        <defaultEntry>
+                            <redeliveryPolicy maximumRedeliveries="16" initialRedeliveryDelay="5000" redeliveryDelay="10000"  />
+                        </defaultEntry>
+                    </redeliveryPolicyMap>
+                </redeliveryPolicyMap>
+            </redeliveryPlugin>
+        </plugins>
 
     </broker>
 

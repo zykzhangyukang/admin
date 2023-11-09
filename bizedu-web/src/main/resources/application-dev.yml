@@ -8,8 +8,8 @@ spring:
     password: DES@99D5518076FE8F32214D66F4B59766B7
     url: jdbc:mysql://127.0.0.1:3306/bizedu_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
   redis:
-    host: wx.yswg.com.cn
-    password: yswg@2019
+    host: 165.154.133.250
+    password: DES@99D5518076FE8F32214D66F4B59766B7
     port: 6379
 aliyun:
   oss:

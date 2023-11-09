@@ -45,7 +45,7 @@ public class ActiveMQConfig {
     @Bean
     public PooledConnectionFactory pooledConnectionFactory(@NonNull ActiveMQConnectionFactory activeMqConnectionFactory) {
         PooledConnectionFactory cachingConnectionFactory = new PooledConnectionFactory(activeMqConnectionFactory);
-        cachingConnectionFactory.setMaxConnections(6);
+        cachingConnectionFactory.setMaxConnections(8);
         return cachingConnectionFactory;
     }
 
@@ -57,8 +57,8 @@ public class ActiveMQConfig {
     @Bean
     public ActiveMQConnectionFactory activeMqConnectionFactory() {
         ActiveMQConnectionFactory connectionFactory  = new ActiveMQConnectionFactory(username, password, brokerUrl);
-        // 重试次数设置为8次
-        connectionFactory.getRedeliveryPolicy().setMaximumRedeliveries(8);
+        // 重试次数设置为1次
+         connectionFactory.getRedeliveryPolicy().setMaximumRedeliveries(0);
         return connectionFactory;
     }
 
