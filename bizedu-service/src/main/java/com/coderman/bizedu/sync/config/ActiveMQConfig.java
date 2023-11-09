@@ -4,6 +4,7 @@ import com.coderman.bizedu.sync.listener.ActiveMqListener;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -57,18 +58,21 @@ public class ActiveMQConfig {
     @Bean
     public ActiveMQConnectionFactory activeMqConnectionFactory() {
         ActiveMQConnectionFactory connectionFactory  = new ActiveMQConnectionFactory(username, password, brokerUrl);
+
+        RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         // 重试次数设置为6次
-         connectionFactory.getRedeliveryPolicy().setMaximumRedeliveries(8);
+        redeliveryPolicy.setMaximumRedeliveries(10);
          // 重试间隔
-         connectionFactory.getRedeliveryPolicy().setRedeliveryDelay(5000);
+        redeliveryPolicy.setRedeliveryDelay(5000);
          // 第一次重试之前的等待时间
-         connectionFactory.getRedeliveryPolicy().setInitialRedeliveryDelay(5000);
+        redeliveryPolicy.setInitialRedeliveryDelay(5000);
          // 指数递增系数
-        connectionFactory.getRedeliveryPolicy().setBackOffMultiplier(5.0);
+        redeliveryPolicy.setBackOffMultiplier(5.0);
         // 防止消息冲突
-        connectionFactory.getRedeliveryPolicy().setUseCollisionAvoidance(true);
+        redeliveryPolicy.setUseCollisionAvoidance(true);
         // 不阻塞队列的方式
         connectionFactory.setNonBlockingRedelivery(true);
+        connectionFactory.setRedeliveryPolicy(redeliveryPolicy);
         return connectionFactory;
     }
 

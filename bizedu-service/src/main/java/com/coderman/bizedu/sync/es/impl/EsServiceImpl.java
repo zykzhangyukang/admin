@@ -56,7 +56,7 @@ public class EsServiceImpl implements EsService {
     private RestHighLevelClient restHighLevelClient;
 
     // 同步系统索引别名
-    private static final String alias = "sync_alias";
+    private static final String alias = "sync_bizedu_alias";
 
     // 当前使用的索引名
     public String syncResultIndexName;

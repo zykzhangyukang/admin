@@ -57,7 +57,7 @@ public class ActiveMqListener implements SessionAwareMessageListener<TextMessage
             String result = SyncContext.getContext().syncData(new String(message.getText().getBytes(), StandardCharsets.UTF_8), messageId, SyncConstant.MSG_ACTIVE_MQ, deliveryCount);
             if (!SyncConstant.SYNC_END.equalsIgnoreCase(result)) {
 
-                throw new RuntimeException(String.format("ActiveMqListener同步结果:[%s], JMSXDeliveryCount:[%s],JMSMessageID:[%s]", result, deliveryCount, messageId));
+                throw new RuntimeException(String.format("ActiveMqListener同步结果:[%s], 当前重试次数:[%s],消息id:[%s]", result, deliveryCount, messageId));
             }
 
             // 手动ack
