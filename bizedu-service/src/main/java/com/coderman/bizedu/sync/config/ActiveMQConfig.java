@@ -57,8 +57,8 @@ public class ActiveMQConfig {
     @Bean
     public ActiveMQConnectionFactory activeMqConnectionFactory() {
         ActiveMQConnectionFactory connectionFactory  = new ActiveMQConnectionFactory(username, password, brokerUrl);
-        // 重试次数设置为16次
-        connectionFactory.getRedeliveryPolicy().setMaximumRedeliveries(16);
+        // 重试次数设置为8次
+        connectionFactory.getRedeliveryPolicy().setMaximumRedeliveries(8);
         return connectionFactory;
     }
 
@@ -75,10 +75,10 @@ public class ActiveMQConfig {
         container.setDestinationName(queueName);
         container.setMessageListener(activeMqListener);
         container.setConcurrentConsumers(6);
-        container.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
+        // 这里要注意activemq和springboot整合的时候，手动提交为4才生效，和原生的不一样
+        container.setSessionAcknowledgeMode(4);
         container.setSessionTransacted(false);
         container.setPubSubDomain(false);
-        container.setErrorHandler(new ActiveMqListener.LogErrorHandle());
         return container;
     }
 
