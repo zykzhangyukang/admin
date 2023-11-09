@@ -18,19 +18,67 @@ aliyun:
     end-point: oss-cn-shenzhen.aliyuncs.com
     bucket-name: ioss-bucket
 
-  # 同步系统客户端
+#服务端配置
 sync:
-  store:
-    type: activemq
-  rocketmq:
-    syncTopic: SYNC_TOPIC_DEV
-    syncOrderTopic: SYNC_ORDER_TOPIC_DEV
-    producerGroup: BASE_AUTH_GROUP_DEV
-    producerOrderGroup: BASE_AUTH_ORDER_GROUP_DEV
-    namesrvAddr: 127.0.0.1:9876
-    sendMsgTimeoutMillis: 5000
-    retryTimes: 16
-    instantName: BASE_AUTH_INSTANT_DEV
+  # es 配置
+  elasticsearch:
+    clusterName: sync
+    hosts: 10.41.188.160:9200
+    # hosts: 165.154.133.250:9200
+    scheme: http
+    connectTimeOut: 5000
+    socketTimeOut: 60000
+    connectionRequestTimeOut: 500
+    maxConnectNum: 100
+    maxConnectNumPerRoute: 100
   activemq:
-    brokerUrl: failover:(nio://localhost:61616)
     queueName: SYNC_QUEUE_DEV
+    brokerUrl: vm://localhost
+    username: admin
+    password: 123456
+  # 同步回调配置
+  callback:
+    destList:
+      - project: demo
+        url: http://127.0.0.1:8084
+  # 同步系统jdbc配置
+  jdbc:
+    commonMaxIdle: 20
+    commonMaxWait: 1000
+    commonMinIdle: 10
+    commonMaxActive: 800
+    commonTimeout: 20
+    mysqlUsername: root
+    mysqlPassword: 123456
+    mysqlInitialSize: 10
+    mysqlMinEvictableIdleTimeMillis: 40000
+    mysqlTimeBetweenEvictionRunsMillis: 10000
+    mysqlTestOnBorrow: false
+    mysqlTestOnReturn: false
+    mysqlTestWhileIdle: true
+    dbList:
+
+      - dbname: base_auth
+        url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/base_auth?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: DES@99D5518076FE8F32214D66F4B59766B7
+        message: true
+
+      - dbname:  ecp_cart_dev
+        url: 127.0.0.1:27017
+        connectionsPerHost: 50
+        connectTimeout: 1000
+        type: mongo
+        maxWaitTime: 1500
+        serverSelectionTimeout: 10000
+        socketKeepAlive: true
+        socketTimeout: 600000
+        threadsAllowedToBlockForConnectionMultiplier: 20
+        password:  DES@99D5518076FE8F32214D66F4B59766B7
+        username: root
+
+logging:
+  level:
+    root: info
+    com.coderman.bizedu.sync: info
+    com.coderman.sync: info
