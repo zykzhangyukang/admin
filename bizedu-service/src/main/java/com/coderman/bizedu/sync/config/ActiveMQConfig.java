@@ -57,8 +57,18 @@ public class ActiveMQConfig {
     @Bean
     public ActiveMQConnectionFactory activeMqConnectionFactory() {
         ActiveMQConnectionFactory connectionFactory  = new ActiveMQConnectionFactory(username, password, brokerUrl);
-        // 重试次数设置为1次
-         connectionFactory.getRedeliveryPolicy().setMaximumRedeliveries(0);
+        // 重试次数设置为6次
+         connectionFactory.getRedeliveryPolicy().setMaximumRedeliveries(8);
+         // 重试间隔
+         connectionFactory.getRedeliveryPolicy().setRedeliveryDelay(5000);
+         // 第一次重试之前的等待时间
+         connectionFactory.getRedeliveryPolicy().setInitialRedeliveryDelay(5000);
+         // 指数递增系数
+        connectionFactory.getRedeliveryPolicy().setBackOffMultiplier(5.0);
+        // 防止消息冲突
+        connectionFactory.getRedeliveryPolicy().setUseCollisionAvoidance(true);
+        // 不阻塞队列的方式
+        connectionFactory.setNonBlockingRedelivery(true);
         return connectionFactory;
     }
 

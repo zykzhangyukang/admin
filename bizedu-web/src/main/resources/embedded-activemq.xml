@@ -133,22 +133,22 @@
             </policyMap>
         </destinationPolicy>
 
-        <plugins>
-            <redeliveryPlugin fallbackToDeadLetter="true" sendToDlqIfMaxRetriesExceeded="true">
-                <redeliveryPolicyMap>
-                    <redeliveryPolicyMap>
-                        <redeliveryPolicyEntries>
-                            <!-- a destination specific policy -->
-                            <redeliveryPolicy queue="SpecialQueue" maximumRedeliveries="4" redeliveryDelay="10000" />
-                        </redeliveryPolicyEntries>
-                        <!-- the fallback policy for all other destinations -->
-                        <defaultEntry>
-                            <redeliveryPolicy maximumRedeliveries="16" initialRedeliveryDelay="5000" redeliveryDelay="10000"  />
-                        </defaultEntry>
-                    </redeliveryPolicyMap>
-                </redeliveryPolicyMap>
-            </redeliveryPlugin>
-        </plugins>
+<!--        <plugins>-->
+<!--            <redeliveryPlugin fallbackToDeadLetter="true" sendToDlqIfMaxRetriesExceeded="true">-->
+<!--                <redeliveryPolicyMap>-->
+<!--                    <redeliveryPolicyMap>-->
+<!--                        <redeliveryPolicyEntries>-->
+<!--                            &lt;!&ndash; a destination specific policy &ndash;&gt;-->
+<!--                            <redeliveryPolicy queue="SpecialQueue" maximumRedeliveries="4" redeliveryDelay="10000" />-->
+<!--                        </redeliveryPolicyEntries>-->
+<!--                        &lt;!&ndash; the fallback policy for all other destinations &ndash;&gt;-->
+<!--                        <defaultEntry>-->
+<!--                            <redeliveryPolicy maximumRedeliveries="16" initialRedeliveryDelay="5000" redeliveryDelay="10000"  />-->
+<!--                        </defaultEntry>-->
+<!--                    </redeliveryPolicyMap>-->
+<!--                </redeliveryPolicyMap>-->
+<!--            </redeliveryPlugin>-->
+<!--        </plugins>-->
 
     </broker>
 
