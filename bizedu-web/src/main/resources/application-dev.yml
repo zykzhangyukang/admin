@@ -25,9 +25,9 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: sync
-    hosts: 165.154.133.250:9200
+    hosts: DES@FFA413173ED6FAA15A70EF283CD06271987E71D6A0ED1F3C
     # hosts: 165.154.133.250:9200
-    scheme: http
+    scheme: https
     connectTimeOut: 5000
     socketTimeOut: 60000
     connectionRequestTimeOut: 500
