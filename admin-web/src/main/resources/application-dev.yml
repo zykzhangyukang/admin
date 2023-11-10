@@ -1,0 +1,79 @@
+server:
+  port: 8989
+spring:
+  application:
+    name: admin
+  datasource:
+    username: root
+    password: DES@99D5518076FE8F32214D66F4B59766B7
+    url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+  redis:
+#    host: 165.154.133.250
+#    password: DES@99D5518076FE8F32214D66F4B59766B7
+    host: 127.0.0.1
+    port: 6379
+
+#服务端配置
+sync:
+  # es 配置
+  elasticsearch:
+    clusterName: sync
+    hosts: DES@FFA413173ED6FAA15A70EF283CD06271987E71D6A0ED1F3C
+    # hosts: 165.154.133.250:9200
+    scheme: https
+    connectTimeOut: 5000
+    socketTimeOut: 60000
+    connectionRequestTimeOut: 500
+    maxConnectNum: 100
+    maxConnectNumPerRoute: 100
+  activemq:
+    queueName: SYNC_QUEUE_DEV
+    brokerUrl: vm://localhost
+    username: admin
+    password: 123456
+  # 同步回调配置
+  callback:
+    destList:
+      - project: admin
+        url: http://127.0.0.1:8989
+  # 同步系统jdbc配置
+  jdbc:
+    commonMaxIdle: 20
+    commonMaxWait: 1000
+    commonMinIdle: 10
+    commonMaxActive: 800
+    commonTimeout: 20
+    mysqlUsername: root
+    mysqlPassword: 123456
+    mysqlInitialSize: 10
+    mysqlMinEvictableIdleTimeMillis: 40000
+    mysqlTimeBetweenEvictionRunsMillis: 10000
+    mysqlTestOnBorrow: false
+    mysqlTestOnReturn: false
+    mysqlTestWhileIdle: true
+    dbList:
+
+    - dbname: base_auth
+      url: jdbc:mysql://localhost:3306/base_auth?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: DES@99D5518076FE8F32214D66F4B59766B7
+      message: true
+
+    - dbname:  ecp_cart_dev
+      url: 127.0.0.1:27017
+      connectionsPerHost: 50
+      connectTimeout: 1000
+      type: mongo
+      maxWaitTime: 1500
+      serverSelectionTimeout: 10000
+      socketKeepAlive: true
+      socketTimeout: 600000
+      threadsAllowedToBlockForConnectionMultiplier: 20
+      password:  DES@99D5518076FE8F32214D66F4B59766B7
+      username: root
+
+logging:
+  level:
+    root: info
+    com.coderman.admin.sync: info
+    com.coderman.sync: info

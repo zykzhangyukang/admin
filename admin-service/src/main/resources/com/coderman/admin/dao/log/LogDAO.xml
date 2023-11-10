@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coderman.admin.dao.log.LogDAO">
+  <resultMap id="BaseResultMap" type="com.coderman.admin.model.log.LogModel">
+    <id column="log_id" jdbcType="INTEGER" property="logId" />
+    <result column="log_info" jdbcType="VARCHAR" property="logInfo" />
+    <result column="log_module" jdbcType="INTEGER" property="logModule" />
+    <result column="log_level" jdbcType="INTEGER" property="logLevel" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    log_id, log_info, log_module, log_level, user_id, username, real_name, create_time
+  </sql>
+  <select id="selectByExample" parameterType="com.coderman.admin.model.log.LogExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from auth_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from auth_log
+    where log_id = #{logId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from auth_log
+    where log_id = #{logId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.coderman.admin.model.log.LogExample">
+    delete from auth_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.coderman.admin.model.log.LogModel">
+    insert into auth_log (log_id, log_info, log_module, 
+      log_level, user_id, username, 
+      real_name, create_time)
+    values (#{logId,jdbcType=INTEGER}, #{logInfo,jdbcType=VARCHAR}, #{logModule,jdbcType=INTEGER}, 
+      #{logLevel,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, 
+      #{realName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.coderman.admin.model.log.LogModel">
+    insert into auth_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="logId != null">
+        log_id,
+      </if>
+      <if test="logInfo != null">
+        log_info,
+      </if>
+      <if test="logModule != null">
+        log_module,
+      </if>
+      <if test="logLevel != null">
+        log_level,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="realName != null">
+        real_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="logId != null">
+        #{logId,jdbcType=INTEGER},
+      </if>
+      <if test="logInfo != null">
+        #{logInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="logModule != null">
+        #{logModule,jdbcType=INTEGER},
+      </if>
+      <if test="logLevel != null">
+        #{logLevel,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null">
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.coderman.admin.model.log.LogExample" resultType="java.lang.Long">
+    select count(*) from auth_log
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update auth_log
+    <set>
+      <if test="record.logId != null">
+        log_id = #{record.logId,jdbcType=INTEGER},
+      </if>
+      <if test="record.logInfo != null">
+        log_info = #{record.logInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.logModule != null">
+        log_module = #{record.logModule,jdbcType=INTEGER},
+      </if>
+      <if test="record.logLevel != null">
+        log_level = #{record.logLevel,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.username != null">
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.realName != null">
+        real_name = #{record.realName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update auth_log
+    set log_id = #{record.logId,jdbcType=INTEGER},
+      log_info = #{record.logInfo,jdbcType=VARCHAR},
+      log_module = #{record.logModule,jdbcType=INTEGER},
+      log_level = #{record.logLevel,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      username = #{record.username,jdbcType=VARCHAR},
+      real_name = #{record.realName,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.admin.model.log.LogModel">
+    update auth_log
+    <set>
+      <if test="logInfo != null">
+        log_info = #{logInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="logModule != null">
+        log_module = #{logModule,jdbcType=INTEGER},
+      </if>
+      <if test="logLevel != null">
+        log_level = #{logLevel,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null">
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where log_id = #{logId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.coderman.admin.model.log.LogModel">
+    update auth_log
+    set log_info = #{logInfo,jdbcType=VARCHAR},
+      log_module = #{logModule,jdbcType=INTEGER},
+      log_level = #{logLevel,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      username = #{username,jdbcType=VARCHAR},
+      real_name = #{realName,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where log_id = #{logId,jdbcType=INTEGER}
+  </update>
+
+  <resultMap  id="pageResultMap"  extends="BaseResultMap" type="com.coderman.admin.vo.log.LogVO">
+  </resultMap>
+
+  <select id="countPage" resultType="long">
+    select count(1) as c
+    from auth_log al
+    <include refid="pageWhere"/>
+  </select>
+
+  <select id="page" resultMap="pageResultMap">
+    select
+    log_id, log_info, log_module, log_level, user_id, username, real_name, create_time
+    from auth_log al
+    <include refid="pageWhere"/>
+    order by log_id desc
+    limit #{offset},#{size}
+  </select>
+
+  <sql id="pageWhere">
+    <where>
+      <if test="username!=null and username!=''">
+        and al.username like concat('%',#{username},'%')
+      </if>
+      <if test="realName!=null and realName!=''">
+        and al.real_name like concat('%',#{realName},'%')
+      </if>
+      <if test="logModule!=null and logModule!=''">
+        and al.log_module  = #{logModule}
+      </if>
+      <if test="logLevel!=null and logLevel!=''">
+        and al.log_level  = #{logLevel}
+      </if>
+    </where>
+  </sql>
+</mapper>

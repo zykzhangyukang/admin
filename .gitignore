@@ -13,9 +13,9 @@ deploy.js
 /src/config/env.js
 webstorm.config.js
 
-/bizedu-web/target/
-/bizedu-service/target/
-/bizedu-api/target/
+/admin-web/target/
+/admin-service/target/
+/admin-api/target/
 #/tools/ffmpeg-win.exe
 #/tools/ffprobe-win.exe
 #/tools/key_info_file.keyinfo

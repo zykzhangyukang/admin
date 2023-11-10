@@ -10,13 +10,14 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>bizedu</artifactId>
+    <artifactId>admin</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>bizedu-api</module>
-        <module>bizedu-web</module>
-        <module>bizedu-service</module>
+        <module>admin-api</module>
+        <module>admin-web</module>
+        <module>admin-service</module>
+        <module>admin-sync</module>
     </modules>
 
     <properties>
@@ -26,14 +27,22 @@
     <dependencyManagement>
 
         <dependencies>
+
             <dependency>
                 <groupId>com.coderman</groupId>
-                <artifactId>bizedu-api</artifactId>
+                <artifactId>admin-api</artifactId>
                 <version>${i.project.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.coderman</groupId>
-                <artifactId>bizedu-service</artifactId>
+                <artifactId>admin-sync</artifactId>
+                <version>${i.project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>admin-service</artifactId>
                 <version>${i.project.version}</version>
             </dependency>
 
@@ -42,7 +51,6 @@
                 <artifactId>ffmpeg</artifactId>
                 <version>${ffmpeg.version}</version>
             </dependency>
-
 
         </dependencies>
 
