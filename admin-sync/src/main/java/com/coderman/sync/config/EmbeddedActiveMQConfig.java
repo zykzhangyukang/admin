@@ -1,4 +1,4 @@
-package com.coderman.sync.server;
+package com.coderman.sync.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
