@@ -56,7 +56,7 @@ public class EsServiceImpl implements EsService {
     private RestHighLevelClient restHighLevelClient;
 
     // 同步系统索引别名
-    private static final String alias = "sync_bizedu_alias";
+    private static final String alias = "bizedu_result__alias";
 
     // 当前使用的索引名
     public String syncResultIndexName;
@@ -241,14 +241,14 @@ public class EsServiceImpl implements EsService {
 
                 String indexName = entry.getKey();
 
-                if (indexName.matches("^sync_result_\\d{13}$")) {
+                if (indexName.matches("^bizedu_result_\\d{13}$")) {
 
-                    list.add(Long.valueOf(indexName.replace("sync_result_", "")));
+                    list.add(Long.valueOf(indexName.replace("bizedu_result_", "")));
                 }
             }
 
             list.sort((o1, o2) -> (int) (o2 - o1));
-            this.syncResultIndexName = "sync_result_" + list.get(0);
+            this.syncResultIndexName = "bizedu_result_" + list.get(0);
             log.info("当前es工作索引为:{}", this.syncResultIndexName);
         }
     }
@@ -317,7 +317,7 @@ public class EsServiceImpl implements EsService {
                 .endObject()
                 .endObject();
 
-        this.syncResultIndexName = "sync_result_" + System.currentTimeMillis();
+        this.syncResultIndexName = "bizedu_result_" + System.currentTimeMillis();
 
         // 创建索引
         CreateIndexRequest createIndexRequest = new CreateIndexRequest();
