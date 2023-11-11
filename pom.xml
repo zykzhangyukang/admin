@@ -18,6 +18,7 @@
         <module>admin-web</module>
         <module>admin-service</module>
         <module>admin-sync</module>
+        <module>admin-sync-sdk</module>
     </modules>
 
     <properties>
@@ -37,6 +38,12 @@
             <dependency>
                 <groupId>com.coderman</groupId>
                 <artifactId>admin-sync</artifactId>
+                <version>${i.project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.coderman</groupId>
+                <artifactId>admin-sync-sdk</artifactId>
                 <version>${i.project.version}</version>
             </dependency>
 

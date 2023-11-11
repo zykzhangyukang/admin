@@ -36,6 +36,8 @@ sync:
     destList:
       - project: admin
         url: http://127.0.0.1:8989
+      - project: club
+        url: http://127.0.0.1:8999
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20
@@ -53,8 +55,14 @@ sync:
     mysqlTestWhileIdle: true
     dbList:
 
-    - dbname: base_auth
-      url: jdbc:mysql://localhost:3306/base_auth?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    - dbname: admin_dev
+      url: jdbc:mysql://localhost:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      username: root
+      password: DES@99D5518076FE8F32214D66F4B59766B7
+      message: true
+
+    - dbname: club_dev
+      url: jdbc:mysql://localhost:3306/club_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
       username: root
       password: DES@99D5518076FE8F32214D66F4B59766B7
       message: true

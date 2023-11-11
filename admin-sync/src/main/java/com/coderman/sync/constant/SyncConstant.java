@@ -9,18 +9,14 @@ public interface SyncConstant {
     /**
      * 源系统
      */
-    @ConstList(group = "src_project",name = "权限系统")
-    public static final String SRC_PROJECT_AUTH= "auth";
+    @ConstList(group = "src_project",name = "后台系统")
+    public static final String SRC_PROJECT_ADMIN= "admin";
 
     /**
      * 目标系统
      */
-    @ConstList(group = "dest_project",name ="企业课程系统")
-    public static final String SRC_PROJECT_admin= "admin";
-    @ConstList(group = "dest_project",name = "权限系统-sync")
-    public static final String SRC_PROJECT_AUTH_SYNC= "auth_sync";
-    @ConstList(group = "dest_project",name ="订单系统")
-    public static final String SRC_PROJECT_ORDER= "order";
+    @ConstList(group = "dest_project",name ="社区系统")
+    public static final String SRC_PROJECT_CLUB= "club";
 
 
     /**

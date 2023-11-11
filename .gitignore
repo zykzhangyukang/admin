@@ -16,6 +16,7 @@ webstorm.config.js
 /admin-web/target/
 /admin-service/target/
 /admin-sync/target/
+/admin-sync-sdk/target/
 /admin-api/target/
 #/tools/ffmpeg-win.exe
 #/tools/ffprobe-win.exe

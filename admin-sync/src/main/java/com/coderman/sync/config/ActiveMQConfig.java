@@ -95,15 +95,4 @@ public class ActiveMQConfig {
         container.setPubSubDomain(false);
         return container;
     }
-
-    @Bean
-    public JmsTemplate jmsTemplate(PooledConnectionFactory pooledConnectionFactory) {
-        JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setConnectionFactory(pooledConnectionFactory);
-        jmsTemplate.setDefaultDestinationName(queueName);
-        jmsTemplate.setDeliveryMode(DeliveryMode.PERSISTENT);
-        jmsTemplate.setSessionAcknowledgeMode(Session.CLIENT_ACKNOWLEDGE);
-        jmsTemplate.setSessionTransacted(false);
-        return jmsTemplate;
-    }
 }

@@ -43,6 +43,12 @@
             <artifactId>base-aop-limiter</artifactId>
         </dependency>
 
+        <!-- 同步系统 sdk-->
+        <dependency>
+            <groupId>com.coderman</groupId>
+            <artifactId>admin-sync-sdk</artifactId>
+        </dependency>
+
         <!-- websocket支持 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
