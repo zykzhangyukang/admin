@@ -58,24 +58,30 @@ sync:
     mysqlTestWhileIdle: true
     dbList:
 
-      - dbname: base_auth_pro
-        url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/base_auth?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-        username: root
+      - dbname: admin_pro
         password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
+        url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_pro?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
         message: true
 
-      - dbname:  ecp_cart_pro
-        url: 127.0.0.1:27017
-        connectionsPerHost: 50
-        connectTimeout: 1000
-        type: mongo
-        maxWaitTime: 1500
-        serverSelectionTimeout: 10000
-        socketKeepAlive: true
-        socketTimeout: 600000
-        threadsAllowedToBlockForConnectionMultiplier: 20
-        password:  DES@99D5518076FE8F32214D66F4B59766B7
+      - dbname: club_pro
+        password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
+        url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/club_pro?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
+        message: true
+
+#      - dbname:  ecp_cart_pro
+#        url: 127.0.0.1:27017
+#        connectionsPerHost: 50
+#        connectTimeout: 1000
+#        type: mongo
+#        maxWaitTime: 1500
+#        serverSelectionTimeout: 10000
+#        socketKeepAlive: true
+#        socketTimeout: 600000
+#        threadsAllowedToBlockForConnectionMultiplier: 20
+#        password:  DES@99D5518076FE8F32214D66F4B59766B7
+#        username: root
 
 logging:
   level:
