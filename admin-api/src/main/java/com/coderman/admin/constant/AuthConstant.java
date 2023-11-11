@@ -64,10 +64,14 @@ public interface AuthConstant {
      */
     String PROJECT_DOMAIN = "project_domain";
 
-    @ConstList(group = PROJECT_DOMAIN, name = "后台系统")
-    String PROJECT_DOMAIN_AUTH = "admin";
-    @ConstList(group = PROJECT_DOMAIN, name = "社区系统")
-    String PROJECT_DOMAIN_EDU = "club";
+    @ConstList(group = PROJECT_DOMAIN, name = "权限模块")
+    String PROJECT_DOMAIN_AUTH = "auth";
+    @ConstList(group = PROJECT_DOMAIN, name = "社区模块")
+    String PROJECT_DOMAIN_CLUB = "club";
+    @ConstList(group = PROJECT_DOMAIN, name = "同步模块")
+    String PROJECT_DOMAIN_SYNC= "sync";
+    @ConstList(group = PROJECT_DOMAIN, name = "课程模块")
+    String PROJECT_DOMAIN_EDU= "edu";
 
 
     /**

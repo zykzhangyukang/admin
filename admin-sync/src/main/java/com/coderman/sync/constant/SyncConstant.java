@@ -26,7 +26,7 @@ public interface SyncConstant {
     public static final String MSG_ROCKET_MQ = "rocket_mq";
     @ConstList(group = "msg_src",name = "分区有序")
     public static final String MSG_ROCKET_ORDER_MQ = "rocket_order_mq";
-    @ConstList(group = "msg_src",name = "ActiveMQ")
+    @ConstList(group = "msg_src",name = "消息队列")
     public static final String MSG_ACTIVE_MQ = "active_mq";
     @ConstList(group = "msg_src",name = "定时器补偿")
     public static final String MSG_SOURCE_JOB = "job";
