@@ -12,8 +12,14 @@ spring:
 #    password: DES@99D5518076FE8F32214D66F4B59766B7
     host: 127.0.0.1
     port: 6379
+  task:
+    scheduling:
+      pool:
+        size: 3
 
 #服务端配置
+pub_mq_message.db: admin_dev
+pub_callback.db: club_dev
 sync:
   # es 配置
   elasticsearch:

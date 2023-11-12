@@ -11,8 +11,14 @@ spring:
     host: 10.41.188.160
     password: DES@99D5518076FE8F32214D66F4B59766B7
     port: 6379
+  task:
+    scheduling:
+      pool:
+        size: 3
 
 #服务端配置
+pub_mq_message.db: admin_pro
+pub_callback.db: club_pro
 sync:
   # es 配置
   elasticsearch:

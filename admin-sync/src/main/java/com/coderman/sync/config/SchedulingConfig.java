@@ -1,0 +1,65 @@
+package com.coderman.sync.config;
+
+import com.coderman.sync.jobhandler.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+@EnableScheduling
+@Configuration
+@Component
+public class SchedulingConfig {
+
+    @Resource
+    private RepeatSyncHandler repeatSyncHandler;
+
+    @Resource
+    private CleanMessageHandler cleanMessageHandler;
+
+    @Resource
+    private CleanResultHandler cleanResultHandler;
+
+    @Resource
+    private ResultToEsHandler resultToEsHandler;
+
+    @Resource
+    private UpdateSuccessHandler updateSuccessHandler;
+
+
+    @Scheduled(cron = "0 */5 * * * ?")
+    public void repeatSyncHandler() {
+
+        this.repeatSyncHandler.execute(StringUtils.EMPTY);
+    }
+
+    @Scheduled(cron = "0 */30 * * * ?")
+    public void cleanMessageHandler() {
+
+        this.cleanMessageHandler.execute(StringUtils.EMPTY);
+    }
+
+    @Scheduled(cron = "0 */30 * * * ?")
+    public void cleanResultHandler() {
+
+        this.cleanResultHandler.execute(StringUtils.EMPTY);
+    }
+
+
+    @Scheduled(cron = "0 */5 * * * ?")
+    public void resultToEsHandler() {
+
+        this.resultToEsHandler.execute(StringUtils.EMPTY);
+    }
+
+    @Scheduled(cron = "0 */10 * * * ?")
+    public void updateSuccessHandler() throws Exception {
+
+        this.updateSuccessHandler.execute(StringUtils.EMPTY);
+    }
+
+
+}

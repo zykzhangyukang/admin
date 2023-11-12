@@ -29,7 +29,7 @@ public class CleanResultHandler extends IJobHandler {
     private EsService esService;
 
     @Override
-    public ReturnT<String> execute(String param) throws Exception {
+    public ReturnT<String> execute(String param) {
 
         // 保存近7天的同步记录
         Date ltTime = DateUtils.addDays(new Date(), -7);
