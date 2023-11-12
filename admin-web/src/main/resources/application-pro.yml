@@ -18,7 +18,6 @@ sync:
   elasticsearch:
     clusterName: sync
     hosts: 10.41.188.160:9200
-    # hosts: 165.154.133.250:9200
     scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000

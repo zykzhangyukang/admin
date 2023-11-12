@@ -248,7 +248,7 @@ public class CallbackServiceImpl implements CallbackService {
         try {
             count = jdbcTemplate.queryForObject(sql, paramList.toArray(), Integer.class);
         } catch (Exception e) {
-            return ResultUtil.getWarnPage(CallbackModel.class, "无此系统信息，请重新选择系统！");
+            return ResultUtil.getWarnPage(CallbackModel.class, "列表查询失败！error:"+  e.getMessage());
         }
 
         List<CallbackModel> list = new ArrayList<>();
