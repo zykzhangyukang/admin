@@ -11,12 +11,6 @@ spring:
     host: 10.41.188.160
     password: DES@99D5518076FE8F32214D66F4B59766B7
     port: 6379
-aliyun:
-  oss:
-    access-key-id: DES@15BF54A5AE211A5CF9D33FBC5F1DC0BBCBB930C2BCC7C3875F2EC4A83FE5B5FD
-    access-key-secret: DES@C198710CB2463E594B6599BE0ABE138AAC0735B5ABBD632655095EBE8F436582
-    end-point: oss-cn-shenzhen.aliyuncs.com
-    bucket-name: ioss-bucket
 
 #服务端配置
 sync:
@@ -62,26 +56,11 @@ sync:
         password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
         url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_pro?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
-        message: true
 
       - dbname: club_pro
         password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
         url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/club_pro?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
-        message: true
-
-#      - dbname:  ecp_cart_pro
-#        url: 127.0.0.1:27017
-#        connectionsPerHost: 50
-#        connectTimeout: 1000
-#        type: mongo
-#        maxWaitTime: 1500
-#        serverSelectionTimeout: 10000
-#        socketKeepAlive: true
-#        socketTimeout: 600000
-#        threadsAllowedToBlockForConnectionMultiplier: 20
-#        password:  DES@99D5518076FE8F32214D66F4B59766B7
-#        username: root
 
 logging:
   level:
