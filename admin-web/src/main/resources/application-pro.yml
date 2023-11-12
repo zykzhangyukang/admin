@@ -43,7 +43,7 @@ sync:
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20
-    commonMaxWait: 1000
+    commonMaxWait: 5000
     commonMinIdle: 10
     commonMaxActive: 800
     commonTimeout: 20
