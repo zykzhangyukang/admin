@@ -16,6 +16,7 @@ import com.coderman.sync.util.SqlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -556,7 +557,7 @@ public class CallBackExecutor {
                 log.error("回调失败,网络超时");
             }
 
-            log.error("回调失败异常,e:{}", e.getMessage(), e);
+            log.error("回调失败异常,error:{}", ExceptionUtils.getRootCauseMessage(e));
 
             this.checkSwitchNode(callback, callbackUrl);
 

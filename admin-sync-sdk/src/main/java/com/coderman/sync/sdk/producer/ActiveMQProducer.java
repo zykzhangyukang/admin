@@ -5,16 +5,13 @@ import com.coderman.service.util.UUIDUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.activemq.pool.PooledConnectionFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.lang.NonNull;
 
 import javax.jms.DeliveryMode;

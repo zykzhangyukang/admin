@@ -115,8 +115,8 @@ public class FuncServiceImpl implements FuncService {
                 val = "func_name";
             } else if (StringUtils.equals(sortField, "funcType")) {
                 val = "func_type";
-            } else if (StringUtils.equals(sortField, "updateTime")) {
-                val = "update_time";
+            } else if (StringUtils.equals(sortField, "createTime")) {
+                val = "create_time";
             } else if (StringUtils.equals(sortField, "funcSort")) {
                 val = "func_sort";
             }
