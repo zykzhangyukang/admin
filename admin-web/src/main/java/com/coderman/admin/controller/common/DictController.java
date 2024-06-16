@@ -45,7 +45,7 @@ public class DictController {
     @SuppressWarnings("all")
     public ResultVO<Map<String, List<ConstItems>>> constAll() {
 
-        Map<String, List<ConstItems>> resultMap = new HashMap<>();
+        Map<String, List<ConstItems>> resultMap = new HashMap<String, List<ConstItems>>();
 
         this.redisService.getRedisTemplate().execute(new RedisCallback() {
             @Override

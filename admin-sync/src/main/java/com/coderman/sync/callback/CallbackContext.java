@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.callback.meta.CallbackTask;
 import com.coderman.sync.thread.CallbackRetryThread;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +19,9 @@ import java.util.List;
 @Component
 @Lazy(false)
 @Slf4j
-@DependsOn(value = "springContextUtil")
 public class CallbackContext {
 
+    @Getter
     private static CallbackContext callbackContext;
 
     @Resource
@@ -35,10 +35,6 @@ public class CallbackContext {
     private void init() {
 
         CallbackContext.callbackContext = SpringContextUtil.getBean(CallbackContext.class);
-    }
-
-    public static CallbackContext getCallbackContext() {
-        return callbackContext;
     }
 
     public static void setCallbackContext(CallbackContext callbackContext) {

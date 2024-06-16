@@ -2,20 +2,19 @@ package com.coderman.sync.context;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.constant.SyncConstant;
 import com.coderman.sync.model.ResultModel;
 import com.coderman.sync.plan.meta.PlanMeta;
 import com.coderman.sync.plan.meta.TableMeta;
-import com.coderman.sync.thread.ResultToEsThread;
-import com.coderman.service.util.SpringContextUtil;
 import com.coderman.sync.task.SyncTask;
 import com.coderman.sync.task.base.BaseTask;
+import com.coderman.sync.thread.ResultToEsThread;
 import com.coderman.sync.thread.SyncRetryThread;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Data
 @Lazy(value = false)
 @Component
-@DependsOn(value = "springContextUtil")
 public class SyncContext {
 
     private final static Logger logger = LoggerFactory.getLogger(SyncContext.class);
