@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Administrator
@@ -67,7 +68,7 @@ public class ResultController {
     })
     public com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid) throws IOException {
 
-        return this.resultService.signSuccess(uuid, AuthUtil.getCurrent().getRealName() + "手动标记成功");
+        return this.resultService.signSuccess(uuid, Objects.requireNonNull(AuthUtil.getCurrent()).getRealName() + "手动标记成功");
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "校验同步结果")

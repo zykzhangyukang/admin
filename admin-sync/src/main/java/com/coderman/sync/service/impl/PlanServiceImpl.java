@@ -143,7 +143,7 @@ public class PlanServiceImpl implements PlanService {
     @Override
     public ResultVO<Void> refreshSyncPlan() {
 
-        this.redisService.sendMessage(PlanConstant.TOPIC_REFRESH_PLAN, "刷新同步计划！");
+        this.redisService.sendTopicMessage(PlanConstant.TOPIC_REFRESH_PLAN, "刷新同步计划！");
 
         return ResultUtil.getSuccess();
     }

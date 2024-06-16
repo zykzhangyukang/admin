@@ -24,9 +24,9 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: sync
-    hosts: DES@FFA413173ED6FAA15A70EF283CD06271987E71D6A0ED1F3C
+    hosts: 127.0.0.1:9200
     # hosts: 165.154.133.250:9200
-    scheme: https
+    scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
     connectionRequestTimeOut: 500
@@ -65,26 +65,24 @@ sync:
       url: jdbc:mysql://localhost:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
       username: root
       password: DES@99D5518076FE8F32214D66F4B59766B7
-      message: true
 
     - dbname: club_dev
       url: jdbc:mysql://localhost:3306/club_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
       username: root
       password: DES@99D5518076FE8F32214D66F4B59766B7
-      message: true
 
-    - dbname:  ecp_cart_dev
-      url: 127.0.0.1:27017
-      connectionsPerHost: 50
-      connectTimeout: 1000
-      type: mongo
-      maxWaitTime: 1500
-      serverSelectionTimeout: 10000
-      socketKeepAlive: true
-      socketTimeout: 600000
-      threadsAllowedToBlockForConnectionMultiplier: 20
-      password:  DES@99D5518076FE8F32214D66F4B59766B7
-      username: root
+#    - dbname:  ecp_cart_dev
+#      url: 127.0.0.1:27017
+#      connectionsPerHost: 50
+#      connectTimeout: 1000
+#      type: mongo
+#      maxWaitTime: 1500
+#      serverSelectionTimeout: 10000
+#      socketKeepAlive: true
+#      socketTimeout: 600000
+#      threadsAllowedToBlockForConnectionMultiplier: 20
+#      password:  DES@99D5518076FE8F32214D66F4B59766B7
+#      username: root
 
 logging:
   level:

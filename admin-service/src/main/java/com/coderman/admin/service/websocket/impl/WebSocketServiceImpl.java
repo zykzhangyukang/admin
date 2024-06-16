@@ -59,7 +59,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         else if (redisService.isSetMember(RedisConstant.WEBSOCKET_USER_SET, receiver, RedisDbConstant.REDIS_DB_DEFAULT)) {
 
             WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(receiver, destination, payload);
-            redisService.sendMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
+            redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
         }
         //否则将消息存储到redis，等用户上线后主动拉取未读消息
         else {
@@ -82,7 +82,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         String destination = WebSocketChannelEnum.TOPIC_SYS_MSG.getSubscribeUrl();
         WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(null, destination,payload);
         // 广播消息
-        redisService.sendMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
+        redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
     }
 
 

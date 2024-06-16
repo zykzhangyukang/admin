@@ -320,7 +320,7 @@ public class RescServiceImpl implements RescService {
     @LogError(value = "刷新系统资源")
     public ResultVO<Void> refresh() {
         String msg = Objects.requireNonNull(AuthUtil.getCurrent()).getUsername() + "刷新系统资源：" + DateFormatUtils.format(new Date(), "yyyy-MM dd HH:mm:ss");
-        this.redisService.sendMessage(RedisConstant.CHANNEL_REFRESH_RESC, msg);
+        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_REFRESH_RESC, msg);
         return ResultUtil.getSuccess();
     }
 }

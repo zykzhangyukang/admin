@@ -19,6 +19,7 @@ import com.coderman.sync.service.ResultService;
 import com.coderman.sync.sql.SelectBuilder;
 import com.coderman.sync.sql.meta.SqlMeta;
 import com.coderman.sync.task.SyncConvert;
+import com.coderman.sync.task.TaskResult;
 import com.coderman.sync.task.support.WriteBackTask;
 import com.coderman.sync.util.SqlUtil;
 import com.coderman.sync.vo.CompareVO;
