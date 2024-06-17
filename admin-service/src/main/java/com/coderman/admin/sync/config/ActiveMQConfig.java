@@ -43,7 +43,7 @@ public class ActiveMQConfig {
     @Bean
     public PooledConnectionFactory pooledConnectionFactory(@NonNull ActiveMQConnectionFactory activeMqConnectionFactory) {
         PooledConnectionFactory cachingConnectionFactory = new PooledConnectionFactory(activeMqConnectionFactory);
-        cachingConnectionFactory.setMaxConnections(2);
+        cachingConnectionFactory.setMaxConnections(4);
         return cachingConnectionFactory;
     }
 
@@ -60,15 +60,13 @@ public class ActiveMQConfig {
         //是否在每次尝试重新发送失败后,增长这个等待时间
         redeliveryPolicy.setUseExponentialBackOff(true);
         // 重试次数设置为7次
-        redeliveryPolicy.setMaximumRedeliveries(16);
+        redeliveryPolicy.setMaximumRedeliveries(6);
          // 重试间隔
-        redeliveryPolicy.setRedeliveryDelay(2000);
+        redeliveryPolicy.setRedeliveryDelay(1000);
          // 第一次重试之前的等待时间
-        redeliveryPolicy.setInitialRedeliveryDelay(2000);
+        redeliveryPolicy.setInitialRedeliveryDelay(1000);
          // 指数递增系数
-        redeliveryPolicy.setBackOffMultiplier(2);
-        // 不阻塞队列的方式
-        connectionFactory.setNonBlockingRedelivery(true);
+        redeliveryPolicy.setBackOffMultiplier(5);
         //是否避免消息碰撞
         redeliveryPolicy.setUseCollisionAvoidance(false);
         //设置重发最大拖延时间-1 表示没有拖延只有UseExponentialBackOff(true)为true时生效

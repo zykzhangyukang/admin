@@ -93,7 +93,7 @@ public class SyncTask {
 
         if (count > 0) {
 
-            log.error("该同步任务已处理,msgId=" + resultModel.getMsgId());
+            log.error("该同步任务已处理,msgId={}", resultModel.getMsgId());
             resultModel.setErrorMsg("该同步任务已处理,msgId=" + resultModel.getMsgId());
             syncTask.setResultModel(resultModel);
             return syncTask;

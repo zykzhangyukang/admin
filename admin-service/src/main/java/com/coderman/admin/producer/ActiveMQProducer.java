@@ -56,7 +56,7 @@ public class ActiveMQProducer {
     @Bean
     public PooledConnectionFactory pooledSyncConnectionFactory(@NonNull ActiveMQConnectionFactory activeMqConnectionFactory) {
         PooledConnectionFactory cachingConnectionFactory = new PooledConnectionFactory(activeMqConnectionFactory);
-        cachingConnectionFactory.setMaxConnections(2);
+        cachingConnectionFactory.setMaxConnections(4);
         return cachingConnectionFactory;
     }
 

@@ -39,7 +39,7 @@ public class ResultController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
             @ApiReturnParam(name = "ResultModel", value = {"syncToEs", "msgSrc", "syncTime", "errorMsg", "uuid", "planCode", "msgId", "planName", "mqId", "planUuid", "status", "repeatCount", "msgCreateTime",
-                    "msgContent", "destProject", "srcProject", "syncContent", "remark"})
+                    "msgContent", "destProject", "srcProject", "syncContent", "remark","hlsMsgContent"})
     })
     public com.coderman.api.vo.ResultVO<PageVO<List<ResultModel>>> page(@RequestBody ResultPageDTO resultPageDTO) throws Exception {
         return this.resultService.page(resultPageDTO);

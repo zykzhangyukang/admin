@@ -30,25 +30,25 @@ public class ActiveMqListener implements SessionAwareMessageListener<TextMessage
 
         try {
 
-            int retryTimeLimit = 4;
+            int retryTimeLimit = 5;
             int deliveryCount = message.getIntProperty("JMSXDeliveryCount");
             String messageId = message.getJMSMessageID();
 
 
             if(StringUtils.equals(message.getText() , "success")){
-                log.info("consumeMessage-消费成功:" + messageId);
+                log.info("consumeMessage-消费成功:{}", messageId);
                 message.acknowledge();
                 return;
             }
 
             if (resultService.successMsgExistRedis(messageId)) {
-                log.warn("consumeMessage-重复消息,标记成功:" + messageId);
+                log.warn("consumeMessage-重复消息,标记成功:{}", messageId);
                 message.acknowledge();
                 return;
             }
 
             if (deliveryCount > retryTimeLimit) {
-                log.warn("投送次数超过:" + retryTimeLimit + "次,不处理当前消息,当前" + deliveryCount + "次,msgID:" + messageId);
+                log.warn("投送次数超过:{}次,不处理当前消息,当前{}次,msgID:{}", retryTimeLimit, deliveryCount, messageId);
                 message.acknowledge();
                 return;
             }

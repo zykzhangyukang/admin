@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -160,7 +161,7 @@ public class ResultServiceImpl implements ResultService {
         HighlightBuilder highlightBuilder = new HighlightBuilder()
                 .field(new HighlightBuilder.Field("msgContent").highlighterType("unified"))
                 .field(new HighlightBuilder.Field("syncContent").highlighterType("unified"))
-                .preTags("<font color='#ea4335'>")
+                .preTags("<font color='#f60'>")
                 .postTags("</font>")
                 .fragmentSize(10)
                 .numOfFragments(1);
@@ -179,12 +180,13 @@ public class ResultServiceImpl implements ResultService {
         }
 
         final String sql = "select status,mq_id,msg_content,repeat_count from sync_result where uuid=?";
-        ResultModel resultModel = this.jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(ResultModel.class), uuid);
+        List<ResultModel> resultModels = this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ResultModel.class), uuid);
 
-        if (resultModel == null) {
+        if (CollectionUtils.isEmpty(resultModels)) {
 
             return ResultUtil.getWarn("同步记录不存在!");
         }
+        ResultModel resultModel = resultModels.get(0);
 
         if (!StringUtils.equals(resultModel.getStatus(), PlanConstant.RESULT_STATUS_FAIL)) {
 
@@ -207,12 +209,14 @@ public class ResultServiceImpl implements ResultService {
         }
 
         final String sql = "select msg_src,status,msg_id,mq_id,msg_content,repeat_count from sync_result where uuid=?";
-        ResultModel resultModel = this.jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(ResultModel.class), uuid);
+        List<ResultModel> resultModels = this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ResultModel.class), uuid);
 
-        if (resultModel == null) {
+        if (CollectionUtils.isEmpty(resultModels)) {
 
             return ResultUtil.getWarn("同步记录不存在!");
         }
+
+        ResultModel resultModel = resultModels.get(0);
 
         if (StringUtils.isNotBlank(resultModel.getMsgContent())) {
             SyncTask syncTask = SyncTask.build(resultModel.getMsgContent(), StringUtils.EMPTY, SyncConstant.MSG_SOURCE_HANDLE, 0);
@@ -248,50 +252,48 @@ public class ResultServiceImpl implements ResultService {
             return ResultUtil.getSuccessList(CompareVO.class, Collections.emptyList());
         }
 
-        // 查询源表数据
-        List<SqlMeta> srcResultList = srcExecutor.execute();
-        Map<String, CompareVO> srcResultMap = this.transformData(planMeta, srcResultList, convert, "src");
+        try {
 
-        // 查询目标表数据
-        List<SqlMeta> destResultList = destExecutor.execute();
-        Map<String, CompareVO> destResultMap = this.transformData(planMeta, destResultList, convert, "dest");
+            // 查询源表数据
+            List<SqlMeta> srcResultList = srcExecutor.execute();
+            Map<String, CompareVO> srcResultMap = this.transformData(planMeta, srcResultList, convert, "src");
 
+            // 查询目标表数据
+            List<SqlMeta> destResultList = destExecutor.execute();
+            Map<String, CompareVO> destResultMap = this.transformData(planMeta, destResultList, convert, "dest");
 
-        // 封装结果集
-        List<CompareVO> resultList = new ArrayList<>();
+            // 封装结果集
+            List<CompareVO> resultList = new ArrayList<>();
+            for (String key : srcResultMap.keySet()) {
 
-        for (String key : srcResultMap.keySet()) {
+                CompareVO compareVO = srcResultMap.get(key);
+                if (destResultMap.containsKey(key)) {
+                    compareVO.setDestResultList(destResultMap.get(key).getDestResultList());
+                } else {
 
-            CompareVO compareVO = srcResultMap.get(key);
-            if (destResultMap.containsKey(key)) {
+                    int size = srcResultMap.get(key).getSrcResultList().size();
+                    Object[] tmpStr = new Object[size];
+                    Arrays.fill(tmpStr, "");
+                    compareVO.setDestResultList(Arrays.asList(tmpStr));
+                }
 
-                compareVO.setDestResultList(destResultMap.get(key).getDestResultList());
-            } else {
-
-                int size = srcResultMap.get(key).getSrcResultList().size();
-
-                Object[] tmpStr = new Object[size];
-
-                Arrays.fill(tmpStr, "");
-                compareVO.setDestResultList(Arrays.asList(tmpStr));
+                resultList.add(compareVO);
             }
 
-            resultList.add(compareVO);
-        }
 
-        for (String key : destResultMap.keySet()) {
+            for (String key : destResultMap.keySet()) {
+                if (srcResultMap.containsKey(key)) {
+                    continue;
+                }
 
-            if (srcResultMap.containsKey(key)) {
-
-                continue;
+                CompareVO compareVO = destResultMap.get(key);
+                compareVO.setSrcResultList(new ArrayList<>());
+                resultList.add(compareVO);
             }
-
-            CompareVO compareVO = destResultMap.get(key);
-            compareVO.setSrcResultList(new ArrayList<>());
-            resultList.add(compareVO);
+            return ResultUtil.getSuccessList(CompareVO.class, resultList);
+        } catch (Exception e) {
+            return ResultUtil.getFailList(CompareVO.class, Collections.emptyList(), ExceptionUtils.getRootCauseMessage(e));
         }
-
-        return ResultUtil.getSuccessList(CompareVO.class, resultList);
     }
 
     @Override

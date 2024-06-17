@@ -19,7 +19,9 @@ import com.coderman.admin.sync.service.CallbackService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.ibatis.reflection.ExceptionUtil;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -238,17 +240,17 @@ public class CallbackServiceImpl implements CallbackService {
             paramList.add(endTime);
         }
 
-        String sql = "select count(0) from pub_callback " + stringBuilder.toString();
+        String sql = "select count(0) from pub_callback " + stringBuilder;
         if (StringUtils.equals(SyncConstant.DB_TYPE_MSSQL, dbType)) {
 
-            sql = "select count(0) from pub_callback with(nolock) " + stringBuilder.toString();
+            sql = "select count(0) from pub_callback with(nolock) " + stringBuilder;
         }
 
         long count;
         try {
             count = jdbcTemplate.queryForObject(sql, paramList.toArray(), Integer.class);
         } catch (Exception e) {
-            return ResultUtil.getWarnPage(CallbackModel.class, "列表查询失败！error:"+  e.getMessage());
+            return ResultUtil.getWarnPage(CallbackModel.class, "列表查询失败！"+ ExceptionUtils.getRootCauseMessage(e));
         }
 
         List<CallbackModel> list = new ArrayList<>();

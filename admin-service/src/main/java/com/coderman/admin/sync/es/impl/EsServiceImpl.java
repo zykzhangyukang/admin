@@ -179,6 +179,7 @@ public class EsServiceImpl implements EsService {
             }
         }
 
+        assert hits.getTotalHits() != null;
         PageVO<List<ResultModel>> pageVO = new PageVO<>(hits.getTotalHits().value, list);
         return ResultUtil.getSuccessPage(ResultModel.class, pageVO);
     }
