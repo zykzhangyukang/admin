@@ -198,7 +198,7 @@ public class CallBackExecutor {
             }
         });
 
-        thread.setName("节点可用性线程");
+        thread.setName("CHECK_NODE_THREAD");
         thread.setDaemon(true);
         thread.start();
 
@@ -206,7 +206,7 @@ public class CallBackExecutor {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
 
-                if ("节点可用性线程".equals(t.getName())) {
+                if ("CHECK_NODE_THREAD".equals(t.getName())) {
 
                     initCheckNodeThread();
                 }

@@ -221,7 +221,7 @@ public class SyncRetryThread {
             }
         });
 
-        thread.setName("同步失败重试线程");
+        thread.setName("SYNC_RETRY_THREAD");
         thread.setDaemon(true);
         thread.start();
 
@@ -229,7 +229,7 @@ public class SyncRetryThread {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
 
-                if ("同步失败重试线程".equals(t.getName())) {
+                if ("SYNC_RETRY_THREAD".equals(t.getName())) {
 
                     init();
                 }

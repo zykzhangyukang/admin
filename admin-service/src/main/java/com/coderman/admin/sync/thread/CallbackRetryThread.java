@@ -57,7 +57,7 @@ public class CallbackRetryThread {
 
         });
 
-        thread.setName("回调失败重试线程");
+        thread.setName("CALLBACK_RETRY_THREAD");
         thread.setDaemon(true);
         thread.start();
 
@@ -65,7 +65,7 @@ public class CallbackRetryThread {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
 
-                if("回调失败重试线程".equals(t.getName())){
+                if("CALLBACK_RETRY_THREAD".equals(t.getName())){
 
                     init();
                 }
