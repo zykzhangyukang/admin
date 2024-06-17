@@ -1,0 +1,157 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+                http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://activemq.apache.org/schema/core
+                http://activemq.apache.org/schema/core/activemq-core-5.15.13.xsd
+        ">
+
+    <!--
+        The <broker> element is used to configure the ActiveMQ broker.
+    -->
+    <broker xmlns="http://activemq.apache.org/schema/core"
+            brokerName="localhost"
+            persistent="true"
+            useJmx="false"
+            schedulerSupport="true"
+            enableStatistics="false">
+
+        <transportConnectors>
+            <transportConnector name="auto+nio" uri="nio://0.0.0.0:61616"/>
+        </transportConnectors>
+
+        <!-- 使用jdbc的方式写消息 -->
+        <persistenceAdapter>
+            <jdbcPersistenceAdapter dataSource="#dataSource" createTablesOnStartup="false">
+                <statements>
+                    <statements stringIdDataType="VARCHAR(128)" tablePrefix="sync_"/>
+                </statements>
+            </jdbcPersistenceAdapter>
+        </persistenceAdapter>
+
+
+        <!-- 使用jdbc加缓冲区的方式写消息
+        <persistenceFactory>
+            <journalPersistenceAdapterFactory
+                    journalLogFiles="4"
+                    journalLogFileSize="32768"
+                    useJournal="true"
+                    useQuickJournal="true"
+                    dataSource="#dataSource"
+                    createTablesOnStartup="false"
+                    dataDirectory="./activemq-data" >
+                <statements>
+                    <statements stringIdDataType ="VARCHAR(128)" tablePrefix ="sync_"/>
+                </statements>
+            </journalPersistenceAdapterFactory>
+        </persistenceFactory>
+         -->
+
+        <destinationPolicy>
+            <policyMap>
+                <policyEntries>
+                    <policyEntry topic=">" >
+                        <!-- The constantPendingMessageLimitStrategy is used to prevent
+                             slow topic consumers to block producers and affect other consumers
+                             by limiting the number of messages that are retained
+                             For more information, see:
+
+                             http://activemq.apache.org/slow-consumer-handling.html
+
+                        -->
+                        <pendingMessageLimitStrategy>
+                            <constantPendingMessageLimitStrategy limit="1000"/>
+                        </pendingMessageLimitStrategy>
+                    </policyEntry>
+                </policyEntries>
+            </policyMap>
+        </destinationPolicy>
+
+        <!--
+          The systemUsage controls the maximum amount of space the broker will
+          use before disabling caching and/or slowing down producers. For more information, see:
+          http://activemq.apache.org/producer-flow-control.html
+        -->
+        <systemUsage>
+            <systemUsage>
+                <memoryUsage>
+                    <memoryUsage percentOfJvmHeap="70"/>
+                </memoryUsage>
+                <storeUsage>
+                    <storeUsage limit="100 gb"/>
+                </storeUsage>
+                <tempUsage>
+                    <tempUsage limit="1 gb"/>
+                </tempUsage>
+            </systemUsage>
+        </systemUsage>
+
+        <!-- destroy the spring context on shutdown -->
+        <shutdownHooks>
+            <bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.hooks.SpringContextHook" />
+        </shutdownHooks>
+
+        <plugins>
+            <simpleAuthenticationPlugin>
+                <users>
+                    <authenticationUser username="${sync.activemq.consumer.username}" password="${sync.activemq.consumer.password}" groups="users,admins"/>
+                </users>
+            </simpleAuthenticationPlugin>
+        </plugins>
+
+        <!-- 配置死信队列 -->
+        <destinationPolicy>
+            <policyMap>
+                <policyEntries>
+                    <!-- Set the following policy on all queues using the '>' wildcard -->
+                    <policyEntry queue=">">
+                        <deadLetterStrategy>
+                            <!--
+                              Use the prefix 'DLQ.' for the destination name, and make
+                              the DLQ a queue rather than a topic
+                            -->
+                            <individualDeadLetterStrategy queuePrefix="DLQ." useQueueForQueueMessages="true" processExpired="true"/>
+                        </deadLetterStrategy>
+                    </policyEntry>
+                </policyEntries>
+            </policyMap>
+        </destinationPolicy>
+
+        <plugins>
+            <redeliveryPlugin fallbackToDeadLetter="true" sendToDlqIfMaxRetriesExceeded="true">
+                <redeliveryPolicyMap>
+                    <redeliveryPolicyMap>
+                        <redeliveryPolicyEntries>
+                            <!-- a destination specific policy
+                            <redeliveryPolicy queue="SpecialQueue" maximumRedeliveries="4" redeliveryDelay="10000" />
+                             -->
+                        </redeliveryPolicyEntries>
+                        <!-- the fallback policy for all other destinations -->
+                        <defaultEntry>
+                            <redeliveryPolicy  maximumRedeliveries="6" initialRedeliveryDelay="2000" redeliveryDelay="2000" backOffMultiplier="2" useExponentialBackOff="true"  useCollisionAvoidance="false" />
+                        </defaultEntry>
+                    </redeliveryPolicyMap>
+                </redeliveryPolicyMap>
+            </redeliveryPlugin>
+        </plugins>
+
+    </broker>
+
+</beans>

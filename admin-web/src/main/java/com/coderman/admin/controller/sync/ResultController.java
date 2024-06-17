@@ -1,15 +1,15 @@
 package com.coderman.admin.controller.sync;
 
-import com.coderman.sync.dto.ResultPageDTO;
-import com.coderman.sync.dto.ResultValidDataDTO;
-import com.coderman.sync.model.ResultModel;
+import com.coderman.admin.sync.dto.ResultPageDTO;
+import com.coderman.admin.sync.dto.ResultValidDataDTO;
+import com.coderman.admin.sync.model.ResultModel;
 import com.coderman.admin.utils.AuthUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
-import com.coderman.sync.service.ResultService;
-import com.coderman.sync.vo.CompareVO;
+import com.coderman.admin.sync.service.ResultService;
+import com.coderman.admin.sync.vo.CompareVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

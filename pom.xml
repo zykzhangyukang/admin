@@ -17,12 +17,9 @@
         <module>admin-api</module>
         <module>admin-web</module>
         <module>admin-service</module>
-        <module>admin-sync</module>
-        <module>admin-sync-sdk</module>
     </modules>
 
     <properties>
-        <ffmpeg.version>0.7.0</ffmpeg.version>
         <elasticsearch.version>7.6.2</elasticsearch.version>
     </properties>
 
@@ -57,26 +54,8 @@
 
             <dependency>
                 <groupId>com.coderman</groupId>
-                <artifactId>admin-sync</artifactId>
-                <version>${i.project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.coderman</groupId>
-                <artifactId>admin-sync-sdk</artifactId>
-                <version>${i.project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.coderman</groupId>
                 <artifactId>admin-service</artifactId>
                 <version>${i.project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.bramp.ffmpeg</groupId>
-                <artifactId>ffmpeg</artifactId>
-                <version>${ffmpeg.version}</version>
             </dependency>
 
         </dependencies>

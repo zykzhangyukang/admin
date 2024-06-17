@@ -1,6 +1,5 @@
 package com.coderman.admin.utils;
 
-import com.coderman.admin.vo.catalog.CatalogTreeVO;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -93,28 +92,4 @@ public class TreeUtils {
         return rootFuncTreeNode;
     }
 
-    public static List<CatalogTreeVO> buildCatalogTreeByList(List<CatalogTreeVO> treeVoList) {
-
-        List<CatalogTreeVO> rootCatalogTreeNode = new ArrayList<>();
-
-        if (CollectionUtils.isEmpty(treeVoList)) {
-            return Collections.emptyList();
-        }
-
-        Map<Integer, CatalogTreeVO> funcTreeVoMap = treeVoList.stream().collect(Collectors.toMap(CatalogTreeVO::getCatalogId, e -> e, (k1, k2) -> k2));
-        for (CatalogTreeVO catalogTreeVO : treeVoList) {
-            Integer parentId = catalogTreeVO.getParentId();
-
-            if (funcTreeVoMap.containsKey(parentId)) {
-                CatalogTreeVO parentFuncTreeNode = funcTreeVoMap.get(parentId);
-                List<CatalogTreeVO> childrenList = Optional.ofNullable(parentFuncTreeNode.getChildren()).orElse(new ArrayList<>());
-                childrenList.add(catalogTreeVO);
-                parentFuncTreeNode.setChildren(childrenList);
-            } else {
-
-                rootCatalogTreeNode.add(catalogTreeVO);
-            }
-        }
-        return rootCatalogTreeNode;
-    }
 }

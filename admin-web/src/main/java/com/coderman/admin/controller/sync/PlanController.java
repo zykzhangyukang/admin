@@ -1,16 +1,16 @@
 package com.coderman.admin.controller.sync;
 
-import com.coderman.sync.dto.PlanPageDTO;
-import com.coderman.sync.dto.PlanSaveDTO;
-import com.coderman.sync.dto.PlanUpdateDTO;
-import com.coderman.sync.dto.PlanUpdateStatusDTO;
+import com.coderman.admin.sync.dto.PlanPageDTO;
+import com.coderman.admin.sync.dto.PlanSaveDTO;
+import com.coderman.admin.sync.dto.PlanUpdateDTO;
+import com.coderman.admin.sync.dto.PlanUpdateStatusDTO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
-import com.coderman.sync.service.PlanService;
-import com.coderman.sync.vo.PlanVO;
+import com.coderman.admin.sync.service.PlanService;
+import com.coderman.admin.sync.vo.PlanVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

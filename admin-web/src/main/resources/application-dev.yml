@@ -21,22 +21,28 @@ pub_callback.db: club_dev
 sync:
   # es 配置
   elasticsearch:
-    clusterName: elasticsearch
-    hosts: 192.168.10.238:9200
-    scheme: http
+    clusterName: docker-cluster
+    hosts: es.coderman.love
+    scheme: https
     connectTimeOut: 5000
     socketTimeOut: 60000
     connectionRequestTimeOut: 500
     maxConnectNum: 100
     maxConnectNumPerRoute: 100
     username: elastic
-    password: elasticsearch2023.+
+    password:  zhangyukang
   # 消息队列配置
   activemq:
-    queueName: SYNC_QUEUE_DEV
-    brokerUrl: vm://localhost
-    username: admin
-    password: 123456
+    producer:
+      queueName: SYNC_QUEUE_DEV
+      brokerUrl: vm://localhost
+      username: admin
+      password: 123456
+    consumer:
+      queueName: SYNC_QUEUE_DEV
+      brokerUrl: vm://localhost
+      username: admin
+      password: 123456
   # 同步回调配置
   callback:
     destList:
@@ -87,5 +93,4 @@ sync:
 logging:
   level:
     root: info
-    com.coderman.admin.sync: info
-    com.coderman.sync: info
+    com.coderman.admin: error

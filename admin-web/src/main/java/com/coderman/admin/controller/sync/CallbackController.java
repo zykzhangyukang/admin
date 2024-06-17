@@ -2,13 +2,13 @@ package com.coderman.admin.controller.sync;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.sync.dto.CallbackPageDTO;
-import com.coderman.sync.dto.CallbackRepeatDTO;
-import com.coderman.sync.model.CallbackModel;
+import com.coderman.admin.sync.dto.CallbackPageDTO;
+import com.coderman.admin.sync.dto.CallbackRepeatDTO;
+import com.coderman.admin.sync.model.CallbackModel;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
-import com.coderman.sync.service.CallbackService;
+import com.coderman.admin.sync.service.CallbackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;

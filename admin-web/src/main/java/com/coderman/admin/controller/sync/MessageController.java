@@ -2,12 +2,12 @@ package com.coderman.admin.controller.sync;
 
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.sync.dto.MessagePageDTO;
-import com.coderman.sync.model.MqMessageModel;
+import com.coderman.admin.sync.dto.MessagePageDTO;
+import com.coderman.admin.sync.model.MqMessageModel;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
-import com.coderman.sync.service.MessageService;
+import com.coderman.admin.sync.service.MessageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -32,10 +32,6 @@ import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.service.BaseService;
-import com.coderman.service.util.UUIDUtils;
-import com.coderman.sync.sdk.util.MsgBuilder;
-import com.coderman.sync.sdk.util.ProjectEnum;
-import com.coderman.sync.sdk.util.SyncUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -577,13 +573,6 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE, "更新用户信息");
-
-        // 测试同步
-        SyncUtil.sync(
-                MsgBuilder.create("update_admin_club_user", ProjectEnum.ADMIN, ProjectEnum.CLUB)
-                        .addIntList("update_admin_club_user", Collections.singletonList(userId))
-                        .build()
-        );
 
         return ResultUtil.getSuccess();
     }
