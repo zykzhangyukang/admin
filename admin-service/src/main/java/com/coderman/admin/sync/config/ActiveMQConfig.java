@@ -59,8 +59,8 @@ public class ActiveMQConfig {
         RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         //是否在每次尝试重新发送失败后,增长这个等待时间
         redeliveryPolicy.setUseExponentialBackOff(true);
-        // 重试次数设置为8次
-        redeliveryPolicy.setMaximumRedeliveries(6);
+        // 重试次数设置为7次
+        redeliveryPolicy.setMaximumRedeliveries(16);
          // 重试间隔
         redeliveryPolicy.setRedeliveryDelay(2000);
          // 第一次重试之前的等待时间

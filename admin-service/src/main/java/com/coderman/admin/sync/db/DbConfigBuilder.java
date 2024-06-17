@@ -132,8 +132,8 @@ public class DbConfigBuilder {
         oracleConfig.setUserName(username);
         oracleConfig.setPassword(password);
 
-        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
-        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getTimeBetweenEvictionRunsMillis()).orElse(config.getMysqlTimeBetweenEvictionRunsMillis());
+        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getMinEvictableIdleTimeMillis()).orElse(config.getMysqlMinEvictableIdleTimeMillis());
         String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
         String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());
         String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
@@ -164,8 +164,8 @@ public class DbConfigBuilder {
         String timeout = Optional.ofNullable(syncDbConfig.getTimeout()).orElse(config.getCommonTimeout());
         String password = Optional.ofNullable(syncDbConfig.getPassword()).orElse(config.getMysqlPassword());
 
-        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
-        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getTimeBetweenEvictionRunsMillis()).orElse(config.getMysqlTimeBetweenEvictionRunsMillis());
+        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getMinEvictableIdleTimeMillis()).orElse(config.getMysqlMinEvictableIdleTimeMillis());
         String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());
         String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
         String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
@@ -214,9 +214,9 @@ public class DbConfigBuilder {
         String password = Optional.ofNullable(syncDbConfig.getPassword()).orElse(config.getMysqlPassword());
         String initialSize = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
 
-        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getTimeBetweenEvictionRunsMillis()).orElse(config.getMysqlTimeBetweenEvictionRunsMillis());
 
-        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getMinEvictableIdleTimeMillis()).orElse(config.getMysqlMinEvictableIdleTimeMillis());
         String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
         String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
         String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());

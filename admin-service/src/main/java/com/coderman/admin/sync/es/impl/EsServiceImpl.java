@@ -3,9 +3,9 @@ package com.coderman.admin.sync.es.impl;
 import com.alibaba.fastjson.JSON;
 import com.coderman.admin.sync.constant.PlanConstant;
 import com.coderman.admin.sync.es.EsService;
+import com.coderman.admin.sync.model.ResultModel;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
-import com.coderman.admin.sync.model.ResultModel;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -186,12 +186,15 @@ public class EsServiceImpl implements EsService {
     @Override
     public int batchDeleteSyncResult(Date ltTime, int limit) throws IOException {
 
-        int totalDeleted = 0; // 用于计算已删除的文档数量
-        int batchSize = 1000; // 每次删除 1000
+        // 用于计算已删除的文档数量
+        int totalDeleted = 0;
+        // 每次删除 1000
+        int batchSize = 1000;
 
         while (true) {
 
-            int remainingDelete = limit - totalDeleted; // 计算剩余需要删除的文档数量
+            // 计算剩余需要删除的文档数量
+            int remainingDelete = limit - totalDeleted;
 
             // 限制每次处理的文档数量不超过剩余需要删除的数量和设定的删除大小
             int currentDeleteSize = Math.min(batchSize, remainingDelete);
@@ -204,8 +207,10 @@ public class EsServiceImpl implements EsService {
 
             deleteByQueryRequest.setRefresh(true);
             deleteByQueryRequest.setQuery(boolQueryBuilder);
-            deleteByQueryRequest.setBatchSize(currentDeleteSize); // 控制每批次处理的文档数量
-            deleteByQueryRequest.setSize(currentDeleteSize); // 控制每次请求返回的文档数量
+            // 控制每批次处理的文档数量
+            deleteByQueryRequest.setBatchSize(currentDeleteSize);
+            // 控制每次请求返回的文档数量
+            deleteByQueryRequest.setMaxDocs(currentDeleteSize);
 
             BulkByScrollResponse response = this.restHighLevelClient.deleteByQuery(deleteByQueryRequest, RequestOptions.DEFAULT);
 
@@ -215,10 +220,12 @@ public class EsServiceImpl implements EsService {
                 break;
             }
 
-            totalDeleted += deletedDocuments; // 更新已删除的文档数量
+            // 更新已删除的文档数量
+            totalDeleted += deletedDocuments;
 
             if (totalDeleted >= limit) {
-                break; // 如果已删除的文档数量达到限制数量，则退出循环
+                // 如果已删除的文档数量达到限制数量，则退出循环
+                break;
             }
         }
 

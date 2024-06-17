@@ -93,4 +93,6 @@ sync:
 logging:
   level:
     root: info
-    com.coderman.admin: error
+    com.coderman.admin: info
+    springfox.documentation: error
+    org.apache.activemq: warn

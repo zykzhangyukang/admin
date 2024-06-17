@@ -38,7 +38,7 @@ public abstract class AbstractTask extends BaseTask {
         }catch (Throwable throwable){
 
             ex = throwable;
-            //log.error("执行同步SQL失败:"+syncTask.getPlanMeta().getCode(), ex);
+            log.error("执行同步SQL失败:"+syncTask.getPlanMeta().getCode(), ex);
         }
 
 

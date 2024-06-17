@@ -145,7 +145,7 @@
                         </redeliveryPolicyEntries>
                         <!-- the fallback policy for all other destinations -->
                         <defaultEntry>
-                            <redeliveryPolicy  maximumRedeliveries="6" initialRedeliveryDelay="2000" redeliveryDelay="2000" backOffMultiplier="2" useExponentialBackOff="true"  useCollisionAvoidance="false" />
+                            <redeliveryPolicy  maximumRedeliveries="16" initialRedeliveryDelay="2000" redeliveryDelay="2000" backOffMultiplier="2" useExponentialBackOff="true"  useCollisionAvoidance="false" />
                         </defaultEntry>
                     </redeliveryPolicyMap>
                 </redeliveryPolicyMap>
