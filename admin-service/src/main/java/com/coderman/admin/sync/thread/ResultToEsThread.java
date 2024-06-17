@@ -78,14 +78,14 @@ public class ResultToEsThread {
         });
 
         thread.setDaemon(true);
-        thread.setName("同步ES线程");
+        thread.setName("RESULT_TO_ES_THREAD");
         thread.start();
 
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
 
-                if ("同步ES线程".equals(t.getName())) {
+                if ("RESULT_TO_ES_THREAD".equals(t.getName())) {
 
                     init();
                 }
