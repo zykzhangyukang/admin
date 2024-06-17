@@ -56,7 +56,7 @@
                     useQuickJournal="true"
                     dataSource="#dataSource"
                     createTablesOnStartup="false"
-                    dataDirectory="${basedir}/../activemq-data" >
+                    dataDirectory="./activemq-data" >
                 <statements>
                     <statements stringIdDataType ="VARCHAR(128)" tablePrefix ="sync_"/>
                 </statements>

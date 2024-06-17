@@ -48,6 +48,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author zhangyukang
+ */
 @Service
 @Slf4j
 public class EsServiceImpl implements EsService {
@@ -55,10 +58,14 @@ public class EsServiceImpl implements EsService {
     @Resource
     private RestHighLevelClient restHighLevelClient;
 
-    // 同步系统索引别名
-    private static final String alias = "admin_alias";
+    /**
+     * 同步系统索引别名
+     */
+    private static final String ALIAS = "admin_alias";
 
-    // 当前使用的索引名
+    /**
+     * 当前使用的索引名
+     */
     public String syncResultIndexName;
 
 
@@ -134,7 +141,7 @@ public class EsServiceImpl implements EsService {
     @LogError(value = "同步记录搜索")
     public com.coderman.api.vo.ResultVO<PageVO<List<ResultModel>>> searchSyncResult(SearchSourceBuilder searchSourceBuilder) throws IOException {
 
-        SearchRequest searchRequest = new SearchRequest(alias);
+        SearchRequest searchRequest = new SearchRequest(ALIAS);
 
         searchRequest.source(searchSourceBuilder);
         searchRequest.types("resultModel");
@@ -172,7 +179,7 @@ public class EsServiceImpl implements EsService {
             }
         }
 
-        PageVO<List<ResultModel>> pageVO = new PageVO<>(hits.getTotalHits(), list);
+        PageVO<List<ResultModel>> pageVO = new PageVO<>(hits.getTotalHits().value, list);
         return ResultUtil.getSuccessPage(ResultModel.class, pageVO);
     }
 
@@ -222,7 +229,7 @@ public class EsServiceImpl implements EsService {
     @PostConstruct
     public void init() throws IOException {
 
-        GetAliasesRequest getAliasesRequest = new GetAliasesRequest(alias);
+        GetAliasesRequest getAliasesRequest = new GetAliasesRequest(ALIAS);
         boolean existsAlias = this.restHighLevelClient.indices().existsAlias(getAliasesRequest, RequestOptions.DEFAULT);
 
         if (!existsAlias) {
@@ -233,7 +240,7 @@ public class EsServiceImpl implements EsService {
         } else {
 
             // 找出最新创建的一条索引为当前索引
-            GetAliasesResponse response = this.restHighLevelClient.indices().getAlias(new GetAliasesRequest(EsServiceImpl.alias), RequestOptions.DEFAULT);
+            GetAliasesResponse response = this.restHighLevelClient.indices().getAlias(new GetAliasesRequest(EsServiceImpl.ALIAS), RequestOptions.DEFAULT);
 
             List<Long> list = new ArrayList<>();
 
@@ -322,7 +329,7 @@ public class EsServiceImpl implements EsService {
         // 创建索引
         CreateIndexRequest createIndexRequest = new CreateIndexRequest();
         createIndexRequest.index(this.syncResultIndexName);
-        createIndexRequest.alias(new Alias(EsServiceImpl.alias));
+        createIndexRequest.alias(new Alias(EsServiceImpl.ALIAS));
         createIndexRequest.mapping("resultModel", xContentBuilder);
 
         CreateIndexResponse indexResponse = this.restHighLevelClient.indices().create(createIndexRequest, RequestOptions.DEFAULT);
