@@ -22,15 +22,15 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: docker-cluster
-    hosts: es.coderman.love
-    scheme: https
+    hosts: 47.115.42.112:9200
+    scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
     connectionRequestTimeOut: 500
     maxConnectNum: 100
     maxConnectNumPerRoute: 100
     username: elastic
-    password:  zhangyukang
+    password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
   activemq:
     producer:
@@ -96,3 +96,4 @@ logging:
     com.coderman.admin: info
     springfox.documentation: error
     org.apache.activemq: warn
+    org.elasticsearch: error
