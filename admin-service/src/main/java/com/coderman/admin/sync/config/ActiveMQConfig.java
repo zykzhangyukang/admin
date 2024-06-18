@@ -59,6 +59,8 @@ public class ActiveMQConfig {
         RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         //是否在每次尝试重新发送失败后,增长这个等待时间
         redeliveryPolicy.setUseExponentialBackOff(true);
+        //是否避免消息碰撞
+        redeliveryPolicy.setUseCollisionAvoidance(true);
         // 重试次数设置为5次
         redeliveryPolicy.setMaximumRedeliveries(16);
          // 重试间隔
@@ -66,9 +68,7 @@ public class ActiveMQConfig {
          // 第一次重试之前的等待时间
         redeliveryPolicy.setInitialRedeliveryDelay(1000);
          // 指数递增系数
-        redeliveryPolicy.setBackOffMultiplier(2);
-        //是否避免消息碰撞
-        redeliveryPolicy.setUseCollisionAvoidance(false);
+        redeliveryPolicy.setBackOffMultiplier(4);
         //设置重发最大拖延时间-1 表示没有拖延只有UseExponentialBackOff(true)为true时生效
         redeliveryPolicy.setMaximumRedeliveryDelay(10000);
 
