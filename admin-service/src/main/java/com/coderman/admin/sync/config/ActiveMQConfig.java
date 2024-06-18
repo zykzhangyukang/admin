@@ -60,17 +60,17 @@ public class ActiveMQConfig {
         //是否在每次尝试重新发送失败后,增长这个等待时间
         redeliveryPolicy.setUseExponentialBackOff(true);
         // 重试次数设置为5次
-        redeliveryPolicy.setMaximumRedeliveries(5);
+        redeliveryPolicy.setMaximumRedeliveries(16);
          // 重试间隔
         redeliveryPolicy.setRedeliveryDelay(1000);
          // 第一次重试之前的等待时间
         redeliveryPolicy.setInitialRedeliveryDelay(1000);
          // 指数递增系数
-        redeliveryPolicy.setBackOffMultiplier(5);
+        redeliveryPolicy.setBackOffMultiplier(2);
         //是否避免消息碰撞
         redeliveryPolicy.setUseCollisionAvoidance(false);
         //设置重发最大拖延时间-1 表示没有拖延只有UseExponentialBackOff(true)为true时生效
-        redeliveryPolicy.setMaximumRedeliveryDelay(-1);
+        redeliveryPolicy.setMaximumRedeliveryDelay(10000);
 
         connectionFactory.setRedeliveryPolicy(redeliveryPolicy);
         return connectionFactory;
@@ -88,7 +88,8 @@ public class ActiveMQConfig {
         container.setConnectionFactory(pooledConnectionFactory);
         container.setDestinationName(queueName);
         container.setMessageListener(activeMqListener);
-        container.setConcurrentConsumers(6);
+        container.setConcurrentConsumers(4);
+        container.setMaxConcurrentConsumers(4);
         // 这里要注意activemq和springboot整合的时候，手动提交为4才生效，和原生的不一样
         container.setSessionAcknowledgeMode(4);
         container.setSessionTransacted(false);

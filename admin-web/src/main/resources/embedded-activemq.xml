@@ -31,13 +31,14 @@
             persistent="true"
             useJmx="false"
             schedulerSupport="true"
-            enableStatistics="false">
+            enableStatistics="false"
+    >
 
         <transportConnectors>
             <transportConnector name="auto+nio" uri="nio://0.0.0.0:61616"/>
         </transportConnectors>
 
-        <!-- 使用jdbc的方式写消息
+        <!-- 使用jdbc的方式写消息   -->
         <persistenceAdapter>
             <jdbcPersistenceAdapter dataSource="#dataSource" createTablesOnStartup="false">
                 <statements>
@@ -45,9 +46,9 @@
                 </statements>
             </jdbcPersistenceAdapter>
         </persistenceAdapter>
-        -->
 
-        <!-- 使用jdbc加缓冲区的方式写消息  -->
+
+        <!-- 使用jdbc加缓冲区的方式写消息
         <persistenceFactory>
             <journalPersistenceAdapterFactory
                     journalLogFiles="4"
@@ -62,6 +63,7 @@
                 </statements>
             </journalPersistenceAdapterFactory>
         </persistenceFactory>
+         -->
 
 
         <destinationPolicy>
@@ -145,7 +147,7 @@
                         </redeliveryPolicyEntries>
                         <!-- the fallback policy for all other destinations -->
                         <defaultEntry>
-                            <redeliveryPolicy  maximumRedeliveries="5" initialRedeliveryDelay="1000" redeliveryDelay="1000" backOffMultiplier="5" maximumRedeliveryDelay="-1" useExponentialBackOff="true"  useCollisionAvoidance="false" />
+                            <redeliveryPolicy  maximumRedeliveries="16" initialRedeliveryDelay="1000" redeliveryDelay="1000" backOffMultiplier="2" maximumRedeliveryDelay="10000" useExponentialBackOff="true"  useCollisionAvoidance="false" />
                         </defaultEntry>
                     </redeliveryPolicyMap>
                 </redeliveryPolicyMap>
