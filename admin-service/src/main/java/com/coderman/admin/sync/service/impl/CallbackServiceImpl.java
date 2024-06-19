@@ -250,7 +250,7 @@ public class CallbackServiceImpl implements CallbackService {
         try {
             count = jdbcTemplate.queryForObject(sql, paramList.toArray(), Integer.class);
         } catch (Exception e) {
-            return ResultUtil.getWarnPage(CallbackModel.class, "列表查询失败！"+ ExceptionUtils.getRootCauseMessage(e));
+            return ResultUtil.getFailPage(CallbackModel.class, ExceptionUtils.getRootCauseMessage(e));
         }
 
         List<CallbackModel> list = new ArrayList<>();

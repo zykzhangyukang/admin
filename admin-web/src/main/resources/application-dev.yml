@@ -94,6 +94,3 @@ logging:
   level:
     root: info
     com.coderman.admin: info
-    springfox.documentation: error
-    org.apache.activemq: warn
-    org.elasticsearch: error

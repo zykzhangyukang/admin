@@ -144,7 +144,6 @@ public class EsServiceImpl implements EsService {
         SearchRequest searchRequest = new SearchRequest(ALIAS);
 
         searchRequest.source(searchSourceBuilder);
-        searchRequest.types("resultModel");
         SearchResponse response = this.restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
 
         SearchHits hits = response.getHits();
