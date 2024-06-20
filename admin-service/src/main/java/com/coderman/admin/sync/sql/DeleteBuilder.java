@@ -12,9 +12,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author zhangyukang
+ */
 @Data
 @Slf4j
-@SuppressWarnings("all")
 public class DeleteBuilder {
 
     private String dbType;

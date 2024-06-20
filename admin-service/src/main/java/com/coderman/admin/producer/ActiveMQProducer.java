@@ -42,7 +42,6 @@ public class ActiveMQProducer {
         JmsTemplate jmsTemplate = SpringContextUtil.getBean(JmsTemplate.class);
         ActiveMQTextMessage message = new ActiveMQTextMessage();
         message.setText(messageContent);
-        message.setJMSMessageID("MQ"+UUIDUtils.getPrimaryValue());
         jmsTemplate.convertAndSend(message);
         return message;
     }

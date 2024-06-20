@@ -15,6 +15,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author zhangyukang
+ */
 @Data
 public abstract class AbstractExecutor {
 

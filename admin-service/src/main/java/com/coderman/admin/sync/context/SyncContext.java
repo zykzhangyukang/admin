@@ -25,40 +25,53 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author zhangyukang
+ */
 @Data
 @Lazy(value = false)
 @Component
 public class SyncContext {
 
     private final static Logger logger = LoggerFactory.getLogger(SyncContext.class);
-
-    // 同步重试线程
+    /**
+     * 同步重试线程
+     */
     @Resource
     private SyncRetryThread syncRetryThread;
-
-    // 同步es线程
+    /**
+     * 同步es线程
+     */
     @Resource
     private ResultToEsThread resultToEsThread;
-
-    // 同步上下文
+    /**
+     * 同步上下文
+     */
     private static SyncContext syncContext;
 
-    // 项目代号与数据库之间的关系
+    /**
+     * 项目代号与数据库之间的关系
+     */
     private Map<String, String> projectDbMap = new ConcurrentHashMap<>();
-
-    // 同步table原始数据
+    /**
+     * 同步table原始数据
+     */
     private Map<String, TableMeta> tableMetaMap = new ConcurrentHashMap<>();
-
-    // 数据库名称与类型之间的关系
+    /**
+     * 数据库名称与类型之间的关系
+     */
     private Map<String, String> dbTypeMap = new ConcurrentHashMap<>();
-
-    // 同步计划原始数据
+    /**
+     * 同步计划原始数据
+     */
     private Map<String, PlanMeta> planMetaMap = new ConcurrentHashMap<>();
-
-    // 是否锁定同步任务,默认锁定
+    /**
+     * 是否锁定同步任务,默认锁定
+     */
     private volatile boolean lockSyncTask = true;
-
-    // 正在进行中的同步任务数量
+    /**
+     * 正在进行中的同步任务数量
+     */
     private AtomicInteger syncTaskCount = new AtomicInteger(0);
 
 

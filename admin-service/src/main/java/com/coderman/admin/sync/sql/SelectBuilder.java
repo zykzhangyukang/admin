@@ -10,6 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+/**
+ * @author zhangyukang
+ */
 @Slf4j
 @Data
 public class SelectBuilder {

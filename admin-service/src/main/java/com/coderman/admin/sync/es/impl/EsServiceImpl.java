@@ -70,7 +70,7 @@ public class EsServiceImpl implements EsService {
 
 
     @Override
-    @LogError(value = "批量查询同步记录")
+    @LogError(value = "批量插入同步记录")
     public boolean batchInsertSyncResult(List<ResultModel> resultModelList) throws IOException {
 
         boolean result = false;
@@ -78,7 +78,7 @@ public class EsServiceImpl implements EsService {
 
         BulkRequest bulkRequest = new BulkRequest();
         for (ResultModel resultModel : resultModelList) {
-            IndexRequest indexRequest = new IndexRequest(this.syncResultIndexName).type("resultModel");
+            IndexRequest indexRequest = new IndexRequest(this.syncResultIndexName);
             indexRequest.source(JSON.toJSONString(resultModel), XContentType.JSON);
             indexRequest.id(resultModel.getUuid());
             bulkRequest.add(indexRequest);
