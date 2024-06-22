@@ -87,7 +87,7 @@ public class EsServiceImpl implements EsService {
         BulkResponse bulkResponse = this.restHighLevelClient.bulk(bulkRequest, RequestOptions.DEFAULT);
         if (bulkResponse.hasFailures()) {
 
-            log.error("批量插入同步记录到es错误:" + bulkResponse.buildFailureMessage());
+            log.error("批量插入同步记录到es错误:{}", bulkResponse.buildFailureMessage());
 
         } else {
 
@@ -103,7 +103,7 @@ public class EsServiceImpl implements EsService {
                 namedParameterJdbcTemplate.update("update sync_result set sync_To_es = 1 where uuid in (:params)", params);
             }
 
-            log.info("自动刷新 - 同步计划到Es,总数:{}, 耗时:{} ms", uuidList.size() , System.currentTimeMillis() - startTime);
+            log.info("同步记录写入Es, 总数:{}, 耗时:{} ms", uuidList.size() , System.currentTimeMillis() - startTime);
         }
 
         return result;
@@ -122,7 +122,7 @@ public class EsServiceImpl implements EsService {
         updateByQuery.setQuery(boolQueryBuilder);
 
         updateByQuery.setBatchSize(100);
-        updateByQuery.setSize(100);
+        updateByQuery.setMaxDocs(100);
         updateByQuery.setScript(
                 new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG,
                         "ctx._source.status = 'success';" +
@@ -221,7 +221,7 @@ public class EsServiceImpl implements EsService {
             }
 
             // 更新已删除的文档数量
-            totalDeleted += deletedDocuments;
+            totalDeleted += (int) deletedDocuments;
 
             if (totalDeleted >= limit) {
                 // 如果已删除的文档数量达到限制数量，则退出循环

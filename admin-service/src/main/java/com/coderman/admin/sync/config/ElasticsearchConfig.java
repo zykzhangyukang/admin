@@ -7,6 +7,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author zhangyukang
@@ -74,11 +76,16 @@ public class ElasticsearchConfig {
             return requestConfigBuilder;
         });
 
-        // 连接数配置
         builder.setHttpClientConfigCallback(httpClientBuilder -> {
+            // 连接数配置
             httpClientBuilder.setMaxConnTotal(maxConnectNum);
             httpClientBuilder.setMaxConnPerRoute(maxConnectNumPerRoute);
             httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+
+            //显式设置keepAliveStrategy (TCP探活)
+            httpClientBuilder.setKeepAliveStrategy((httpResponse,httpContext) -> TimeUnit.MINUTES.toMillis(3));
+            //显式开启tcp keepalive
+            httpClientBuilder.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(true).build());
             return httpClientBuilder;
         });
 

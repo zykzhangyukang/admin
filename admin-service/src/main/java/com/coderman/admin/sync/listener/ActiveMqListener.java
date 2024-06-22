@@ -68,7 +68,7 @@ public class ActiveMqListener implements SessionAwareMessageListener<TextMessage
 
         } catch (Exception e) {
 
-            log.error("消息者监听器消费失败：{}", e.getMessage());
+            log.error("ActiveMQ消息者监听器消费失败：{}", e.getMessage());
             session.recover();
         }
     }

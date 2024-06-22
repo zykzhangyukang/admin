@@ -94,3 +94,4 @@ logging:
   level:
     root: info
     com.coderman.admin: info
+    org.elasticsearch: debug

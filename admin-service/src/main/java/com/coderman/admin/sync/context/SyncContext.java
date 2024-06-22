@@ -2,7 +2,6 @@ package com.coderman.admin.sync.context;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.coderman.service.util.SpringContextUtil;
 import com.coderman.admin.sync.constant.SyncConstant;
 import com.coderman.admin.sync.model.ResultModel;
 import com.coderman.admin.sync.plan.meta.PlanMeta;
@@ -11,6 +10,7 @@ import com.coderman.admin.sync.task.SyncTask;
 import com.coderman.admin.sync.task.base.BaseTask;
 import com.coderman.admin.sync.thread.ResultToEsThread;
 import com.coderman.admin.sync.thread.SyncRetryThread;
+import com.coderman.service.util.SpringContextUtil;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -48,7 +48,6 @@ public class SyncContext {
      * 同步上下文
      */
     private static SyncContext syncContext;
-
     /**
      * 项目代号与数据库之间的关系
      */
