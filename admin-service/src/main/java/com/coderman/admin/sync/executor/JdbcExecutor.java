@@ -159,23 +159,20 @@ public class JdbcExecutor extends AbstractExecutor {
 
     private void printLog(String sql, List<Object[]> paramList) {
 
-        if (log.isDebugEnabled()) {
+        StringBuilder stringBuilder = new StringBuilder();
 
-            StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("执行sql语句->");
+        stringBuilder.append(sql);
 
-            stringBuilder.append("执行sql语句->");
-            stringBuilder.append(sql);
-
-            for (Object[] obj : paramList) {
+        for (Object[] obj : paramList) {
 
 
-                stringBuilder.append("[")
-                        .append(StringUtils.join(obj, ","))
-                        .append("]");
-            }
-
-            log.debug(stringBuilder.toString());
+            stringBuilder.append("[")
+                    .append(StringUtils.join(obj, ","))
+                    .append("]");
         }
+
+        log.info(stringBuilder.toString());
 
     }
 }

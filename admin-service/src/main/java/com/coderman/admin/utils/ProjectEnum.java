@@ -8,6 +8,11 @@ public enum ProjectEnum {
     ADMIN("admin"),
 
     /**
+     * 后台sync系统
+     */
+    ADMIN_SYNC("admin_sync"),
+
+    /**
      * 社区系统
      */
     CLUB("club");

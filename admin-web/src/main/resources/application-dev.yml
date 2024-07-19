@@ -72,10 +72,10 @@ sync:
       username: root
       password: DES@99D5518076FE8F32214D66F4B59766B7
 
-    - dbname: club_dev
-      url: jdbc:mysql://localhost:3306/club_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    - dbname: admin_dev_sync
+      url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
       username: root
-      password: DES@99D5518076FE8F32214D66F4B59766B7
+      password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
 
 #    - dbname:  ecp_cart_dev
 #      url: 127.0.0.1:27017
@@ -90,8 +90,17 @@ sync:
 #      password:  DES@99D5518076FE8F32214D66F4B59766B7
 #      username: root
 
+# job
+job:
+  enable: false
+  app-name: ${spring.application.name}
+  admin-addresses: http://192.168.2.97:8999/xxl-job-admin
+  port: 9991
+  log-retention-days: 30
+  log-path: D:\java\logs\xxl-job
+
 logging:
   level:
     root: info
     com.coderman.admin: info
-    org.elasticsearch: debug
+    org.elasticsearch: warn

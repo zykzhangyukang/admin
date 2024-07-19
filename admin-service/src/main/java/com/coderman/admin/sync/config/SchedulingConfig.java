@@ -2,6 +2,7 @@ package com.coderman.admin.sync.config;
 
 import com.coderman.admin.sync.jobhandler.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,6 +13,7 @@ import javax.annotation.Resource;
 @EnableScheduling
 @Configuration
 @Component
+@ConditionalOnProperty(prefix = "job",name = "enable",havingValue = "false")
 public class SchedulingConfig {
 
     @Resource

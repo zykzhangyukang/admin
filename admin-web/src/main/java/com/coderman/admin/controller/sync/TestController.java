@@ -11,7 +11,7 @@ import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,15 +27,17 @@ import java.util.Collections;
 public class TestController {
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "同步测试")
-    @PostMapping(value = "")
+    @GetMapping(value = "")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
     })
     public ResultVO<Void> test() {
-        PlanMsg build = MsgBuilder.create("update_admin_club_resc", ProjectEnum.ADMIN, ProjectEnum.CLUB)
-                .addIntList("update_admin_club_resc", Collections.singletonList(1))
-                .build();
-        SyncUtil.sync(build);
+        for (int i = 0; i < 500; i++) {
+            PlanMsg build = MsgBuilder.create("update_admin_sync_update_resc", ProjectEnum.ADMIN, ProjectEnum.ADMIN_SYNC)
+                    .addIntList("update_admin_sync_update_resc", Collections.singletonList(1))
+                    .build();
+            SyncUtil.sync(build);
+        }
         return ResultUtil.getSuccess();
     }
 
