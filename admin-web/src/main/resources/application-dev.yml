@@ -7,6 +7,9 @@ spring:
     username: root
     password: DES@99D5518076FE8F32214D66F4B59766B7
     url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    schema: classpath:db/schema.sql
+    data: classpath:db/data.sql
+    initialization-mode: never
   redis:
     host: 127.0.0.1
     port: 6379
