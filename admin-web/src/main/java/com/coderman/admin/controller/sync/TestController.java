@@ -32,12 +32,10 @@ public class TestController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
     })
     public ResultVO<Void> test() {
-        for (int i = 0; i < 500; i++) {
-            PlanMsg build = MsgBuilder.create("update_admin_sync_update_resc", ProjectEnum.ADMIN, ProjectEnum.ADMIN_SYNC)
-                    .addIntList("update_admin_sync_update_resc", Collections.singletonList(1))
-                    .build();
-            SyncUtil.sync(build);
-        }
+        PlanMsg build = MsgBuilder.create("update_admin_sync_update_resc", ProjectEnum.ADMIN, ProjectEnum.ADMIN_SYNC)
+                .addIntList("update_admin_sync_update_resc", Collections.singletonList(1))
+                .build();
+        SyncUtil.sync(build);
         return ResultUtil.getSuccess();
     }
 

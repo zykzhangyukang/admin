@@ -1,6 +1,6 @@
 package com.coderman.admin.sync.db;
 
-import com.coderman.admin.sync.config.SyncDBConfig;
+import com.coderman.admin.sync.config.SyncJdbcConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,14 +14,14 @@ import java.util.Optional;
  */
 public class DbConfigBuilder {
 
-    private static SyncDBConfig config;
+    private static SyncJdbcConfig syncJdbcConfig;
 
 
-    public static List<AbstractDbConfig> build(SyncDBConfig syncDbConfig) {
+    public static List<AbstractDbConfig> build(SyncJdbcConfig syncJdbcConfig) {
 
-        config = syncDbConfig;
+        DbConfigBuilder.syncJdbcConfig = syncJdbcConfig;
 
-        List<SyncDBConfig.SyncDbConfig> dbList = syncDbConfig.getDbList();
+        List<SyncJdbcConfig.DbConfig> dbList = syncJdbcConfig.getDbList();
 
         if(CollectionUtils.isEmpty(dbList)){
 
@@ -31,7 +31,7 @@ public class DbConfigBuilder {
         List<AbstractDbConfig> configList = new ArrayList<>(dbList.size());
 
 
-        for (SyncDBConfig.SyncDbConfig datasource : dbList) {
+        for (SyncJdbcConfig.DbConfig datasource : dbList) {
 
             String url = datasource.getUrl();
             String type = datasource.getType();
@@ -65,20 +65,20 @@ public class DbConfigBuilder {
         return configList;
     }
 
-    private static MongoConfig getMongoConfig(SyncDBConfig.SyncDbConfig syncDbConfig ) {
+    private static MongoConfig getMongoConfig(SyncJdbcConfig.DbConfig dbConfig) {
 
         // mongo 配置
-        String dbname = syncDbConfig.getDbname();
-        String url = syncDbConfig.getUrl();
-        String username = syncDbConfig.getUsername();
-        String password = syncDbConfig.getPassword();
-        Integer connectionsPerHost = syncDbConfig.getConnectionsPerHost();
-        Integer maxWaitTime = syncDbConfig.getMaxWaitTime();
-        Integer connectTimeout = syncDbConfig.getConnectTimeout();
-        Integer serverSelectionTimeout = syncDbConfig.getServerSelectionTimeout();
-        String socketKeepAlive = syncDbConfig.getSocketKeepAlive();
-        Integer socketTimeout = syncDbConfig.getSocketTimeout();
-        Integer threadsAllowedToBlockForConnectionMultiplier = syncDbConfig.getThreadsAllowedToBlockForConnectionMultiplier();
+        String dbname = dbConfig.getDbname();
+        String url = dbConfig.getUrl();
+        String username = dbConfig.getUsername();
+        String password = dbConfig.getPassword();
+        Integer connectionsPerHost = dbConfig.getConnectionsPerHost();
+        Integer maxWaitTime = dbConfig.getMaxWaitTime();
+        Integer connectTimeout = dbConfig.getConnectTimeout();
+        Integer serverSelectionTimeout = dbConfig.getServerSelectionTimeout();
+        String socketKeepAlive = dbConfig.getSocketKeepAlive();
+        Integer socketTimeout = dbConfig.getSocketTimeout();
+        Integer threadsAllowedToBlockForConnectionMultiplier = dbConfig.getThreadsAllowedToBlockForConnectionMultiplier();
 
 
         // 跳过sync的配置
@@ -104,22 +104,22 @@ public class DbConfigBuilder {
     }
 
 
-    private static AbstractDbConfig getOracleDbConfig(SyncDBConfig.SyncDbConfig syncDbConfig) {
+    private static AbstractDbConfig getOracleDbConfig(SyncJdbcConfig.DbConfig dbConfig) {
 
         OracleConfig oracleConfig = new OracleConfig();
 
-        oracleConfig.setBeanId(syncDbConfig.getDbname());
+        oracleConfig.setBeanId(dbConfig.getDbname());
         oracleConfig.setDriverClassName(OracleConfig.DRIVER_ORACLE);
 
 
         // 读取配置
-        String maxIdle = Optional.ofNullable(syncDbConfig.getMaxIdle()).orElse(config.getCommonMaxIdle());
-        String maxActive = Optional.ofNullable(syncDbConfig.getMaxActive()).orElse(config.getCommonMaxActive());
-        String minIdle = Optional.ofNullable(syncDbConfig.getMinIdle()).orElse(config.getCommonMinIdle());
-        String maxWait = Optional.ofNullable(syncDbConfig.getMaxWait()).orElse(config.getCommonMaxWait());
-        String username = Optional.ofNullable(syncDbConfig.getUsername()).orElse(config.getMysqlUsername());
-        String timeout = Optional.ofNullable(syncDbConfig.getTimeout()).orElse(config.getCommonTimeout());
-        String password = Optional.ofNullable(syncDbConfig.getPassword()).orElse(config.getMysqlPassword());
+        String maxIdle = Optional.ofNullable(dbConfig.getMaxIdle()).orElse(syncJdbcConfig.getCommonMaxIdle());
+        String maxActive = Optional.ofNullable(dbConfig.getMaxActive()).orElse(syncJdbcConfig.getCommonMaxActive());
+        String minIdle = Optional.ofNullable(dbConfig.getMinIdle()).orElse(syncJdbcConfig.getCommonMinIdle());
+        String maxWait = Optional.ofNullable(dbConfig.getMaxWait()).orElse(syncJdbcConfig.getCommonMaxWait());
+        String username = Optional.ofNullable(dbConfig.getUsername()).orElse(syncJdbcConfig.getMysqlUsername());
+        String timeout = Optional.ofNullable(dbConfig.getTimeout()).orElse(syncJdbcConfig.getCommonTimeout());
+        String password = Optional.ofNullable(dbConfig.getPassword()).orElse(syncJdbcConfig.getMysqlPassword());
 
 
         oracleConfig.setMaxIdle(maxIdle);
@@ -128,15 +128,15 @@ public class DbConfigBuilder {
         oracleConfig.setMinIdle(minIdle);
         oracleConfig.setTransTimeout(timeout);
 
-        oracleConfig.setUrl(syncDbConfig.getUrl());
+        oracleConfig.setUrl(dbConfig.getUrl());
         oracleConfig.setUserName(username);
         oracleConfig.setPassword(password);
 
-        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getTimeBetweenEvictionRunsMillis()).orElse(config.getMysqlTimeBetweenEvictionRunsMillis());
-        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getMinEvictableIdleTimeMillis()).orElse(config.getMysqlMinEvictableIdleTimeMillis());
-        String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
-        String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());
-        String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(dbConfig.getTimeBetweenEvictionRunsMillis()).orElse(syncJdbcConfig.getMysqlTimeBetweenEvictionRunsMillis());
+        String minEvictableIdleTimeMillis = Optional.ofNullable(dbConfig.getMinEvictableIdleTimeMillis()).orElse(syncJdbcConfig.getMysqlMinEvictableIdleTimeMillis());
+        String testOnBorrow = Optional.ofNullable(dbConfig.getTestOnBorrow()).orElse(syncJdbcConfig.getMysqlTestOnBorrow());
+        String testOnReturn = Optional.ofNullable(dbConfig.getTestOnReturn()).orElse(syncJdbcConfig.getMysqlTestOnReturn());
+        String testWhileIdle = Optional.ofNullable(dbConfig.getTestWhileIdle()).orElse(syncJdbcConfig.getMysqlTestWhileIdle());
 
 
         oracleConfig.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
@@ -148,27 +148,27 @@ public class DbConfigBuilder {
         return oracleConfig;
     }
 
-    private static AbstractDbConfig getMSSQLDbConfig(SyncDBConfig.SyncDbConfig syncDbConfig, String driverClassName) {
+    private static AbstractDbConfig getMSSQLDbConfig(SyncJdbcConfig.DbConfig dbConfig, String driverClassName) {
 
         MSSQLConfig mssqlConfig = new MSSQLConfig();
 
         mssqlConfig.setDriverClassName(driverClassName);
-        mssqlConfig.setBeanId(syncDbConfig.getDbname());
+        mssqlConfig.setBeanId(dbConfig.getDbname());
 
         // 读取配置
-        String maxActive = Optional.ofNullable(syncDbConfig.getMaxActive()).orElse(config.getCommonMaxActive());
-        String maxIdle = Optional.ofNullable(syncDbConfig.getMaxIdle()).orElse(config.getCommonMaxIdle());
-        String maxWait = Optional.ofNullable(syncDbConfig.getMaxWait()).orElse(config.getCommonMaxWait());
-        String username = Optional.ofNullable(syncDbConfig.getUsername()).orElse(config.getMysqlUsername());
-        String minIdle = Optional.ofNullable(syncDbConfig.getMinIdle()).orElse(config.getCommonMinIdle());
-        String timeout = Optional.ofNullable(syncDbConfig.getTimeout()).orElse(config.getCommonTimeout());
-        String password = Optional.ofNullable(syncDbConfig.getPassword()).orElse(config.getMysqlPassword());
+        String maxActive = Optional.ofNullable(dbConfig.getMaxActive()).orElse(syncJdbcConfig.getCommonMaxActive());
+        String maxIdle = Optional.ofNullable(dbConfig.getMaxIdle()).orElse(syncJdbcConfig.getCommonMaxIdle());
+        String maxWait = Optional.ofNullable(dbConfig.getMaxWait()).orElse(syncJdbcConfig.getCommonMaxWait());
+        String username = Optional.ofNullable(dbConfig.getUsername()).orElse(syncJdbcConfig.getMysqlUsername());
+        String minIdle = Optional.ofNullable(dbConfig.getMinIdle()).orElse(syncJdbcConfig.getCommonMinIdle());
+        String timeout = Optional.ofNullable(dbConfig.getTimeout()).orElse(syncJdbcConfig.getCommonTimeout());
+        String password = Optional.ofNullable(dbConfig.getPassword()).orElse(syncJdbcConfig.getMysqlPassword());
 
-        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getTimeBetweenEvictionRunsMillis()).orElse(config.getMysqlTimeBetweenEvictionRunsMillis());
-        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getMinEvictableIdleTimeMillis()).orElse(config.getMysqlMinEvictableIdleTimeMillis());
-        String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());
-        String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
-        String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(dbConfig.getTimeBetweenEvictionRunsMillis()).orElse(syncJdbcConfig.getMysqlTimeBetweenEvictionRunsMillis());
+        String minEvictableIdleTimeMillis = Optional.ofNullable(dbConfig.getMinEvictableIdleTimeMillis()).orElse(syncJdbcConfig.getMysqlMinEvictableIdleTimeMillis());
+        String testOnReturn = Optional.ofNullable(dbConfig.getTestOnReturn()).orElse(syncJdbcConfig.getMysqlTestOnReturn());
+        String testOnBorrow = Optional.ofNullable(dbConfig.getTestOnBorrow()).orElse(syncJdbcConfig.getMysqlTestOnBorrow());
+        String testWhileIdle = Optional.ofNullable(dbConfig.getTestWhileIdle()).orElse(syncJdbcConfig.getMysqlTestWhileIdle());
 
 
         mssqlConfig.setMaxActive(maxActive);
@@ -177,13 +177,13 @@ public class DbConfigBuilder {
         mssqlConfig.setMaxWait(maxWait);
         mssqlConfig.setTransTimeout(timeout);
 
-        mssqlConfig.setUrl(syncDbConfig.getUrl());
+        mssqlConfig.setUrl(dbConfig.getUrl());
         mssqlConfig.setUserName(username);
         mssqlConfig.setPassword(password);
 
-        mssqlConfig.setLogAbandoned(syncDbConfig.getLogAbandoned());
-        mssqlConfig.setRemoveAbandoned(syncDbConfig.getRemoveAbandoned());
-        mssqlConfig.setRemoveAbandonedTimeout(syncDbConfig.getRemoveAbandonedTimeout());
+        mssqlConfig.setLogAbandoned(dbConfig.getLogAbandoned());
+        mssqlConfig.setRemoveAbandoned(dbConfig.getRemoveAbandoned());
+        mssqlConfig.setRemoveAbandonedTimeout(dbConfig.getRemoveAbandonedTimeout());
 
         mssqlConfig.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
         mssqlConfig.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
@@ -195,31 +195,31 @@ public class DbConfigBuilder {
 
     }
 
-    private static AbstractDbConfig getMySQLConfig(SyncDBConfig.SyncDbConfig syncDbConfig) {
+    private static AbstractDbConfig getMySQLConfig(SyncJdbcConfig.DbConfig dbConfig) {
 
         MySQLConfig mySQLConfig = new MySQLConfig();
 
-        String key = syncDbConfig.getDbname();
+        String key = dbConfig.getDbname();
 
         // 注册bean key
         mySQLConfig.setBeanId(key);
 
         // 读取配置
-        String maxActive = Optional.ofNullable(syncDbConfig.getMaxActive()).orElse(config.getCommonMaxActive());
-        String maxIdle = Optional.ofNullable(syncDbConfig.getMaxIdle()).orElse(config.getCommonMaxIdle());
-        String maxWait = Optional.ofNullable(syncDbConfig.getMaxWait()).orElse(config.getCommonMaxWait());
-        String minIdle = Optional.ofNullable(syncDbConfig.getMinIdle()).orElse(config.getCommonMinIdle());
-        String timeout = Optional.ofNullable(syncDbConfig.getTimeout()).orElse(config.getCommonTimeout());
-        String username = Optional.ofNullable(syncDbConfig.getUsername()).orElse(config.getMysqlUsername());
-        String password = Optional.ofNullable(syncDbConfig.getPassword()).orElse(config.getMysqlPassword());
-        String initialSize = Optional.ofNullable(syncDbConfig.getInitialSize()).orElse(config.getMysqlInitialSize());
+        String maxActive = Optional.ofNullable(dbConfig.getMaxActive()).orElse(syncJdbcConfig.getCommonMaxActive());
+        String maxIdle = Optional.ofNullable(dbConfig.getMaxIdle()).orElse(syncJdbcConfig.getCommonMaxIdle());
+        String maxWait = Optional.ofNullable(dbConfig.getMaxWait()).orElse(syncJdbcConfig.getCommonMaxWait());
+        String minIdle = Optional.ofNullable(dbConfig.getMinIdle()).orElse(syncJdbcConfig.getCommonMinIdle());
+        String timeout = Optional.ofNullable(dbConfig.getTimeout()).orElse(syncJdbcConfig.getCommonTimeout());
+        String username = Optional.ofNullable(dbConfig.getUsername()).orElse(syncJdbcConfig.getMysqlUsername());
+        String password = Optional.ofNullable(dbConfig.getPassword()).orElse(syncJdbcConfig.getMysqlPassword());
+        String initialSize = Optional.ofNullable(dbConfig.getInitialSize()).orElse(syncJdbcConfig.getMysqlInitialSize());
 
-        String timeBetweenEvictionRunsMillis = Optional.ofNullable(syncDbConfig.getTimeBetweenEvictionRunsMillis()).orElse(config.getMysqlTimeBetweenEvictionRunsMillis());
+        String timeBetweenEvictionRunsMillis = Optional.ofNullable(dbConfig.getTimeBetweenEvictionRunsMillis()).orElse(syncJdbcConfig.getMysqlTimeBetweenEvictionRunsMillis());
 
-        String minEvictableIdleTimeMillis = Optional.ofNullable(syncDbConfig.getMinEvictableIdleTimeMillis()).orElse(config.getMysqlMinEvictableIdleTimeMillis());
-        String testOnBorrow = Optional.ofNullable(syncDbConfig.getTestOnBorrow()).orElse(config.getMysqlTestOnBorrow());
-        String testWhileIdle = Optional.ofNullable(syncDbConfig.getTestWhileIdle()).orElse(config.getMysqlTestWhileIdle());
-        String testOnReturn = Optional.ofNullable(syncDbConfig.getTestOnReturn()).orElse(config.getMysqlTestOnReturn());
+        String minEvictableIdleTimeMillis = Optional.ofNullable(dbConfig.getMinEvictableIdleTimeMillis()).orElse(syncJdbcConfig.getMysqlMinEvictableIdleTimeMillis());
+        String testOnBorrow = Optional.ofNullable(dbConfig.getTestOnBorrow()).orElse(syncJdbcConfig.getMysqlTestOnBorrow());
+        String testWhileIdle = Optional.ofNullable(dbConfig.getTestWhileIdle()).orElse(syncJdbcConfig.getMysqlTestWhileIdle());
+        String testOnReturn = Optional.ofNullable(dbConfig.getTestOnReturn()).orElse(syncJdbcConfig.getMysqlTestOnReturn());
 
 
         mySQLConfig.setMaxActive(maxActive);
@@ -228,7 +228,7 @@ public class DbConfigBuilder {
         mySQLConfig.setMinIdle(minIdle);
         mySQLConfig.setTransTimeout(timeout);
 
-        mySQLConfig.setUrl(syncDbConfig.getUrl());
+        mySQLConfig.setUrl(dbConfig.getUrl());
         mySQLConfig.setUserName(username);
         mySQLConfig.setPassword(password);
 

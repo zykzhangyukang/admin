@@ -1,8 +1,8 @@
 package com.coderman.admin.sync.jobhandler;
 
-import com.coderman.admin.sync.context.SyncContext;
+import com.coderman.admin.sync.config.SyncDbConfig;
 import com.coderman.admin.sync.constant.SyncConstant;
-import com.coderman.service.config.PropertyConfig;
+import com.coderman.admin.sync.context.SyncContext;
 import com.coderman.admin.sync.executor.AbstractExecutor;
 import com.coderman.admin.sync.sql.meta.SqlMeta;
 import com.coderman.admin.sync.task.SyncConvert;
@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -28,6 +29,9 @@ import java.util.*;
 @Slf4j
 public class CleanMessageHandler extends IJobHandler {
 
+    @Resource
+    private SyncDbConfig syncDbConfig;
+
     @SneakyThrows
     @Override
     public ReturnT<String> execute(String param) {
@@ -37,8 +41,8 @@ public class CleanMessageHandler extends IJobHandler {
 
         Set<String> databaseSets = new HashSet<>();
 
-        List<String> messageDatabases = Arrays.asList(StringUtils.split(PropertyConfig.getConfigValue("pub_mq_message.db"), ","));
-        List<String> callbackDatabases= Arrays.asList(StringUtils.split(PropertyConfig.getConfigValue("pub_callback.db"), ","));
+        List<String> messageDatabases = Arrays.asList(StringUtils.split(syncDbConfig.getPubMqMessage(), ","));
+        List<String> callbackDatabases= Arrays.asList(StringUtils.split(syncDbConfig.getPubCallback(), ","));
 
         databaseSets.addAll(messageDatabases);
         databaseSets.addAll(callbackDatabases);

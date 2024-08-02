@@ -12,7 +12,7 @@ import java.util.List;
 @Configuration
 @ConfigurationProperties(prefix = "sync.jdbc")
 @Data
-public class SyncDBConfig {
+public class SyncJdbcConfig {
 
     private String commonMaxIdle;
     private String commonMaxWait;
@@ -30,7 +30,7 @@ public class SyncDBConfig {
     private String mysqlTestWhileIdle;
 
     @Data
-    public  static  final class SyncDbConfig {
+    public  static  final class DbConfig {
         private String dbname;
         private String url;
         private String type;
@@ -77,7 +77,7 @@ public class SyncDBConfig {
     }
 
 
-    private List<SyncDbConfig> dbList;
+    private List<DbConfig> dbList;
 }
 
 

@@ -1,6 +1,6 @@
 package com.coderman.admin.sync.init;
 
-import com.coderman.admin.sync.config.SyncDBConfig;
+import com.coderman.admin.sync.config.SyncJdbcConfig;
 import com.coderman.admin.sync.context.SyncContext;
 import com.coderman.admin.sync.db.*;
 import com.coderman.admin.sync.executor.AbstractExecutor;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class DataSourceInitializer {
 
     @Resource
-    private SyncDBConfig config;
+    private SyncJdbcConfig jdbcConfig;
 
     /**
      * 初始化数据源
@@ -31,7 +31,7 @@ public class DataSourceInitializer {
     public void init() {
 
 
-        List<AbstractDbConfig> dbConfigList = DbConfigBuilder.build(config);
+        List<AbstractDbConfig> dbConfigList = DbConfigBuilder.build(jdbcConfig);
 
         if (CollectionUtils.isEmpty(dbConfigList)) {
             return;

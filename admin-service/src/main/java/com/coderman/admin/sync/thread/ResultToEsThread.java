@@ -113,8 +113,6 @@ public class ResultToEsThread {
     @PreDestroy
     private void flushInfo() throws Exception {
 
-        log.error("系统关闭,处理内存数据...");
-
         loop = false;
 
         Thread.sleep(1200);

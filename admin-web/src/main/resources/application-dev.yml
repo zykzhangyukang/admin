@@ -9,7 +9,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
     schema: classpath:db/schema.sql
     data: classpath:db/data.sql
-    initialization-mode: never
+    initialization-mode: always
   redis:
     host: 127.0.0.1
     port: 6379
@@ -18,10 +18,11 @@ spring:
       pool:
         size: 4
 
-#服务端配置
-pub_mq_message.db: admin_dev
-pub_callback.db: club_dev
 sync:
+  # 回调&&发送库
+  db:
+    pub-mq-message: admin_dev
+    pub-callback: admin_dev_sync
   # es 配置
   elasticsearch:
     clusterName: docker-cluster
