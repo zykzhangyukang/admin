@@ -15,9 +15,10 @@
    - 资源
 
 2. **同步系统模块**：
-   - 本地消息
-   - 嵌入式 ActiveMQ
-   - 数据一致性
+   - 嵌入式 ActiveMQ (无需手动安装MQ, 开箱即用, 当然也可以随便替换成其他MQ产品.)
+   - 数据一致性 (基于本地消息表的最终一致性)
+   - 补偿机制 (定时器补充, 手动补偿)
+   - 同步记录追踪 (接入ES检索,方便快速定位问题. )
 
 
 ### 1. 启动步骤
@@ -75,7 +76,8 @@ sync:
 -Dsecret.key=xxxx  (配置文件加密key,  加密代码见 com.coderman.service.config.EncryptPropertyConfig)
 ```
 
-#### 2. Linux部署参数
+### 2. Linux部署参数
+
 ```shell script
 nohup java -Dserver.port=8989 -Ddomain=admin -Dspring.profiles.active=pro -Dsecret=xxxx -Dlog.file=/root/app/logs  -jar admin-web-1.0.0-DEV-SNAPSHOT.jar &
 ```
