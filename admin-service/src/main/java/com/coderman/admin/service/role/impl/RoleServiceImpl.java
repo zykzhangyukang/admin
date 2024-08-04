@@ -1,5 +1,9 @@
 package com.coderman.admin.service.role.impl;
 
+import com.coderman.admin.utils.MsgBuilder;
+import com.coderman.admin.utils.ProjectEnum;
+import com.coderman.admin.utils.SyncUtil;
+import com.coderman.admin.vo.sync.PlanMsg;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
@@ -242,6 +246,11 @@ public class RoleServiceImpl implements RoleService {
         this.roleDAO.updateByPrimaryKeySelective(update);
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_MIDDLE, "更新角色信息");
+
+        PlanMsg build = MsgBuilder.create("update_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("update_admin_sync_role", Collections.singletonList(roleId))
+                .build();
+        SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
     }

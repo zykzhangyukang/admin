@@ -1,5 +1,9 @@
 package com.coderman.admin.service.func.impl;
 
+import com.coderman.admin.utils.MsgBuilder;
+import com.coderman.admin.utils.ProjectEnum;
+import com.coderman.admin.utils.SyncUtil;
+import com.coderman.admin.vo.sync.PlanMsg;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -268,6 +272,11 @@ public class FuncServiceImpl implements FuncService {
 
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_MIDDLE, "更新功能信息");
+
+        PlanMsg build = MsgBuilder.create("update_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("update_admin_sync_func", Collections.singletonList(funcId))
+                .build();
+        SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
     }

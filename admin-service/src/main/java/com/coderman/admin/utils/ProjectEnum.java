@@ -10,7 +10,7 @@ public enum ProjectEnum {
     /**
      * 后台sync系统
      */
-    ADMIN_SYNC("admin_sync");
+    SYNC("sync");
 
     private String key;
 

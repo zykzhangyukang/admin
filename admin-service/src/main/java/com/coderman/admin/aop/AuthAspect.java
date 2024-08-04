@@ -88,7 +88,7 @@ public class AuthAspect {
     public void init() {
 
         // 白名单URL
-        whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout","/auth/const/all","/sync/test"));
+        whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout","/auth/const/all"));
 
         // 无需拦截且有会话信息URL
         unFilterHasLoginInfoUrl.addAll(Arrays.asList("/auth/user/info", "/auth/user/refresh/login","/auth/user/pull/notify"));

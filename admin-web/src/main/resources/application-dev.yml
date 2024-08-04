@@ -5,8 +5,8 @@ spring:
     name: admin
   datasource:
     username: root
-    password: DES@99D5518076FE8F32214D66F4B59766B7
-    url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
     schema: classpath:db/schema.sql
     data: classpath:db/data.sql
     initialization-mode: never
@@ -52,8 +52,8 @@ sync:
     destList:
       - project: admin
         url: http://127.0.0.1:8989
-      - project: club
-        url: http://127.0.0.1:8999
+      - project: sync
+        url: http://127.0.0.1:8998
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20
@@ -72,9 +72,9 @@ sync:
     dbList:
 
     - dbname: admin_dev
-      url: jdbc:mysql://localhost:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
       username: root
-      password: DES@99D5518076FE8F32214D66F4B59766B7
+      password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
 
     - dbname: admin_dev_sync
       url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8

@@ -16,10 +16,10 @@ import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.service.websocket.WebSocketService;
-import com.coderman.admin.utils.AuthUtil;
-import com.coderman.admin.utils.PasswordUtils;
+import com.coderman.admin.utils.*;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.resc.RescVO;
+import com.coderman.admin.vo.sync.PlanMsg;
 import com.coderman.admin.vo.user.*;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.constant.ResultConstant;
@@ -573,6 +573,11 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE, "更新用户信息");
+
+        PlanMsg build = MsgBuilder.create("update_admin_sync_user", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("update_admin_sync_user", Collections.singletonList(userId))
+                .build();
+        SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
     }
