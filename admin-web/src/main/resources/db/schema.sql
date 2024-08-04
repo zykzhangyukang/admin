@@ -245,51 +245,51 @@ CREATE TABLE `pub_queue`  (
 -- Table structure for sync_activemq_acks
 -- ----------------------------
 DROP TABLE IF EXISTS `sync_activemq_acks`;
-CREATE TABLE `sync_activemq_acks`  (
-  `CONTAINER` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `SUB_DEST` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `CLIENT_ID` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `SUB_NAME` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `SELECTOR` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `LAST_ACKED_ID` bigint(20) NULL DEFAULT NULL,
-  `PRIORITY` bigint(20) NOT NULL DEFAULT 5,
-  `XID` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`CONTAINER`, `CLIENT_ID`, `SUB_NAME`, `PRIORITY`) USING BTREE,
-  INDEX `sync_ACTIVEMQ_ACKS_XIDX`(`XID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+CREATE TABLE `sync_activemq_acks` (
+                                      `CONTAINER` varchar(250) NOT NULL,
+                                      `SUB_DEST` varchar(128) DEFAULT NULL,
+                                      `CLIENT_ID` varchar(128) NOT NULL,
+                                      `SUB_NAME` varchar(128) NOT NULL,
+                                      `SELECTOR` varchar(128) DEFAULT NULL,
+                                      `LAST_ACKED_ID` bigint(20) DEFAULT NULL,
+                                      `PRIORITY` bigint(20) NOT NULL DEFAULT '5',
+                                      `XID` varchar(128) DEFAULT NULL,
+                                      PRIMARY KEY (`CONTAINER`,`CLIENT_ID`,`SUB_NAME`,`PRIORITY`),
+                                      KEY `sync_ACTIVEMQ_ACKS_XIDX` (`XID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sync_activemq_lock
 -- ----------------------------
 DROP TABLE IF EXISTS `sync_activemq_lock`;
-CREATE TABLE `sync_activemq_lock`  (
-  `ID` bigint(20) NOT NULL,
-  `TIME` bigint(20) NULL DEFAULT NULL,
-  `BROKER_NAME` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`ID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+CREATE TABLE `sync_activemq_lock` (
+                                      `ID` bigint(20) NOT NULL,
+                                      `TIME` bigint(20) DEFAULT NULL,
+                                      `BROKER_NAME` varchar(128) DEFAULT NULL,
+                                      PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sync_activemq_msgs
 -- ----------------------------
 DROP TABLE IF EXISTS `sync_activemq_msgs`;
-CREATE TABLE `sync_activemq_msgs`  (
-  `ID` bigint(20) NOT NULL,
-  `CONTAINER` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `MSGID_PROD` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `MSGID_SEQ` bigint(20) NULL DEFAULT NULL,
-  `EXPIRATION` bigint(20) NULL DEFAULT NULL,
-  `MSG` blob NULL,
-  `PRIORITY` bigint(20) NULL DEFAULT NULL,
-  `XID` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`ID`) USING BTREE,
-  INDEX `sync_ACTIVEMQ_MSGS_MIDX`(`MSGID_PROD`, `MSGID_SEQ`) USING BTREE,
-  INDEX `sync_ACTIVEMQ_MSGS_CIDX`(`CONTAINER`) USING BTREE,
-  INDEX `sync_ACTIVEMQ_MSGS_EIDX`(`EXPIRATION`) USING BTREE,
-  INDEX `sync_ACTIVEMQ_MSGS_PIDX`(`PRIORITY`) USING BTREE,
-  INDEX `sync_ACTIVEMQ_MSGS_XIDX`(`XID`) USING BTREE,
-  INDEX `sync_ACTIVEMQ_MSGS_IIDX`(`ID`, `XID`, `CONTAINER`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+CREATE TABLE `sync_activemq_msgs` (
+                                      `ID` bigint(20) NOT NULL,
+                                      `CONTAINER` varchar(250) NOT NULL,
+                                      `MSGID_PROD` varchar(250) DEFAULT NULL,
+                                      `MSGID_SEQ` bigint(20) DEFAULT NULL,
+                                      `EXPIRATION` bigint(20) DEFAULT NULL,
+                                      `MSG` blob,
+                                      `PRIORITY` bigint(20) DEFAULT NULL,
+                                      `XID` varchar(128) DEFAULT NULL,
+                                      PRIMARY KEY (`ID`),
+                                      KEY `sync_ACTIVEMQ_MSGS_MIDX` (`MSGID_PROD`,`MSGID_SEQ`),
+                                      KEY `sync_ACTIVEMQ_MSGS_CIDX` (`CONTAINER`),
+                                      KEY `sync_ACTIVEMQ_MSGS_EIDX` (`EXPIRATION`),
+                                      KEY `sync_ACTIVEMQ_MSGS_PIDX` (`PRIORITY`),
+                                      KEY `sync_ACTIVEMQ_MSGS_XIDX` (`XID`),
+                                      KEY `sync_ACTIVEMQ_MSGS_IIDX` (`ID`,`XID`,`CONTAINER`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for sync_plan
