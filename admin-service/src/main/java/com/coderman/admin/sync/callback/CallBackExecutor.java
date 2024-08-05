@@ -13,6 +13,9 @@ import com.coderman.admin.sync.sql.UpdateBuilder;
 import com.coderman.admin.sync.sql.meta.SqlMeta;
 import com.coderman.admin.sync.task.SyncConvert;
 import com.coderman.admin.sync.util.SqlUtil;
+import com.coderman.api.constant.ResultConstant;
+import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.ResultVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -348,27 +351,27 @@ public class CallBackExecutor {
         }
 
         // 开始回调
-        boolean result = this.sendPost(callback);
+        ResultVO<Void> result = this.sendPost(callback);
 
         // 标记回调结果
         this.markCallbackEnd(callback, result);
 
-        return result;
+        return ResultConstant.RESULT_CODE_200.equals(result.getCode());
     }
 
     /**
      * 标记回调完成
      *
      * @param callback 回调任务
-     * @param success  回调结果
+     * @param result  回调结果
      * @throws Throwable
      */
-    public void markCallbackEnd(CallbackTask callback, boolean success) throws Throwable {
+    public void markCallbackEnd(CallbackTask callback, ResultVO<Void> result) throws Throwable {
 
         AbstractExecutor executor = AbstractExecutor.build(callback.getDb());
 
         UpdateBuilder updateBuilder = UpdateBuilder.create(SyncContext.getContext().getDbType(callback.getDb()));
-        updateBuilder.table("pub_callback").column("status").column("ack_time");
+        updateBuilder.table("pub_callback").column("status").column("ack_time").column("error_msg");
         updateBuilder.whereIn("uuid", 1);
 
         // 重试次数+1
@@ -376,14 +379,14 @@ public class CallBackExecutor {
 
         List<Object> paramList = new ArrayList<>();
 
-        if (success) {
-
+        if (ResultConstant.RESULT_CODE_200.equals(result.getCode())) {
             paramList.add(PlanConstant.CALLBACK_STATUS_SUCCESS);
         } else {
             paramList.add(PlanConstant.CALLBACK_STATUS_FAIL);
         }
 
         paramList.add(new Date());
+        paramList.add(result.getMsg());
         paramList.add(callback.getUuid());
 
         SqlMeta sqlMeta = new SqlMeta();
@@ -489,9 +492,10 @@ public class CallBackExecutor {
      * @param callback 回调任务
      * @return
      */
-    private boolean sendPost(CallbackTask callback) {
+    private ResultVO<Void> sendPost(CallbackTask callback) {
 
         boolean result = false;
+        String error = StringUtils.EMPTY;
 
         CloseableHttpClient client;
         CloseableHttpResponse response = null;
@@ -530,39 +534,33 @@ public class CallBackExecutor {
                 if (StringUtils.isNotBlank(resultStr)) {
 
                     JSONObject jsonObject = JSONObject.parseObject(resultStr);
-
                     if (jsonObject != null && jsonObject.containsKey("code") && HttpStatus.SC_OK == jsonObject.getInteger("code")) {
-
                         result = true;
-
                     } else {
-
-                        log.error("业务系统回调失败,resultVO code 错误！！！resultVO:{}, retryCount:{}", resultStr, callback.getRetry());
+                        error = String.format("业务系统回调失败,resultVO code 错误！！！resultVO:%s, retryCount:%s", resultStr, callback.getRetry());
                     }
                 }
             } else {
-
-                log.error("业务系统回调 url:{} ,http状态码错误 ！！！statusLine:{}, retryCount:{}", callbackUrl, response.getStatusLine(), callback.getRetry());
+                error = String.format("业务系统回调 url:%s ,http状态码错误 ！！！statusLine:%s, retryCount:%s", callbackUrl, response.getStatusLine(), callback.getRetry());
             }
 
         } catch (Exception e) {
 
             if (e instanceof HttpHostConnectException) {
 
-                log.error("回调失败,无法连接主机");
+                error = "回调失败, 无法连接主机";
+
+            } else if (e instanceof ConnectTimeoutException) {
+
+                error = "回调失败, 网络连接超时";
+            } else {
+
+                error = "回调失败, 未知异常: " + ExceptionUtils.getRootCauseMessage(e);
             }
-
-            if (e instanceof ConnectTimeoutException) {
-
-                log.error("回调失败,网络超时");
-            }
-
-            log.error("回调失败异常,error:{}", ExceptionUtils.getRootCauseMessage(e));
 
             this.checkSwitchNode(callback, callbackUrl);
 
         } finally {
-
 
             if (null != response) {
 
@@ -578,7 +576,7 @@ public class CallBackExecutor {
 
         }
 
-        return result;
+        return result ? ResultUtil.getSuccess() : ResultUtil.getFail(error);
     }
 
     @PreDestroy
