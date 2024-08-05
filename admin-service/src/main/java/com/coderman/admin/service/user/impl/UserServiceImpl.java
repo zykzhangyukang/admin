@@ -486,6 +486,11 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_MIDDLE, "新增用户信息");
 
+        PlanMsg build = MsgBuilder.create("insert_admin_sync_user", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("insert_admin_sync_user", Collections.singletonList(insertModel.getUserId()))
+                .build();
+        SyncUtil.sync(build);
+
         return ResultUtil.getSuccess();
     }
 
@@ -521,6 +526,11 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.userDAO.deleteByPrimaryKey(userId);
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_IMPORTANT, "删除用户信息");
+
+        PlanMsg build = MsgBuilder.create("delete_admin_sync_user", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("delete_admin_sync_user", Collections.singletonList(userId))
+                .build();
+        SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
     }
@@ -657,6 +667,11 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, "启用用户账号");
 
+        PlanMsg build = MsgBuilder.create("update_admin_sync_user", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("update_admin_sync_user_status", Collections.singletonList(userId))
+                .build();
+        SyncUtil.sync(build);
+
         return ResultUtil.getSuccess();
     }
 
@@ -689,6 +704,11 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, "禁用用户账号");
+
+        PlanMsg build = MsgBuilder.create("update_admin_sync_user", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("update_admin_sync_user_status", Collections.singletonList(userId))
+                .build();
+        SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
     }

@@ -161,6 +161,11 @@ public class RoleServiceImpl implements RoleService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_MIDDLE,"新增角色信息");
 
+        PlanMsg build = MsgBuilder.create("insert_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("insert_admin_sync_role", Collections.singletonList(insert.getRoleId()))
+                .build();
+        SyncUtil.sync(build);
+
         return ResultUtil.getSuccess();
     }
 
@@ -194,6 +199,11 @@ public class RoleServiceImpl implements RoleService {
         this.roleDAO.deleteByPrimaryKey(roleId);
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_IMPORTANT, "删除角色信息");
+
+        PlanMsg build = MsgBuilder.create("delete_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("delete_admin_sync_role", Collections.singletonList(roleId))
+                .build();
+        SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
     }

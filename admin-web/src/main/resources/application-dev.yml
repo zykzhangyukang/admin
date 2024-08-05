@@ -107,4 +107,4 @@ logging:
   level:
     root: info
     com.coderman.admin: info
-    org.elasticsearch: warn
+    org.elasticsearch: info

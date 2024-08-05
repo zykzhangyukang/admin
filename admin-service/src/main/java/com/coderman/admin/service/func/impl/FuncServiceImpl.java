@@ -199,6 +199,12 @@ public class FuncServiceImpl implements FuncService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_MIDDLE, "新增功能信息");
 
+        PlanMsg build = MsgBuilder.create("insert_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("insert_admin_sync_func", Collections.singletonList(insert.getFuncId()))
+                .build();
+        SyncUtil.sync(build);
+
+
         return ResultUtil.getSuccess();
     }
 
@@ -330,6 +336,11 @@ public class FuncServiceImpl implements FuncService {
 
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT, "删除功能信息");
+
+        PlanMsg build = MsgBuilder.create("delete_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("delete_admin_sync_func", Collections.singletonList(funcId))
+                .build();
+        SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
     }

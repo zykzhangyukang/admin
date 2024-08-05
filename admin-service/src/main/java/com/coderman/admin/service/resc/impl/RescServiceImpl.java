@@ -161,6 +161,11 @@ public class RescServiceImpl implements RescService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, AuthConstant.LOG_MODULE_MIDDLE, "新增资源信息");
 
+        PlanMsg build = MsgBuilder.create("insert_admin_sync_resc", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("insert_admin_sync_resc", Collections.singletonList(insert.getRescId()))
+                .build();
+        SyncUtil.sync(build);
+
         return ResultUtil.getSuccess();
     }
 
@@ -245,6 +250,10 @@ public class RescServiceImpl implements RescService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_RESC, AuthConstant.LOG_MODULE_IMPORTANT, "删除资源信息");
 
+        PlanMsg build = MsgBuilder.create("delete_admin_sync_resc", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+                .addIntList("delete_admin_sync_resc", Collections.singletonList(rescId))
+                .build();
+        SyncUtil.sync(build);
         return ResultUtil.getSuccess();
     }
 
