@@ -355,6 +355,216 @@ public class LogExample {
             return (Criteria) this;
         }
 
+        public Criteria andIpAddressIsNull() {
+            addCriterion("ip_address is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressIsNotNull() {
+            addCriterion("ip_address is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressEqualTo(String value) {
+            addCriterion("ip_address =", value, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressNotEqualTo(String value) {
+            addCriterion("ip_address <>", value, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressGreaterThan(String value) {
+            addCriterion("ip_address >", value, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressGreaterThanOrEqualTo(String value) {
+            addCriterion("ip_address >=", value, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressLessThan(String value) {
+            addCriterion("ip_address <", value, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressLessThanOrEqualTo(String value) {
+            addCriterion("ip_address <=", value, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressLike(String value) {
+            addCriterion("ip_address like", value, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressNotLike(String value) {
+            addCriterion("ip_address not like", value, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressIn(List<String> values) {
+            addCriterion("ip_address in", values, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressNotIn(List<String> values) {
+            addCriterion("ip_address not in", values, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressBetween(String value1, String value2) {
+            addCriterion("ip_address between", value1, value2, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andIpAddressNotBetween(String value1, String value2) {
+            addCriterion("ip_address not between", value1, value2, "ipAddress");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoIsNull() {
+            addCriterion("device_info is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoIsNotNull() {
+            addCriterion("device_info is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoEqualTo(String value) {
+            addCriterion("device_info =", value, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoNotEqualTo(String value) {
+            addCriterion("device_info <>", value, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoGreaterThan(String value) {
+            addCriterion("device_info >", value, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoGreaterThanOrEqualTo(String value) {
+            addCriterion("device_info >=", value, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoLessThan(String value) {
+            addCriterion("device_info <", value, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoLessThanOrEqualTo(String value) {
+            addCriterion("device_info <=", value, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoLike(String value) {
+            addCriterion("device_info like", value, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoNotLike(String value) {
+            addCriterion("device_info not like", value, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoIn(List<String> values) {
+            addCriterion("device_info in", values, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoNotIn(List<String> values) {
+            addCriterion("device_info not in", values, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoBetween(String value1, String value2) {
+            addCriterion("device_info between", value1, value2, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andDeviceInfoNotBetween(String value1, String value2) {
+            addCriterion("device_info not between", value1, value2, "deviceInfo");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationIsNull() {
+            addCriterion("location is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationIsNotNull() {
+            addCriterion("location is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationEqualTo(String value) {
+            addCriterion("location =", value, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationNotEqualTo(String value) {
+            addCriterion("location <>", value, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationGreaterThan(String value) {
+            addCriterion("location >", value, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationGreaterThanOrEqualTo(String value) {
+            addCriterion("location >=", value, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationLessThan(String value) {
+            addCriterion("location <", value, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationLessThanOrEqualTo(String value) {
+            addCriterion("location <=", value, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationLike(String value) {
+            addCriterion("location like", value, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationNotLike(String value) {
+            addCriterion("location not like", value, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationIn(List<String> values) {
+            addCriterion("location in", values, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationNotIn(List<String> values) {
+            addCriterion("location not in", values, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationBetween(String value1, String value2) {
+            addCriterion("location between", value1, value2, "location");
+            return (Criteria) this;
+        }
+
+        public Criteria andLocationNotBetween(String value1, String value2) {
+            addCriterion("location not between", value1, value2, "location");
+            return (Criteria) this;
+        }
+
         public Criteria andUserIdIsNull() {
             addCriterion("user_id is null");
             return (Criteria) this;

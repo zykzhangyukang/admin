@@ -30,6 +30,15 @@ public class LogModel extends BaseModel {
     @ApiModelProperty(value = "日志等级")
     private Integer logLevel;
 
+    @ApiModelProperty(value = "ip")
+    private String ipAddress;
+
+    @ApiModelProperty(value = "设备信息")
+    private String deviceInfo;
+
+    @ApiModelProperty(value = "位置")
+    private String location;
+
     @ApiModelProperty(value = "操作人id")
     private Integer userId;
 

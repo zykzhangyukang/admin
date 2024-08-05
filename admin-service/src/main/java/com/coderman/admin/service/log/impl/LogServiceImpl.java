@@ -19,6 +19,8 @@ import com.coderman.admin.vo.user.AuthUserVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.service.BaseService;
+import com.coderman.service.util.HttpContextUtil;
+import com.coderman.service.util.IpUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -52,6 +54,9 @@ public class LogServiceImpl extends BaseService implements LogService {
         logModel.setUsername(username);
         logModel.setRealName(realName);
         logModel.setCreateTime(new Date());
+        logModel.setIpAddress(IpUtil.getIpAddr());
+        logModel.setLocation(IpUtil.getCityInfo());
+        logModel.setDeviceInfo(IpUtil.getClientDeviceInfo(HttpContextUtil.getHttpServletRequest()));
         logDAO.insertSelectiveReturnKey(logModel);
 
         PlanMsg build = MsgBuilder.create("insert_admin_sync_log", ProjectEnum.ADMIN, ProjectEnum.LOG)

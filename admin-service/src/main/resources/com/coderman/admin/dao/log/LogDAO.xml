@@ -6,6 +6,9 @@
     <result column="log_info" jdbcType="VARCHAR" property="logInfo" />
     <result column="log_module" jdbcType="INTEGER" property="logModule" />
     <result column="log_level" jdbcType="INTEGER" property="logLevel" />
+    <result column="ip_address" jdbcType="VARCHAR" property="ipAddress" />
+    <result column="device_info" jdbcType="VARCHAR" property="deviceInfo" />
+    <result column="location" jdbcType="VARCHAR" property="location" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="real_name" jdbcType="VARCHAR" property="realName" />
@@ -70,7 +73,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    log_id, log_info, log_module, log_level, user_id, username, real_name, create_time
+    log_id, log_info, log_module, log_level, ip_address, device_info, location, user_id, 
+    username, real_name, create_time
   </sql>
   <select id="selectByExample" parameterType="com.coderman.admin.model.log.LogExample" resultMap="BaseResultMap">
     select
@@ -104,10 +108,12 @@
   </delete>
   <insert id="insert" parameterType="com.coderman.admin.model.log.LogModel">
     insert into auth_log (log_id, log_info, log_module, 
-      log_level, user_id, username, 
+      log_level, ip_address, device_info, 
+      location, user_id, username, 
       real_name, create_time)
     values (#{logId,jdbcType=INTEGER}, #{logInfo,jdbcType=VARCHAR}, #{logModule,jdbcType=INTEGER}, 
-      #{logLevel,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, 
+      #{logLevel,jdbcType=INTEGER}, #{ipAddress,jdbcType=VARCHAR}, #{deviceInfo,jdbcType=VARCHAR}, 
+      #{location,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, 
       #{realName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.admin.model.log.LogModel">
@@ -124,6 +130,15 @@
       </if>
       <if test="logLevel != null">
         log_level,
+      </if>
+      <if test="ipAddress != null">
+        ip_address,
+      </if>
+      <if test="deviceInfo != null">
+        device_info,
+      </if>
+      <if test="location != null">
+        location,
       </if>
       <if test="userId != null">
         user_id,
@@ -150,6 +165,15 @@
       </if>
       <if test="logLevel != null">
         #{logLevel,jdbcType=INTEGER},
+      </if>
+      <if test="ipAddress != null">
+        #{ipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceInfo != null">
+        #{deviceInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null">
+        #{location,jdbcType=VARCHAR},
       </if>
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
@@ -186,6 +210,15 @@
       <if test="record.logLevel != null">
         log_level = #{record.logLevel,jdbcType=INTEGER},
       </if>
+      <if test="record.ipAddress != null">
+        ip_address = #{record.ipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deviceInfo != null">
+        device_info = #{record.deviceInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.location != null">
+        location = #{record.location,jdbcType=VARCHAR},
+      </if>
       <if test="record.userId != null">
         user_id = #{record.userId,jdbcType=INTEGER},
       </if>
@@ -209,6 +242,9 @@
       log_info = #{record.logInfo,jdbcType=VARCHAR},
       log_module = #{record.logModule,jdbcType=INTEGER},
       log_level = #{record.logLevel,jdbcType=INTEGER},
+      ip_address = #{record.ipAddress,jdbcType=VARCHAR},
+      device_info = #{record.deviceInfo,jdbcType=VARCHAR},
+      location = #{record.location,jdbcType=VARCHAR},
       user_id = #{record.userId,jdbcType=INTEGER},
       username = #{record.username,jdbcType=VARCHAR},
       real_name = #{record.realName,jdbcType=VARCHAR},
@@ -228,6 +264,15 @@
       </if>
       <if test="logLevel != null">
         log_level = #{logLevel,jdbcType=INTEGER},
+      </if>
+      <if test="ipAddress != null">
+        ip_address = #{ipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceInfo != null">
+        device_info = #{deviceInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null">
+        location = #{location,jdbcType=VARCHAR},
       </if>
       <if test="userId != null">
         user_id = #{userId,jdbcType=INTEGER},
@@ -249,6 +294,9 @@
     set log_info = #{logInfo,jdbcType=VARCHAR},
       log_module = #{logModule,jdbcType=INTEGER},
       log_level = #{logLevel,jdbcType=INTEGER},
+      ip_address = #{ipAddress,jdbcType=VARCHAR},
+      device_info = #{deviceInfo,jdbcType=VARCHAR},
+      location = #{location,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=INTEGER},
       username = #{username,jdbcType=VARCHAR},
       real_name = #{realName,jdbcType=VARCHAR},
@@ -270,6 +318,15 @@
       </if>
       <if test="logLevel != null">
         log_level,
+      </if>
+      <if test="ipAddress != null">
+        ip_address,
+      </if>
+      <if test="deviceInfo != null">
+        device_info,
+      </if>
+      <if test="location != null">
+        location,
       </if>
       <if test="userId != null">
         user_id,
@@ -296,6 +353,15 @@
       </if>
       <if test="logLevel != null">
         #{logLevel,jdbcType=INTEGER},
+      </if>
+      <if test="ipAddress != null">
+        #{ipAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceInfo != null">
+        #{deviceInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null">
+        #{location,jdbcType=VARCHAR},
       </if>
       <if test="userId != null">
         #{userId,jdbcType=INTEGER},
