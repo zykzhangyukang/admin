@@ -10,7 +10,12 @@ public enum ProjectEnum {
     /**
      * 后台sync系统
      */
-    SYNC("sync");
+    SYNC("sync"),
+
+    /**
+     * 后台日志系统
+     */
+    LOG("log");
 
     private String key;
 

@@ -256,6 +256,62 @@
     where log_id = #{logId,jdbcType=INTEGER}
   </update>
 
+  <insert id="insertSelectiveReturnKey" useGeneratedKeys="true" keyProperty="logId" parameterType="com.coderman.admin.model.log.LogModel">
+    insert into auth_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="logId != null">
+        log_id,
+      </if>
+      <if test="logInfo != null">
+        log_info,
+      </if>
+      <if test="logModule != null">
+        log_module,
+      </if>
+      <if test="logLevel != null">
+        log_level,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="realName != null">
+        real_name,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="logId != null">
+        #{logId,jdbcType=INTEGER},
+      </if>
+      <if test="logInfo != null">
+        #{logInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="logModule != null">
+        #{logModule,jdbcType=INTEGER},
+      </if>
+      <if test="logLevel != null">
+        #{logLevel,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null">
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
   <resultMap  id="pageResultMap"  extends="BaseResultMap" type="com.coderman.admin.vo.log.LogVO">
   </resultMap>
 

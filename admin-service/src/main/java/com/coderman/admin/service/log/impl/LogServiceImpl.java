@@ -1,6 +1,10 @@
 package com.coderman.admin.service.log.impl;
 
 import com.coderman.admin.service.log.LogService;
+import com.coderman.admin.utils.MsgBuilder;
+import com.coderman.admin.utils.ProjectEnum;
+import com.coderman.admin.utils.SyncUtil;
+import com.coderman.admin.vo.sync.PlanMsg;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -48,7 +52,12 @@ public class LogServiceImpl extends BaseService implements LogService {
         logModel.setUsername(username);
         logModel.setRealName(realName);
         logModel.setCreateTime(new Date());
-        logDAO.insertSelective(logModel);
+        logDAO.insertSelectiveReturnKey(logModel);
+
+        PlanMsg build = MsgBuilder.create("insert_admin_sync_log", ProjectEnum.ADMIN, ProjectEnum.LOG)
+                .addIntList("insert_admin_sync_log", Collections.singletonList(logModel.getLogId()))
+                .build();
+        SyncUtil.sync(build);
     }
 
     @Override

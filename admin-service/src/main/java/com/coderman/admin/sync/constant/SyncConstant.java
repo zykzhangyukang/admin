@@ -17,6 +17,8 @@ public interface SyncConstant {
      */
     @ConstList(group = "dest_project",name ="同步系统")
     public static final String SRC_PROJECT_SYNC= "sync";
+    @ConstList(group = "dest_project",name ="日志系统")
+    public static final String SRC_PROJECT_LOG= "log";
 
 
     /**

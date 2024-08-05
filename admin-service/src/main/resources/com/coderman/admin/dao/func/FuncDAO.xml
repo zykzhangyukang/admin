@@ -429,7 +429,7 @@
     where parent_id = #{parentId}
   </select>
 
-  <insert id="insertSelectiveReturnKey" keyColumn="func_id" keyProperty="funcId" parameterType="com.coderman.admin.model.func.FuncModel" useGeneratedKeys="true">
+  <insert id="insertSelectiveReturnKey" keyProperty="funcId" parameterType="com.coderman.admin.model.func.FuncModel" useGeneratedKeys="true">
     insert into auth_func
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="funcId != null">

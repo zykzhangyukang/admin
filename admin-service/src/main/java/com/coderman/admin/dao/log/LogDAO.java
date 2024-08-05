@@ -28,4 +28,12 @@ public interface LogDAO extends BaseDAO<LogModel, LogExample> {
      * @return
      */
     List<LogVO> page(Map<String, Object> conditionMap);
+
+
+    /**
+     * 新增并返回主键
+     * @param record
+     * @return
+     */
+    int insertSelectiveReturnKey(LogModel record);
 }
