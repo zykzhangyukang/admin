@@ -69,11 +69,14 @@ sync:
 ### 1.3 启动参数
 
 ```
--Dserver.port=8989 (端口)
--Ddomain=admin (项目名)
--Dspring.profiles.active=dev (环境)
--Dlog.file=D:\log\springboot\admin (日志文件地址)
--Dsecret.key=xxxx  (配置文件加密key,  加密代码见 com.coderman.service.config.EncryptPropertyConfig)
+-Dspring.profiles.active=dev
+-Dlog.file=D:/java/logs/admin
+-Ddomain=admin
+-Dsecret.key=XXX[配置文件秘钥]
+-Xms256m
+-Xmx512m
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=D:/java/logs/oom
 ```
 
 ### 2. Linux部署参数
