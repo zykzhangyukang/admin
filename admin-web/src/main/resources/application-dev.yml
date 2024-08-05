@@ -50,10 +50,8 @@ sync:
   # 同步回调配置
   callback:
     destList:
-      - project: admin
-        url: http://127.0.0.1:8989
       - project: sync
-        url: http://127.0.0.1:8998
+        url: http://127.0.0.1:8787
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20

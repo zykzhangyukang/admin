@@ -239,15 +239,15 @@ public class CallBackExecutor {
             response = client.execute(post);
 
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-
                 result = true;
-
                 log.info("同步消息回调节点检测成功:{} ", callbackUrl);
+            }else {
+                log.error("回调检测失败:{},callbackUrl:{}",EntityUtils.toString(response.getEntity()), callbackUrl);
             }
 
         } catch (Exception e) {
 
-            log.warn("回调检测失败:{},callbackUrl:{}", e.getMessage(), callbackUrl);
+            log.error("回调检测失败:{},callbackUrl:{}", e.getMessage(), callbackUrl);
 
         } finally {
 

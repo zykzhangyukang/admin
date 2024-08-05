@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 本地mysql
+ Source Server         : 腾讯云
  Source Server Type    : MySQL
- Source Server Version : 50735
- Source Host           : localhost:3306
+ Source Server Version : 50718
+ Source Host           : gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688
  Source Schema         : admin_dev
 
  Target Server Type    : MySQL
- Target Server Version : 50735
+ Target Server Version : 50718
  File Encoding         : 65001
 
- Date: 02/08/2024 09:25:01
+ Date: 05/08/2024 16:40:40
 */
 
 SET NAMES utf8mb4;
@@ -28,7 +28,7 @@ CREATE TABLE `auth_dept`  (
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`dept_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for auth_func
@@ -48,7 +48,7 @@ CREATE TABLE `auth_func`  (
   PRIMARY KEY (`func_id`) USING BTREE,
   UNIQUE INDEX `idx_func_key`(`func_key`) USING BTREE,
   INDEX `idx_parent_id`(`parent_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 174 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 174 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for auth_func_resc
@@ -61,7 +61,7 @@ CREATE TABLE `auth_func_resc`  (
   PRIMARY KEY (`func_resc_id`) USING BTREE,
   INDEX `idx_func_id`(`func_id`) USING BTREE,
   INDEX `idx_resc_id`(`resc_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 541 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 541 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for auth_log
@@ -72,6 +72,9 @@ CREATE TABLE `auth_log`  (
   `log_info` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '日志内容',
   `log_module` int(11) NOT NULL COMMENT '模块类型',
   `log_level` int(11) NOT NULL COMMENT '日志等级',
+  `ip_address` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'ip',
+  `device_info` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '设备信息',
+  `location` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '位置',
   `user_id` int(11) NULL DEFAULT NULL COMMENT '操作人id',
   `username` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '操作人账号',
   `real_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '操作人姓名',
@@ -80,7 +83,7 @@ CREATE TABLE `auth_log`  (
   INDEX `idx_log_module`(`log_module`) USING BTREE,
   INDEX `idx_user_id_name`(`user_id`, `username`) USING BTREE,
   INDEX `idx_log_level`(`log_level`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 516 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 585 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for auth_resc
@@ -98,7 +101,7 @@ CREATE TABLE `auth_resc`  (
   UNIQUE INDEX `idx_resc_url`(`resc_url`) USING BTREE,
   INDEX `idx_resc_name`(`resc_name`) USING BTREE,
   INDEX `idx_resc_domain`(`resc_domain`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 80 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 80 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for auth_role
@@ -112,7 +115,7 @@ CREATE TABLE `auth_role`  (
   `update_time` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`role_id`) USING BTREE,
   UNIQUE INDEX `idx_role_name`(`role_name`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 53 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for auth_role_func
@@ -125,7 +128,7 @@ CREATE TABLE `auth_role_func`  (
   PRIMARY KEY (`role_func_id`) USING BTREE,
   INDEX `idx_role_id`(`role_id`) USING BTREE,
   INDEX `idx_func_id`(`func_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 16820 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 16820 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for auth_user
@@ -143,7 +146,7 @@ CREATE TABLE `auth_user`  (
   PRIMARY KEY (`user_id`) USING BTREE,
   UNIQUE INDEX `ix_username`(`username`) USING BTREE,
   INDEX `ix_deptcode`(`dept_code`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 84 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 85 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for auth_user_role
@@ -156,7 +159,7 @@ CREATE TABLE `auth_user_role`  (
   PRIMARY KEY (`user_role_id`) USING BTREE,
   INDEX `idx_user_id`(`user_id`) USING BTREE,
   INDEX `idx_role_id`(`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 961 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 961 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for pub_callback
@@ -177,6 +180,7 @@ CREATE TABLE `pub_callback`  (
   `repeat_count` int(11) NOT NULL,
   `status` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `remark` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `error_msg` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`callback_id`) USING BTREE,
   INDEX `ix_create_time`(`create_time`) USING BTREE,
   INDEX `ix_send_time`(`send_time`) USING BTREE,
@@ -184,7 +188,7 @@ CREATE TABLE `pub_callback`  (
   INDEX `msg_id`(`msg_id`) USING BTREE,
   INDEX `ix_uq_uuid`(`uuid`) USING BTREE,
   FULLTEXT INDEX `ix_msg_content`(`msg_content`)
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for pub_mq_message
@@ -208,7 +212,7 @@ CREATE TABLE `pub_mq_message`  (
   INDEX `ix_create_time`(`create_time`) USING BTREE,
   INDEX `ix_deal_status`(`deal_status`) USING BTREE,
   INDEX `ix_src_project_dest_project_create_time`(`src_project`, `dest_project`, `create_time`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3765 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3830 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for pub_mq_msg
@@ -225,7 +229,7 @@ CREATE TABLE `pub_mq_msg`  (
   PRIMARY KEY (`uuid`) USING BTREE,
   INDEX `ix_tag`(`tag`) USING BTREE,
   INDEX `ix_status_retry_ctime`(`send_status`, `retry`, `create_time`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for pub_queue
@@ -239,23 +243,23 @@ CREATE TABLE `pub_queue`  (
   `create_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`node_id`) USING BTREE,
   INDEX `ix_queue_name`(`queue_name`, `is_consumed`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sync_activemq_acks
 -- ----------------------------
 DROP TABLE IF EXISTS `sync_activemq_acks`;
 CREATE TABLE `sync_activemq_acks` (
-                                      `CONTAINER` varchar(250) NOT NULL,
-                                      `SUB_DEST` varchar(128) DEFAULT NULL,
-                                      `CLIENT_ID` varchar(128) NOT NULL,
-                                      `SUB_NAME` varchar(128) NOT NULL,
-                                      `SELECTOR` varchar(128) DEFAULT NULL,
-                                      `LAST_ACKED_ID` bigint(20) DEFAULT NULL,
-                                      `PRIORITY` bigint(20) NOT NULL DEFAULT '5',
-                                      `XID` varchar(128) DEFAULT NULL,
-                                      PRIMARY KEY (`CONTAINER`,`CLIENT_ID`,`SUB_NAME`,`PRIORITY`),
-                                      KEY `sync_ACTIVEMQ_ACKS_XIDX` (`XID`)
+  `CONTAINER` varchar(250) NOT NULL,
+  `SUB_DEST` varchar(128) DEFAULT NULL,
+  `CLIENT_ID` varchar(128) NOT NULL,
+  `SUB_NAME` varchar(128) NOT NULL,
+  `SELECTOR` varchar(128) DEFAULT NULL,
+  `LAST_ACKED_ID` bigint(20) DEFAULT NULL,
+  `PRIORITY` bigint(20) NOT NULL DEFAULT '5',
+  `XID` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`CONTAINER`,`CLIENT_ID`,`SUB_NAME`,`PRIORITY`) USING BTREE,
+  KEY `sync_ACTIVEMQ_ACKS_XIDX` (`XID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -263,10 +267,10 @@ CREATE TABLE `sync_activemq_acks` (
 -- ----------------------------
 DROP TABLE IF EXISTS `sync_activemq_lock`;
 CREATE TABLE `sync_activemq_lock` (
-                                      `ID` bigint(20) NOT NULL,
-                                      `TIME` bigint(20) DEFAULT NULL,
-                                      `BROKER_NAME` varchar(128) DEFAULT NULL,
-                                      PRIMARY KEY (`ID`)
+  `ID` bigint(20) NOT NULL,
+  `TIME` bigint(20) DEFAULT NULL,
+  `BROKER_NAME` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -274,21 +278,21 @@ CREATE TABLE `sync_activemq_lock` (
 -- ----------------------------
 DROP TABLE IF EXISTS `sync_activemq_msgs`;
 CREATE TABLE `sync_activemq_msgs` (
-                                      `ID` bigint(20) NOT NULL,
-                                      `CONTAINER` varchar(250) NOT NULL,
-                                      `MSGID_PROD` varchar(250) DEFAULT NULL,
-                                      `MSGID_SEQ` bigint(20) DEFAULT NULL,
-                                      `EXPIRATION` bigint(20) DEFAULT NULL,
-                                      `MSG` blob,
-                                      `PRIORITY` bigint(20) DEFAULT NULL,
-                                      `XID` varchar(128) DEFAULT NULL,
-                                      PRIMARY KEY (`ID`),
-                                      KEY `sync_ACTIVEMQ_MSGS_MIDX` (`MSGID_PROD`,`MSGID_SEQ`),
-                                      KEY `sync_ACTIVEMQ_MSGS_CIDX` (`CONTAINER`),
-                                      KEY `sync_ACTIVEMQ_MSGS_EIDX` (`EXPIRATION`),
-                                      KEY `sync_ACTIVEMQ_MSGS_PIDX` (`PRIORITY`),
-                                      KEY `sync_ACTIVEMQ_MSGS_XIDX` (`XID`),
-                                      KEY `sync_ACTIVEMQ_MSGS_IIDX` (`ID`,`XID`,`CONTAINER`)
+  `ID` bigint(20) NOT NULL,
+  `CONTAINER` varchar(250) NOT NULL,
+  `MSGID_PROD` varchar(250) DEFAULT NULL,
+  `MSGID_SEQ` bigint(20) DEFAULT NULL,
+  `EXPIRATION` bigint(20) DEFAULT NULL,
+  `MSG` blob,
+  `PRIORITY` bigint(20) DEFAULT NULL,
+  `XID` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  KEY `sync_ACTIVEMQ_MSGS_MIDX` (`MSGID_PROD`,`MSGID_SEQ`) USING BTREE,
+  KEY `sync_ACTIVEMQ_MSGS_CIDX` (`CONTAINER`) USING BTREE,
+  KEY `sync_ACTIVEMQ_MSGS_EIDX` (`EXPIRATION`) USING BTREE,
+  KEY `sync_ACTIVEMQ_MSGS_PIDX` (`PRIORITY`) USING BTREE,
+  KEY `sync_ACTIVEMQ_MSGS_XIDX` (`XID`) USING BTREE,
+  KEY `sync_ACTIVEMQ_MSGS_IIDX` (`ID`,`XID`,`CONTAINER`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
@@ -308,7 +312,7 @@ CREATE TABLE `sync_plan`  (
   `create_time` datetime NOT NULL,
   `update_time` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`uuid`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sync_result
@@ -335,6 +339,6 @@ CREATE TABLE `sync_result`  (
   `sync_to_es` bit(1) NULL DEFAULT NULL,
   PRIMARY KEY (`uuid`) USING BTREE,
   INDEX `ix_msg_id`(`msg_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
