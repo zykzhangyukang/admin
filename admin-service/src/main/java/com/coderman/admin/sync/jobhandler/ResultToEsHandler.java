@@ -28,42 +28,42 @@ public class ResultToEsHandler extends IJobHandler {
 
     @Override
     public ReturnT<String> execute(String param) {
-
-        // 将 前20分钟 - 前5分钟的消息重新刷新到es
         int begin = -20;
         int end = -5;
 
+        // 解析参数并记录日志
         try {
-            if (StringUtils.isNotBlank(param) && StringUtils.contains(param, "#")) {
-                begin = Integer.parseInt(param.split("#")[0]);
-                end = Integer.parseInt(param.split("#")[1]);
+            if (StringUtils.isNotBlank(param) && param.contains("#")) {
+                String[] params = param.split("#");
+                begin = Integer.parseInt(params[0]);
+                end = Integer.parseInt(params[1]);
+                log.info("Parsed parameters: begin = {}, end = {}", begin, end);
             }
-
-        } catch (Exception e) {
-            log.error("es error parse use default:{},begin:{},end:{}", e.getMessage(), begin, end);
+        } catch (NumberFormatException e) {
+            log.error("Error parsing parameters '{}'. Using default values: begin = {}, end = {}. Error: {}", param, begin, end, e.getMessage());
         }
 
         Date now = new Date();
-        Date endTime = DateUtils.addMinutes(now, end);
         Date startTime = DateUtils.addMinutes(now, begin);
+        Date endTime = DateUtils.addMinutes(now, end);
 
-        final String sql = "select uuid,plan_uuid,plan_code,plan_name,msg_src" +
-                ",mq_id,msg_id,msg_content,src_project,dest_project,sync_content,msg_create_time,sync_time" +
-                ",status,error_msg,repeat_count,remark,sync_to_es from sync_result where sync_to_es = ? and msg_create_time > ? and msg_create_time < ?";
+        final String sql = "SELECT uuid, plan_uuid, plan_code, plan_name, msg_src, mq_id, msg_id, msg_content, src_project, " +
+                "dest_project, sync_content, msg_create_time, sync_time, status, error_msg, repeat_count, remark, sync_to_es " +
+                "FROM sync_result WHERE sync_to_es = ? AND msg_create_time BETWEEN ? AND ?";
 
-        List<ResultModel> resultModels = this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ResultModel.class), 0, startTime, endTime);
+        List<ResultModel> resultModels = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ResultModel.class), 0, startTime, endTime);
 
         if (CollectionUtils.isNotEmpty(resultModels)) {
-
-            for (ResultModel resultModel : resultModels) {
-
-                SyncContext.getContext().syncToEs(resultModel);
-            }
-
+            log.info("Fetched {} records from database.", resultModels.size());
+            resultModels.forEach(resultModel -> SyncContext.getContext().syncToEs(resultModel));
+        } else {
+            log.info("No records found for sync_to_es = 0 between {} and {}.", startTime, endTime);
         }
 
-        XxlJobLogger.log("补偿器 -  刷新记录到ES总数:{}",resultModels.size());
-        log.info("补偿器 -  刷新记录到ES总数:{}",resultModels.size());
+        int count = resultModels.size();
+        XxlJobLogger.log("ES同步补偿器 - 刷新记录到ES总数: {}", count);
+        log.info("ES同步补偿器 - 刷新记录到ES总数: {}", count);
+
         return ReturnT.SUCCESS;
     }
 }
