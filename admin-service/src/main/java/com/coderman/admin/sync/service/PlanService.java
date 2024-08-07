@@ -1,9 +1,7 @@
 package com.coderman.admin.sync.service;
 
-import com.coderman.admin.sync.dto.PlanPageDTO;
-import com.coderman.admin.sync.dto.PlanSaveDTO;
-import com.coderman.admin.sync.dto.PlanUpdateDTO;
-import com.coderman.admin.sync.dto.PlanUpdateStatusDTO;
+import com.coderman.admin.sync.dto.*;
+import com.coderman.admin.sync.model.PlanHistoryModel;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.sync.vo.PlanVO;
@@ -73,4 +71,11 @@ public interface PlanService {
      * @return
      */
     ResultVO<Void> refreshSyncPlan();
+
+    /**
+     * 同步计划变更历史
+     * @param planHistoryDTO
+     * @return
+     */
+    ResultVO<PageVO<List<PlanHistoryModel>>> selectHistoryPage(PlanHistoryDTO planHistoryDTO);
 }

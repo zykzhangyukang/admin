@@ -1,5 +1,7 @@
 package com.coderman.admin.sync.service.impl;
 
+import com.coderman.admin.sync.dto.*;
+import com.coderman.admin.sync.model.PlanHistoryModel;
 import com.coderman.admin.utils.AuthUtil;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.util.ResultUtil;
@@ -10,10 +12,6 @@ import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.util.UUIDUtils;
 import com.coderman.admin.sync.constant.PlanConstant;
-import com.coderman.admin.sync.dto.PlanPageDTO;
-import com.coderman.admin.sync.dto.PlanSaveDTO;
-import com.coderman.admin.sync.dto.PlanUpdateDTO;
-import com.coderman.admin.sync.dto.PlanUpdateStatusDTO;
 import com.coderman.admin.sync.plan.meta.PlanMeta;
 import com.coderman.admin.sync.plan.parser.MetaParser;
 import com.coderman.admin.sync.service.PlanService;
@@ -300,6 +298,39 @@ public class PlanServiceImpl implements PlanService {
         return this.jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(PlanVO.class), params.toArray());
     }
 
+
+    @Override
+    @LogError(value = "同步计划变更历史")
+    public ResultVO<PageVO<List<PlanHistoryModel>>> selectHistoryPage(PlanHistoryDTO planHistoryDTO) {
+
+        Integer currentPage = planHistoryDTO.getCurrentPage();
+        Integer pageSize = planHistoryDTO.getPageSize();
+        String uuid = planHistoryDTO.getUuid();
+
+        if (currentPage == null) {
+            currentPage = 1;
+        }
+
+        if (pageSize == null) {
+            pageSize = CommonConstant.SYS_PAGE_SIZE;
+        }
+
+        final String countSql = "SELECT COUNT(1) FROM sync_plan_history WHERE uuid = ?";
+        Integer count = jdbcTemplate.queryForObject(countSql, Integer.class, uuid);
+
+        if (count == null || count <= 0) {
+
+            return ResultUtil.getSuccessPage(PlanHistoryModel.class, new PageVO<>(0, Collections.emptyList(), currentPage, pageSize));
+        }
+
+        List<Object> params = new ArrayList<>();
+        params.add((currentPage - 1) * pageSize);
+        params.add(pageSize);
+        final String querySql = "SELECT uuid, operation_type, last_content, this_content, username, create_time FROM sync_plan_history ORDER BY create_time DESC LIMIT ?,? ";
+        List<PlanHistoryModel> list = jdbcTemplate.query(querySql, new BeanPropertyRowMapper<>(PlanHistoryModel.class), params.toArray());
+
+        return ResultUtil.getSuccessPage(PlanHistoryModel.class, new PageVO<>(count, list, currentPage, pageSize));
+    }
 
     /**
      * @param planPageDTO 查询参数

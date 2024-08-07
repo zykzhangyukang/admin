@@ -1,9 +1,7 @@
 package com.coderman.admin.controller.sync;
 
-import com.coderman.admin.sync.dto.PlanPageDTO;
-import com.coderman.admin.sync.dto.PlanSaveDTO;
-import com.coderman.admin.sync.dto.PlanUpdateDTO;
-import com.coderman.admin.sync.dto.PlanUpdateStatusDTO;
+import com.coderman.admin.sync.dto.*;
+import com.coderman.admin.sync.model.PlanHistoryModel;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -61,6 +59,18 @@ public class PlanController {
     public ResultVO<PageVO<List<PlanVO>>> page(@RequestBody PlanPageDTO planPageDTO) {
 
         return this.planService.page(planPageDTO);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "同步计划变更历史")
+    @PostMapping(value = "/history")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"result", "code", "msg"}),
+            @ApiReturnParam(name = "PageVO", value = {"pageRow", "totalPage", "currPage", "totalRow", "dataList"}),
+            @ApiReturnParam(name = "PlanVO", value = {"uuid", "operationType", "lastContent", "thisContent", "username", "createTime"}),
+    })
+    public ResultVO<PageVO<List<PlanHistoryModel>>> selectHistoryPage(@RequestBody PlanHistoryDTO planHistoryDTO) {
+
+        return this.planService.selectHistoryPage(planHistoryDTO);
     }
 
 
