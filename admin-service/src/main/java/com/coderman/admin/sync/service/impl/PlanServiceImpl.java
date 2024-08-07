@@ -1,5 +1,6 @@
 package com.coderman.admin.sync.service.impl;
 
+import com.coderman.admin.utils.AuthUtil;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
@@ -84,10 +85,12 @@ public class PlanServiceImpl implements PlanService {
             return ResultUtil.getWarn("已存在编号为 " + planCode + " 的同步计划");
         }
 
-        String sql = "insert into sync_plan(uuid,plan_code,description,src_db,dest_db,src_project,dest_project,plan_content,status,create_time,update_time) values(?,?,?,?,?,?,?,?,?,?,?)";
+        String primaryValue = UUIDUtils.getPrimaryValue();
+
+        String sql = "INSERT INTO sync_plan(uuid,plan_code,description,src_db,dest_db,src_project,dest_project,plan_content,status,create_time,update_time) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
         int count = jdbcTemplate.update(sql,
                 preparedStatement -> {
-                    preparedStatement.setString(1, UUIDUtils.getPrimaryValue());
+                    preparedStatement.setString(1, primaryValue);
                     preparedStatement.setString(2, planCode);
                     preparedStatement.setString(3, description);
                     preparedStatement.setString(4, srcDb);
@@ -105,6 +108,17 @@ public class PlanServiceImpl implements PlanService {
 
             throw new RuntimeException("新增同步计划失败");
         }
+
+        // 记录一下变更记录
+        String historySql = "INSERT INTO sync_plan_history (uuid , operation_type , last_content, this_content, username, create_time) VALUES (?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(historySql, preparedStatement -> {
+            preparedStatement.setString(1, primaryValue);
+            preparedStatement.setString(2, "新增");
+            preparedStatement.setString(3, StringUtils.EMPTY);
+            preparedStatement.setString(4, planContent);
+            preparedStatement.setString(5, Objects.requireNonNull(AuthUtil.getCurrent()).getUsername());
+            preparedStatement.setObject(6, new Date());
+        });
 
         return ResultUtil.getSuccess();
     }
@@ -137,6 +151,10 @@ public class PlanServiceImpl implements PlanService {
 
             return ResultUtil.getWarn("删除同步计划失败!");
         }
+
+        // 删除操作记录
+        this.jdbcTemplate.update("delete from sync_plan_history where uuid=?", params.toArray());
+
         return ResultUtil.getSuccess();
     }
 
@@ -209,6 +227,17 @@ public class PlanServiceImpl implements PlanService {
 
             throw new RuntimeException("更新同步计划失败");
         }
+
+        // 记录一下变更记录
+        String historySql = "INSERT INTO sync_plan_history (uuid , operation_type , last_content, this_content, username, create_time) VALUES (?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(historySql, preparedStatement -> {
+            preparedStatement.setString(1, uuid);
+            preparedStatement.setString(2, "更新");
+            preparedStatement.setString(3, planVOByCode.get(0).getPlanContent());
+            preparedStatement.setString(4, planContent);
+            preparedStatement.setString(5, Objects.requireNonNull(AuthUtil.getCurrent()).getUsername());
+            preparedStatement.setObject(6, new Date());
+        });
 
         return ResultUtil.getSuccess();
     }
