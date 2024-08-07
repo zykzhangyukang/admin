@@ -18,18 +18,16 @@ public class SchedulingConfig {
 
     @Resource
     private RepeatSyncHandler repeatSyncHandler;
-
     @Resource
     private CleanMessageHandler cleanMessageHandler;
-
     @Resource
     private CleanResultHandler cleanResultHandler;
-
     @Resource
     private ResultToEsHandler resultToEsHandler;
-
     @Resource
     private UpdateSuccessHandler updateSuccessHandler;
+    @Resource
+    private CallbackHandler callbackHandler;
 
 
     @Scheduled(cron = "0 */5 * * * ?")
@@ -61,6 +59,12 @@ public class SchedulingConfig {
     public void updateSuccessHandler() throws Exception {
 
         this.updateSuccessHandler.execute(StringUtils.EMPTY);
+    }
+
+    @Scheduled(cron = "0 */5 * * * ?")
+    public void callbackHandler() {
+
+        this.callbackHandler.execute(StringUtils.EMPTY);
     }
 
 

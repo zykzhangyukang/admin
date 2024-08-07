@@ -111,7 +111,8 @@ public class SyncBeanUtil {
 
 
             definitionBuilder.addPropertyValue("minIdle", config.getMinIdle());
-            definitionBuilder.addPropertyValue("maxIdle", config.getMaxIdle());
+            // maxIdle已过期
+            // definitionBuilder.addPropertyValue("maxIdle", config.getMaxIdle());
             definitionBuilder.addPropertyValue("maxActive", config.getMaxActive());
             definitionBuilder.addPropertyValue("maxWait", config.getMaxWait());
 

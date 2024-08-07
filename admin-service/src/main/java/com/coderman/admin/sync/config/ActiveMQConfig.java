@@ -94,6 +94,8 @@ public class ActiveMQConfig {
         container.setSessionAcknowledgeMode(4);
         container.setSessionTransacted(false);
         container.setPubSubDomain(false);
+        // 断线重连间隔
+        container.setRecoveryInterval(5000);
         return container;
     }
 }

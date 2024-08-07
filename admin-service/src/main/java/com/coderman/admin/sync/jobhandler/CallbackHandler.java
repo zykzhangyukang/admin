@@ -78,8 +78,8 @@ public class CallbackHandler extends IJobHandler {
 
             AbstractExecutor executor = AbstractExecutor.build(dbName);
 
-            // 处理前5分钟的回调记录
-            Date initDate = DateUtils.addMinutes(new Date(), -5);
+            // 处理前10分钟的回调记录
+            Date initDate = DateUtils.addMinutes(new Date(), -10);
 
             // 1. 查出callbackId, 前N分钟处于待回调, 回调中的记录, 重复次数为0.
             SelectBuilder callbackIdSelectBuilder = SelectBuilder.create(SyncContext.getContext().getDbType(dbName));
@@ -121,7 +121,7 @@ public class CallbackHandler extends IJobHandler {
 
                 // 封装参数
                 paramList.add(PlanConstant.CALLBACK_STATUS_FAIL);
-                paramList.add(DateUtils.addDays(new Date(), -10));
+                paramList.add(DateUtils.addMinutes(new Date(), -10));
 
                 for (Map<String, Object> callbackIdMap : callbackIds.get(0).getResultList()) {
                     paramList.add(callbackIdMap.get("callback_id"));
@@ -147,7 +147,7 @@ public class CallbackHandler extends IJobHandler {
             selectBuilder.whereEq("status");
             selectBuilder.whereLt("repeat_count");
             selectBuilder.whereLt("send_time");
-            selectBuilder.whereLt("send_time");
+            selectBuilder.whereGt("send_time");
 
             paramList.add(PlanConstant.CALLBACK_STATUS_FAIL);
             paramList.add(MAX_CALLBACK_REPEAT_COUNT);

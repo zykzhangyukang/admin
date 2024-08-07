@@ -64,7 +64,7 @@ sync:
     mysqlInitialSize: 10
     mysqlMinEvictableIdleTimeMillis: 40000
     mysqlTimeBetweenEvictionRunsMillis: 10000
-    mysqlTestOnBorrow: false
+    mysqlTestOnBorrow: true
     mysqlTestOnReturn: false
     mysqlTestWhileIdle: true
     dbList:
@@ -106,3 +106,4 @@ logging:
     root: info
     com.coderman.admin: info
     org.elasticsearch: info
+    com.alibaba.druid: debug

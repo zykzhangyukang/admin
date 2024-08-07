@@ -32,6 +32,7 @@
             useJmx="false"
             schedulerSupport="true"
             enableStatistics="false"
+            useShutdownHook="true"
     >
 
         <transportConnectors>
@@ -97,7 +98,7 @@
                     <memoryUsage percentOfJvmHeap="70"/>
                 </memoryUsage>
                 <storeUsage>
-                    <storeUsage limit="50 gb"/>
+                    <storeUsage limit="5 gb"/>
                 </storeUsage>
                 <tempUsage>
                     <tempUsage limit="1 gb"/>
