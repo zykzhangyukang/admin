@@ -389,7 +389,7 @@
 
   <select id="page" resultMap="pageResultMap">
     select
-    log_id, log_info, log_module, log_level, user_id, username, real_name, create_time
+    log_id, log_info, log_module, log_level, user_id, username, real_name, create_time, ip_address, device_info, location
     from auth_log al
     <include refid="pageWhere"/>
     order by log_id desc

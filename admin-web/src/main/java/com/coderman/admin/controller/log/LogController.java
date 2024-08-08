@@ -35,7 +35,7 @@ public class LogController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "LogVO", value = {"username", "logModule", "userId", "createTime", "logId", "logInfo", "logLevel", "realName"})
+            @ApiReturnParam(name = "LogVO", value = {"username", "logModule", "userId", "createTime", "logId", "logInfo", "logLevel", "realName","ipAddress","deviceInfo","location"})
     })
     public ResultVO<PageVO<List<LogVO>>> page(@RequestBody LogPageDTO logPageDTO) {
 
