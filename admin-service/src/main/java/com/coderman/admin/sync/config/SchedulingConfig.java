@@ -61,6 +61,7 @@ public class SchedulingConfig {
         this.updateSuccessHandler.execute(StringUtils.EMPTY);
     }
 
+    //@Scheduled(initialDelay = 10000, fixedDelay = 300000)
     @Scheduled(cron = "0 */5 * * * ?")
     public void callbackHandler() {
 

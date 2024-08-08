@@ -548,14 +548,14 @@ public class CallBackExecutor {
 
             if (e instanceof HttpHostConnectException) {
 
-                error = "回调失败, 无法连接主机";
+                error = "无法连接主机";
 
             } else if (e instanceof ConnectTimeoutException) {
 
-                error = "回调失败, 网络连接超时";
+                error = "网络连接超时";
             } else {
 
-                error = "回调失败, 未知异常: " + ExceptionUtils.getRootCauseMessage(e);
+                error = "未知异常: " + ExceptionUtils.getRootCauseMessage(e);
             }
 
             this.checkSwitchNode(callback, callbackUrl);

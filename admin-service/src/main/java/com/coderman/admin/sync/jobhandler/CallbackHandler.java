@@ -195,7 +195,7 @@ public class CallbackHandler extends IJobHandler {
             }
 
         } catch (Throwable e) {
-            XxlJobLogger.log("处理回调失败记录出错, 数据库:" + dbName + " , error: " + e.getMessage());
+            XxlJobLogger.log("处理回调失败记录出错, 数据库:" + dbName + " , error: " + e.getMessage(), e);
         }
     }
 }
