@@ -3,6 +3,9 @@ package com.coderman.admin.utils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.Constant;
+import com.coderman.admin.producer.RocketMQOrderProducer;
+import com.coderman.admin.producer.RocketMQProducer;
+import com.coderman.admin.producer.RocketMQProperties;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.SpringContextUtil;
 import com.coderman.service.util.UUIDUtils;
@@ -63,13 +66,38 @@ public class SyncUtil {
 
     private static ActiveMQProducer activeMQProducer;
 
+    private static RocketMQProducer rocketMQProducer;
+
+    private static RocketMQOrderProducer rocketMQOrderProducer;
+
     static {
 
         try {
-
             jdbcTemplate = SpringContextUtil.getBean(JdbcTemplate.class);
-            activeMQProducer = SpringContextUtil.getBean(ActiveMQProducer.class);
+        } catch (Exception e) {
+            logger.error("初始化JdbcTemplate失败");
+        }
 
+        try {
+            activeMQProducer = SpringContextUtil.getBean(ActiveMQProducer.class);
+        } catch (Exception e) {
+            logger.error("初始化ActiveMQProducer失败");
+        }
+
+        try {
+            rocketMQProducer = SpringContextUtil.getBean(RocketMQProducer.class);
+        } catch (Exception e) {
+            logger.error("初始化RocketMQProducer失败");
+        }
+
+        try {
+            rocketMQOrderProducer = SpringContextUtil.getBean(RocketMQOrderProducer.class);
+        } catch (Exception e) {
+            logger.error("初始化RocketMQOrderProducer失败");
+        }
+
+
+        try {
             // 初始化队列
             List<Map<String, Object>> resultList = jdbcTemplate.queryForList(INIT_SQL);
 
@@ -294,6 +322,10 @@ public class SyncUtil {
             if(activeMQProducer != null){
 
                 sendResult = activeMQProducer.sendMessage(msgBody.getMsg());
+
+            }else if(rocketMQProducer !=null){
+
+                // todo
             }
 
 

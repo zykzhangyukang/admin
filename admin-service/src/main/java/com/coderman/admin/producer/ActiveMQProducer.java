@@ -1,13 +1,14 @@
 package com.coderman.admin.producer;
 
 import com.coderman.service.util.SpringContextUtil;
-import com.coderman.service.util.UUIDUtils;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,16 +27,23 @@ import javax.jms.Session;
 @ConfigurationProperties(prefix = "sync.activemq.producer")
 @Data
 @Slf4j
+@ConditionalOnProperty(prefix = "sync.activemq.producer", name = "enable", havingValue = "true")
 public class ActiveMQProducer {
 
+    @ApiModelProperty(value = "队列名称")
     private String queueName;
 
+    @ApiModelProperty(value = "broker地址")
     private String brokerUrl;
 
+    @ApiModelProperty(value = "用户名")
     private String username;
 
+    @ApiModelProperty(value = "密码")
     private String password;
 
+    @ApiModelProperty(value = "是否启用")
+    private boolean enable;
 
 
     public Message sendMessage(String messageContent) throws JMSException {

@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author Administrator
  */
-@Component
 @Slf4j
 public class ActiveMqListener implements SessionAwareMessageListener<TextMessage> {
 
