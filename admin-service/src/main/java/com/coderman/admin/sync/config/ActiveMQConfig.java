@@ -23,7 +23,6 @@ import javax.annotation.Resource;
 @ConfigurationProperties(prefix = "sync.activemq.consumer")
 @Data
 @Slf4j
-@ConditionalOnProperty(prefix = "sync.activemq.consumer", name = "enable", havingValue = "true")
 public class ActiveMQConfig {
 
     @ApiModelProperty(value = "队列名称")
@@ -37,9 +36,6 @@ public class ActiveMQConfig {
 
     @ApiModelProperty(value = "密码")
     private String password;
-
-    @ApiModelProperty(value = "是否启用")
-    private boolean enable;
 
     /**
      * 连接池的连接工厂，优化Mq的性能

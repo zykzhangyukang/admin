@@ -3,6 +3,7 @@ package com.coderman.admin.sync.listener;
 import com.coderman.admin.sync.constant.SyncConstant;
 import com.coderman.admin.sync.context.SyncContext;
 import com.coderman.admin.sync.service.ResultService;
+import com.coderman.service.util.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.listener.SessionAwareMessageListener;
@@ -21,13 +22,13 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class ActiveMqListener implements SessionAwareMessageListener<TextMessage> {
 
-    @Resource
-    private ResultService resultService;
 
     @Override
     public void onMessage(@NonNull TextMessage message, @NonNull Session session) throws JMSException {
 
         try {
+
+            ResultService resultService = SpringContextUtil.getBean(ResultService.class);
 
             int retryTimeLimit = 6;
             int deliveryCount = message.getIntProperty("JMSXDeliveryCount");
@@ -63,7 +64,7 @@ public class ActiveMqListener implements SessionAwareMessageListener<TextMessage
             message.acknowledge();
 
             // 如果没有异常都任务消费成功
-            this.resultService.successMsgSave2Redis(messageId, 60);
+            resultService.successMsgSave2Redis(messageId, 60);
 
         } catch (Exception e) {
 

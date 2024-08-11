@@ -45,6 +45,7 @@ sync:
     sendMsgTimeoutMillis: 10000
     syncOrderTopic: SYNC_ORDER_TOPIC
     syncTopic: SYNC_TOPIC
+    enable: false
   activemq:
     producer:
       queueName: SYNC_QUEUE_DEV
@@ -57,7 +58,6 @@ sync:
       brokerUrl: vm://localhost
       username: admin
       password: 123456
-      enable: true
   # 同步回调配置
   callback:
     destList:

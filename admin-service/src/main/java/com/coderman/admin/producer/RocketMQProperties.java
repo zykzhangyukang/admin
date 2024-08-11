@@ -36,4 +36,7 @@ public class RocketMQProperties {
     @ApiModelProperty(value = "重试次数")
     private int retryTimes;
 
+    @ApiModelProperty(value = "是否启用")
+    private boolean enable;
+
 }

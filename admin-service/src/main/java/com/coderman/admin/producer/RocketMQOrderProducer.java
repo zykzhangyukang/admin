@@ -7,6 +7,7 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +21,7 @@ import javax.annotation.Resource;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Component
+@ConditionalOnProperty(prefix = "sync.rocketmq", name = "enable", havingValue = "true")
 public class RocketMQOrderProducer extends BaseService {
 
     private DefaultMQProducer defaultMQProducer;
