@@ -1,10 +1,6 @@
 package com.coderman.admin.service.log.impl;
 
 import com.coderman.admin.service.log.LogService;
-import com.coderman.admin.utils.MsgBuilder;
-import com.coderman.admin.utils.ProjectEnum;
-import com.coderman.admin.utils.SyncUtil;
-import com.coderman.admin.vo.sync.PlanMsg;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -21,6 +17,10 @@ import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.service.BaseService;
 import com.coderman.service.util.HttpContextUtil;
 import com.coderman.service.util.IpUtil;
+import com.coderman.sync.util.MsgBuilder;
+import com.coderman.sync.util.ProjectEnum;
+import com.coderman.sync.util.SyncUtil;
+import com.coderman.sync.vo.PlanMsg;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;

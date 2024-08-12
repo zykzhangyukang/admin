@@ -1,9 +1,5 @@
 package com.coderman.admin.service.func.impl;
 
-import com.coderman.admin.utils.MsgBuilder;
-import com.coderman.admin.utils.ProjectEnum;
-import com.coderman.admin.utils.SyncUtil;
-import com.coderman.admin.vo.sync.PlanMsg;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -31,6 +27,10 @@ import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.FuncVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
+import com.coderman.sync.util.MsgBuilder;
+import com.coderman.sync.util.ProjectEnum;
+import com.coderman.sync.util.SyncUtil;
+import com.coderman.sync.vo.PlanMsg;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;

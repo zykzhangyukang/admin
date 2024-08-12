@@ -1,7 +1,6 @@
 package com.coderman.admin.controller.user;
 
 import com.coderman.admin.dto.user.*;
-import com.coderman.admin.producer.RocketMQProducer;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.utils.AuthUtil;
 import com.coderman.admin.vo.user.UserLoginRespVO;
