@@ -3,14 +3,13 @@ package com.coderman.admin.sync.listener;
 import com.coderman.admin.sync.constant.SyncConstant;
 import com.coderman.admin.sync.context.SyncContext;
 import com.coderman.admin.sync.service.ResultService;
-import com.coderman.service.util.SpringContextUtil;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.jms.TextMessage;
@@ -20,15 +19,16 @@ import java.nio.charset.StandardCharsets;
  * @author Administrator
  */
 @Slf4j
+@NoArgsConstructor
+@AllArgsConstructor
 public class ActiveMqListener implements SessionAwareMessageListener<TextMessage> {
 
+    private ResultService resultService;
 
     @Override
     public void onMessage(@NonNull TextMessage message, @NonNull Session session) throws JMSException {
 
         try {
-
-            ResultService resultService = SpringContextUtil.getBean(ResultService.class);
 
             int retryTimeLimit = 6;
             int deliveryCount = message.getIntProperty("JMSXDeliveryCount");

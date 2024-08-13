@@ -1,6 +1,7 @@
 package com.coderman.admin.sync.config;
 
 import com.coderman.admin.sync.listener.ActiveMqListener;
+import com.coderman.admin.sync.service.ResultService;
 import com.coderman.sync.properties.SyncProperties;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -76,11 +77,11 @@ public class ActiveMQListenerConfig {
      * @return
      */
     @Bean
-    public DefaultMessageListenerContainer jmsListenerContainerFactory(PooledConnectionFactory pooledConnectionFactory, SyncProperties syncProperties) {
+    public DefaultMessageListenerContainer jmsListenerContainerFactory(PooledConnectionFactory pooledConnectionFactory, SyncProperties syncProperties, ResultService resultService) {
         DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
         container.setConnectionFactory(pooledConnectionFactory);
         container.setDestinationName(syncProperties.getActivemq().getQueueName());
-        container.setMessageListener(new ActiveMqListener());
+        container.setMessageListener(new ActiveMqListener(resultService));
         container.setConcurrentConsumers(4);
         container.setMaxConcurrentConsumers(4);
         // 这里要注意activemq和springboot整合的时候，手动提交为4才生效，和原生的不一样

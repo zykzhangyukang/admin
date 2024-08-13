@@ -111,3 +111,4 @@ logging:
     com.coderman.admin: info
     org.elasticsearch: info
     com.alibaba.druid: debug
+    com.coderman.sync: info
