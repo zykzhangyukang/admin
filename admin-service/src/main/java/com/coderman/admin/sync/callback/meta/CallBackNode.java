@@ -1,5 +1,6 @@
 package com.coderman.admin.sync.callback.meta;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,8 +10,10 @@ import java.util.List;
 @Data
 public class CallBackNode {
 
+    @ApiModelProperty(value = "可用回调地址")
     private List<String> availableList = new ArrayList<>();
 
+    @ApiModelProperty(value = "不可用回调地址")
     private List<String> unavailableList = new ArrayList<>();
 
     public String getCallbackUrl() {
