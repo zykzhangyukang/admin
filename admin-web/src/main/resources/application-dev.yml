@@ -36,16 +36,20 @@ sync:
     username: elastic
     password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
-  mq: activemq
+  mq: rocketmq
   rocketmq:
     instantName: SYNC_INSTANT
-    namesrvAddr: 127.0.0.1:9876
-    producerGroup: SYNC_PRODUCE_GROUP
-    producerOrderGroup: SYNC_PRODUCE_ORDER_GROUP
+    namesrvAddr: 47.115.42.112:9876
     retryTimes: 16
     sendMsgTimeoutMillis: 10000
     syncOrderTopic: SYNC_ORDER_TOPIC
     syncTopic: SYNC_TOPIC
+    producerGroup: SYNC_PRODUCE_GROUP
+    producerOrderGroup: SYNC_PRODUCE_ORDER_GROUP
+    consumerGroup: SYNC_CONSUME_GROUP
+    consumerOrderGroup: SYNC_CONSUME_ORDER_GROUP
+    consumeThreadMax: 10
+    consumeThreadMin: 2
   activemq:
     queueName: SYNC_QUEUE_DEV
     brokerUrl: vm://localhost
