@@ -36,7 +36,7 @@ sync:
     username: elastic
     password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
-  mq: rocketmq
+  mq: activemq
   rocketmq:
     instantName: SYNC_INSTANT
     namesrvAddr: 47.115.42.112:9876
@@ -52,7 +52,7 @@ sync:
     consumeThreadMin: 2
   activemq:
     queueName: SYNC_QUEUE_DEV
-    brokerUrl: vm://localhost
+    brokerUrl: nio://localhost:61616 # vm://localhost
     username: admin
     password: 123456
   # 同步回调配置
@@ -72,7 +72,7 @@ sync:
     mysqlInitialSize: 10
     mysqlMinEvictableIdleTimeMillis: 40000
     mysqlTimeBetweenEvictionRunsMillis: 10000
-    mysqlTestOnBorrow: true
+    mysqlTestOnBorrow: false
     mysqlTestOnReturn: false
     mysqlTestWhileIdle: true
     dbList:

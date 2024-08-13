@@ -114,7 +114,7 @@
         <plugins>
             <simpleAuthenticationPlugin>
                 <users>
-                    <authenticationUser username="${sync.activemq.consumer.username}" password="${sync.activemq.consumer.password}" groups="users,admins"/>
+                    <authenticationUser username="${sync.activemq.username}" password="${sync.activemq.password}" groups="users,admins"/>
                 </users>
             </simpleAuthenticationPlugin>
         </plugins>
