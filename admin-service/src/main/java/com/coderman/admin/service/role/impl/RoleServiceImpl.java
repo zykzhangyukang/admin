@@ -161,7 +161,7 @@ public class RoleServiceImpl implements RoleService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_MIDDLE,"新增角色信息");
 
-        PlanMsg build = MsgBuilder.create("insert_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+        PlanMsg build = MsgBuilder.createOrderlyMsg("insert_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC,String.valueOf(insert.getRoleId()))
                 .addIntList("insert_admin_sync_role", Collections.singletonList(insert.getRoleId()))
                 .build();
         SyncUtil.sync(build);
@@ -200,7 +200,7 @@ public class RoleServiceImpl implements RoleService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_IMPORTANT, "删除角色信息");
 
-        PlanMsg build = MsgBuilder.create("delete_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+        PlanMsg build = MsgBuilder.createOrderlyMsg("delete_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC,String.valueOf(roleId))
                 .addIntList("delete_admin_sync_role", Collections.singletonList(roleId))
                 .build();
         SyncUtil.sync(build);
@@ -257,7 +257,7 @@ public class RoleServiceImpl implements RoleService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_MIDDLE, "更新角色信息");
 
-        PlanMsg build = MsgBuilder.create("update_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+        PlanMsg build = MsgBuilder.createOrderlyMsg("update_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC, String.valueOf(roleId))
                 .addIntList("update_admin_sync_role", Collections.singletonList(roleId))
                 .build();
         SyncUtil.sync(build);

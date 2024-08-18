@@ -670,7 +670,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, "启用用户账号");
 
-        PlanMsg build = MsgBuilder.create("update_admin_sync_user", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+        PlanMsg build = MsgBuilder.createOrderlyMsg("update_admin_sync_user_status", ProjectEnum.ADMIN, ProjectEnum.SYNC,String.valueOf(userId))
                 .addIntList("update_admin_sync_user_status", Collections.singletonList(userId))
                 .build();
         SyncUtil.sync(build);
@@ -708,7 +708,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, "禁用用户账号");
 
-        PlanMsg build = MsgBuilder.create("update_admin_sync_user", ProjectEnum.ADMIN, ProjectEnum.SYNC)
+        PlanMsg build = MsgBuilder.createOrderlyMsg("update_admin_sync_user_status", ProjectEnum.ADMIN, ProjectEnum.SYNC, String.valueOf(userId))
                 .addIntList("update_admin_sync_user_status", Collections.singletonList(userId))
                 .build();
         SyncUtil.sync(build);

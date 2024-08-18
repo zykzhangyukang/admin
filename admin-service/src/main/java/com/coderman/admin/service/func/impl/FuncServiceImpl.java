@@ -327,7 +327,7 @@ public class FuncServiceImpl implements FuncService {
             UserRoleExample userRoleModelExample = new UserRoleExample();
             userRoleModelExample.createCriteria().andRoleIdIn(roleIds);
             List<UserRoleModel> userRoleModels = this.userRoleDAO.selectByExample(userRoleModelExample);
-            if (userRoleModels.size() > 0) {
+            if (!userRoleModels.isEmpty()) {
                 return ResultUtil.getWarn("请先解绑用户！");
             }
         }
