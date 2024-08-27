@@ -362,7 +362,14 @@
     <include refid="pageWhere"></include>
     group by  f.func_id, f.func_name, f.func_key, f.parent_id, f.create_time, f.update_time
     order by
-    f.create_time desc
+    <choose>
+      <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
+        ${sortField} ${sortType}
+      </when>
+      <otherwise>
+        f.create_time desc
+      </otherwise>
+    </choose>
     limit #{offset},#{size}
   </select>
 
