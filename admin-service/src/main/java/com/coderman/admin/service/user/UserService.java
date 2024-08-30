@@ -2,6 +2,8 @@ package com.coderman.admin.service.user;
 
 
 import com.coderman.admin.dto.user.*;
+import com.coderman.admin.vo.func.FuncTreeVO;
+import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.user.*;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
@@ -165,4 +167,12 @@ public interface UserService {
      * @return
      */
     ResultVO<List<Object>> pullNotify(Integer userId);
+
+    /**
+     * 获取用户权限信息
+     *
+     * @return
+     */
+    ResultVO<PermissionVO> getPermission();
+
 }

@@ -18,6 +18,8 @@ import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.service.websocket.WebSocketService;
 import com.coderman.admin.utils.*;
 import com.coderman.admin.vo.func.FuncTreeVO;
+import com.coderman.admin.vo.func.MenuVO;
+import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.admin.vo.user.*;
 import com.coderman.api.constant.RedisDbConstant;
@@ -840,6 +842,22 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.redisService.del(listKey, RedisDbConstant.REDIS_DB_DEFAULT);
 
         return ResultUtil.getSuccessList(Object.class, list);
+    }
+
+    @Override
+    public ResultVO<PermissionVO> getPermission() {
+        AuthUserVO currentUser = AuthUtil.getCurrent();
+        Assert.notNull(currentUser , "当前用户未登录!");
+
+        PermissionVO permissionVO =  new PermissionVO();
+
+        List<MenuVO> userMenus = this.funcService.selectUserMenus(currentUser.getUserId());
+        permissionVO.setMenus(userMenus);
+
+        List<String> userButtons = this.funcService.selectUserButtons(currentUser.getUserId());
+        permissionVO.setButtons(userButtons);
+
+        return ResultUtil.getSuccess(PermissionVO.class, permissionVO);
     }
 
 

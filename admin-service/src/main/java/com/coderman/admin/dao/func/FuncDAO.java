@@ -4,6 +4,7 @@ import com.coderman.admin.model.func.FuncExample;
 import com.coderman.admin.model.func.FuncModel;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.FuncVO;
+import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.admin.vo.user.UserVO;
 import com.coderman.mybatis.dao.BaseDAO;
@@ -112,4 +113,19 @@ public interface FuncDAO extends BaseDAO<FuncModel, FuncExample> {
      * @return
      */
     List<FuncModel> selectByRoleId(@Param(value = "roleId") Integer roleId);
+
+    /**
+     * 获取用户所有菜单数据
+     *
+     * @param userId
+     * @return
+     */
+    List<MenuVO> selectUserMenus(@Param(value = "userId") Integer userId);
+
+    /**
+     * 获取用户功能按钮
+     * @param userId
+     * @return
+     */
+    List<String> selectUserButtons(@Param(value = "userId") Integer userId);
 }

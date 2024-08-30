@@ -523,31 +523,66 @@
   </select>
 
 
+
+
   <select id="selectAllByUserIdAndFuncType"  resultMap="funcTreeVOResultMap">
     SELECT DISTINCT
-      f.func_id,
-      f.func_name,
-      f.func_key,
-      f.func_type,
-      f.func_icon,
-      f.parent_id,
-      f.func_sort,
-      f.func_dir_status
+    f.func_id,
+    f.func_name,
+    f.func_key,
+    f.func_type,
+    f.func_icon,
+    f.parent_id,
+    f.func_sort,
+    f.func_dir_status
     FROM
-    auth_user u
-    INNER JOIN auth_user_role ur ON u.user_id = ur.user_id
-    INNER JOIN auth_role r ON ur.role_id = r.role_id
-    INNER JOIN auth_role_func rf ON r.role_id = rf.role_id
-    INNER JOIN auth_func f ON rf.func_id = f.func_id
-      <where>
-        <if test="userId!=null">
-           AND  u.user_id = #{userId}
-        </if>
-        <if test="funcType!=null and funcType!=''">
-          AND f.func_type = #{funcType}
-        </if>
-      </where>
-       ORDER BY f.func_sort ASC
+    auth_func f
+    INNER JOIN auth_role_func rf ON f.func_id = rf.func_id
+    INNER JOIN auth_role r ON rf.role_id = r.role_id
+    INNER JOIN auth_user_role ur ON r.role_id = ur.role_id
+    INNER JOIN auth_user u ON ur.user_id = u.user_id
+    WHERE
+    <if test="userId != null">
+      u.user_id = #{userId}
+    </if>
+    <if test="funcType != null and funcType != ''">
+      AND f.func_type = #{funcType}
+    </if>
+    ORDER BY
+    f.func_sort ASC
+  </select>
+
+  <select id="selectUserMenus" resultType="com.coderman.admin.vo.func.MenuVO">
+    SELECT DISTINCT
+        f.func_id AS id,
+        f.func_name AS `name`,
+        f.func_key AS `key`,
+        f.func_icon AS icon,
+        f.parent_id,
+        f.func_sort AS sort
+    FROM
+        auth_func f
+        INNER JOIN auth_role_func rf ON f.func_id = rf.func_id
+        INNER JOIN auth_role r ON rf.role_id = r.role_id
+        INNER JOIN auth_user_role ur ON r.role_id = ur.role_id
+        INNER JOIN auth_user u ON ur.user_id = u.user_id
+    WHERE
+        u.user_id = #{userId}
+        AND f.func_type = 'dir'
+  </select>
+
+  <select id="selectUserButtons" resultType="string">
+        SELECT DISTINCT
+        f.func_key AS `key`
+    FROM
+        auth_func f
+        INNER JOIN auth_role_func rf ON f.func_id = rf.func_id
+        INNER JOIN auth_role r ON rf.role_id = r.role_id
+        INNER JOIN auth_user_role ur ON r.role_id = ur.role_id
+        INNER JOIN auth_user u ON ur.user_id = u.user_id
+    WHERE
+        u.user_id = #{userId}
+        AND f.func_type = 'func'
   </select>
 
   <select id="selectFuncInfo" resultMap="funcInfoResultMap">

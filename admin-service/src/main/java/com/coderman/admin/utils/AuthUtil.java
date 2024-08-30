@@ -9,7 +9,9 @@ import com.coderman.service.util.HttpContextUtil;
 import com.coderman.service.util.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -64,5 +66,21 @@ public class AuthUtil {
     public static void setCurrent(AuthUserVO authUserVO) {
         HttpServletRequest httpServletRequest = HttpContextUtil.getHttpServletRequest();
         httpServletRequest.setAttribute(CommonConstant.USER_SESSION_KEY, authUserVO);
+    }
+
+    /**
+     * 获取用户登录令牌
+     *
+     * @return
+     */
+    public static String getToken() {
+
+        HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7); // 去掉"Bearer "前缀
+        }
+
+        return null;
     }
 }

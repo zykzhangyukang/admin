@@ -1,5 +1,6 @@
 package com.coderman.admin.service.func.impl;
 
+import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -513,5 +514,51 @@ public class FuncServiceImpl implements FuncService {
     public List<FuncModel> selectAllByFuncIdList(Collection<Integer> funcIdList) {
         Assert.notEmpty(funcIdList, "funcIdList is empty");
         return this.funcDAO.selectAllByFuncIdList(funcIdList);
+    }
+
+    @Override
+    public List<MenuVO> selectUserMenus(Integer userId) {
+
+        List<MenuVO> allMenus = this.funcDAO.selectUserMenus(userId);
+
+        List<MenuVO> rootMenus = new ArrayList<>();
+        Map<Integer, MenuVO> menuMap = allMenus.stream().collect(Collectors.toMap(MenuVO::getId, menu -> menu));
+
+        for (MenuVO menu : allMenus) {
+            if (menu.getParentId() == null || menu.getParentId() == 0) {
+                // 如果是根节点，添加到根菜单列表
+                rootMenus.add(menu);
+            } else {
+                // 如果不是根节点，找到其父菜单并添加到其 children 列表中
+                MenuVO parentMenu = menuMap.get(menu.getParentId());
+                if (parentMenu != null) {
+                    parentMenu.getChildren().add(menu);
+                }
+            }
+        }
+        // 对根菜单和所有子菜单进行排序
+        sortMenus(rootMenus);
+        return rootMenus;
+    }
+
+    /**
+     * 对菜单列表及其子菜单进行递归排序
+     * @param menus 菜单列表
+     */
+    private void sortMenus(List<MenuVO> menus) {
+        // 按照 funcSort 字段排序
+        menus.sort(Comparator.comparingInt(MenuVO::getSort));
+
+        // 递归排序子菜单
+        for (MenuVO menu : menus) {
+            if (menu.getChildren() != null && !menu.getChildren().isEmpty()) {
+                sortMenus(menu.getChildren());
+            }
+        }
+    }
+
+    @Override
+    public List<String> selectUserButtons(Integer userId) {
+        return this.funcDAO.selectUserButtons(userId);
     }
 }

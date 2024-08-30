@@ -3,6 +3,9 @@ package com.coderman.admin.controller.user;
 import com.coderman.admin.dto.user.*;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.utils.AuthUtil;
+import com.coderman.admin.vo.func.FuncTreeVO;
+import com.coderman.admin.vo.func.MenuVO;
+import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.user.UserLoginRespVO;
 import com.coderman.admin.vo.user.UserPermissionVO;
 import com.coderman.admin.vo.user.UserRoleInitVO;
@@ -34,6 +37,16 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "获取用户权限信息")
+    @GetMapping(value = "/permission")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "PermissionVO", value = {"menus", "buttons"})
+    })
+    public ResultVO<PermissionVO> getPermission() {
+        return this.userService.getPermission();
+    }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "用户登录")
     @PostMapping(value = "/login")

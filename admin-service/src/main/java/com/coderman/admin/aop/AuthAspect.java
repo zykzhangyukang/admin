@@ -91,7 +91,7 @@ public class AuthAspect {
         whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout","/auth/const/all"));
 
         // 无需拦截且有会话信息URL
-        unFilterHasLoginInfoUrl.addAll(Arrays.asList("/auth/user/info", "/auth/user/refresh/login","/auth/user/pull/notify"));
+        unFilterHasLoginInfoUrl.addAll(Arrays.asList("/auth/user/info", "/auth/user/refresh/login","/auth/user/pull/notify","/auth/user/permission"));
 
         // 刷新系统资源
         refreshSystemAllRescMap();
@@ -125,7 +125,7 @@ public class AuthAspect {
         }
 
         // 访问令牌
-        String token = request.getHeader(CommonConstant.USER_TOKEN_NAME);
+        String token = AuthUtil.getToken();
 
         if (StringUtils.isBlank(token)) {
 

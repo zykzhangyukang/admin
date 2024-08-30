@@ -1,6 +1,7 @@
 package com.coderman.admin.service.func;
 
 
+import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.dto.func.FuncPageDTO;
@@ -129,4 +130,20 @@ public interface FuncService {
      * @return
      */
     List<FuncModel> selectAllByFuncIdList(Collection<Integer> funcIdList);
+
+    /**
+     * 获取用户菜单
+     *
+     * @param userId
+     * @return
+     */
+    List<MenuVO> selectUserMenus(Integer userId);
+
+    /**
+     * 获取用户按钮
+     *
+     * @param userId
+     * @return
+     */
+    List<String> selectUserButtons(Integer userId);
 }
