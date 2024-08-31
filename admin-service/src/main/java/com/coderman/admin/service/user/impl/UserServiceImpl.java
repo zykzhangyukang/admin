@@ -62,32 +62,18 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Resource
     private UserDAO userDAO;
-
     @Resource
     private RoleDAO roleDAO;
-
     @Resource
     private UserRoleDAO userRoleDAO;
-
     @Resource
     private RedisService redisService;
-
-    @Resource
-    private RedisLockService redisLockService;
-
     @Resource
     private RescService rescService;
-
     @Resource
     private FuncService funcService;
-
     @Resource
     private LogService logService;
-
-    @Resource
-    private WebSocketService webSocketService;
-
-
 
     @Override
     @LogError(value = "切换用户登录")
@@ -387,15 +373,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         String sortType = queryVO.getSortType();
         String sortField = queryVO.getSortField();
         String val = StringUtils.EMPTY;
-        if (StringUtils.isNotBlank(sortType)) {
-
-            if (StringUtils.equals(sortField, "username")) {
-                val = "username";
-            } else if (StringUtils.equals(sortField, "updateTime")) {
-                val = "update_time";
-            } else if (StringUtils.equals(sortField, "createTime")) {
-                val = "create_time";
-            }
+        if (StringUtils.isNotBlank(sortType) && StringUtils.isNotBlank(sortField)) {
             conditionMap.put("sortType", sortType);
             conditionMap.put("sortField", val);
         }

@@ -113,6 +113,7 @@ logging:
   level:
     root: info
     com.coderman.admin: info
+    com.coderman.admin.dao: debug
     org.elasticsearch: info
     com.alibaba.druid: debug
     com.coderman.sync: info
