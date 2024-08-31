@@ -104,7 +104,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         if (!AuthConstant.USER_STATUS_ENABLE.equals(dbUser.getUserStatus())) {
 
-            return ResultUtil.getWarn("用户已被锁定！");
+            return ResultUtil.getWarn("用户已被禁用！");
         }
 
         UserLoginRespVO response = this.generateAndStoreToken(dbUser);
@@ -176,7 +176,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
             if (Objects.equals(dbUser.getUserStatus(), AuthConstant.USER_STATUS_DISABLE)) {
 
-                return ResultUtil.getWarn("用户已被锁定！");
+                return ResultUtil.getWarn("用户已被禁用！");
             }
 
             // 签发token
