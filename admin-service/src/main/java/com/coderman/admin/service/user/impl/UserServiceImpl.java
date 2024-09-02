@@ -372,10 +372,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 字段排序
         String sortType = queryVO.getSortType();
         String sortField = queryVO.getSortField();
-        String val = StringUtils.EMPTY;
         if (StringUtils.isNotBlank(sortType) && StringUtils.isNotBlank(sortField)) {
+            conditionMap.put("sortField", sortField);
             conditionMap.put("sortType", sortType);
-            conditionMap.put("sortField", val);
         }
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);

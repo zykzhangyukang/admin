@@ -86,7 +86,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from auth_resc
     where resc_id = #{rescId,jdbcType=INTEGER}
@@ -102,11 +102,11 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.admin.model.resc.RescModel">
-    insert into auth_resc (resc_id, resc_name, resc_url, 
-      resc_domain, method_type, create_time, 
+    insert into auth_resc (resc_id, resc_name, resc_url,
+      resc_domain, method_type, create_time,
       update_time)
-    values (#{rescId,jdbcType=INTEGER}, #{rescName,jdbcType=VARCHAR}, #{rescUrl,jdbcType=VARCHAR}, 
-      #{rescDomain,jdbcType=VARCHAR}, #{methodType,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+    values (#{rescId,jdbcType=INTEGER}, #{rescName,jdbcType=VARCHAR}, #{rescUrl,jdbcType=VARCHAR},
+      #{rescDomain,jdbcType=VARCHAR}, #{methodType,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.admin.model.resc.RescModel">
@@ -245,7 +245,7 @@
 
   </resultMap>
 
-  <!-- 用户列表 -->
+  <!-- 资源列表 -->
   <select id="page" resultMap="rescVoResultMap" >
     select
     <include refid="Base_Column_List" />

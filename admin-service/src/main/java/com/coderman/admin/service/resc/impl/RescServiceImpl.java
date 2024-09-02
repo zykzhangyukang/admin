@@ -78,12 +78,11 @@ public class RescServiceImpl implements RescService {
             conditionMap.put("methodType", methodType);
         }
         // 字段排序
-        String val = StringUtils.EMPTY;
         String sortField = rescPageDTO.getSortField();
         String sortType = rescPageDTO.getSortType();
         if (StringUtils.isNotBlank(sortType) && StringUtils.isNotBlank(sortField)) {
             conditionMap.put("sortType", sortType);
-            conditionMap.put("sortField", val);
+            conditionMap.put("sortField", sortField);
         }
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
