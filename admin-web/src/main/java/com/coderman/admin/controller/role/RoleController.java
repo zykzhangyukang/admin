@@ -47,8 +47,7 @@ public class RoleController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
     })
-    public ResultVO<Void> updateRoleUser(@RequestParam(value = "roleId") Integer roleId,
-                                     @RequestParam(value = "assignedIdList") List<Integer> assignedIdList){
+    public ResultVO<Void> updateRoleUser(@RequestParam(value = "roleId") Integer roleId, @RequestParam(value = "assignedIdList") List<Integer> assignedIdList){
         return this.roleService.updateRoleUser(roleId,assignedIdList);
     }
 

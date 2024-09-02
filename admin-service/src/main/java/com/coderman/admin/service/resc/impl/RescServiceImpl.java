@@ -81,19 +81,7 @@ public class RescServiceImpl implements RescService {
         String val = StringUtils.EMPTY;
         String sortField = rescPageDTO.getSortField();
         String sortType = rescPageDTO.getSortType();
-        if (StringUtils.isNotBlank(sortType)) {
-
-            if (StringUtils.equals(sortField, "rescUrl")) {
-                val = "resc_url";
-            } else if (StringUtils.equals(sortField, "methodType")) {
-                val = "method_type";
-            } else if (StringUtils.equals(sortField, "rescDomain")) {
-                val = "resc_domain";
-            } else if (StringUtils.equals(sortField, "createTime")) {
-                val = "create_time";
-            } else if (StringUtils.equals(sortField, "updateTime")) {
-                val = "update_time";
-            }
+        if (StringUtils.isNotBlank(sortType) && StringUtils.isNotBlank(sortField)) {
             conditionMap.put("sortType", sortType);
             conditionMap.put("sortField", val);
         }
