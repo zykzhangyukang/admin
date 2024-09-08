@@ -99,6 +99,14 @@ public class LogServiceImpl extends BaseService implements LogService {
         if (StringUtils.isNotBlank(logPageDTO.getRealName())) {
             conditionMap.put("realName", logPageDTO.getRealName());
         }
+        if (StringUtils.isNotBlank(logPageDTO.getIpAddress())) {
+            conditionMap.put("ipAddress", logPageDTO.getIpAddress());
+        }
+
+        if (StringUtils.isNotBlank(logPageDTO.getSortType()) && StringUtils.isNotBlank(logPageDTO.getSortField())) {
+            conditionMap.put("sortType", logPageDTO.getSortType());
+            conditionMap.put("sortField", logPageDTO.getSortField());
+        }
 
         List<LogVO> logVOList = new ArrayList<>();
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);

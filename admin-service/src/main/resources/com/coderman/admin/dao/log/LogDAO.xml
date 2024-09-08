@@ -73,7 +73,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    log_id, log_info, log_module, log_level, ip_address, device_info, location, user_id, 
+    log_id, log_info, log_module, log_level, ip_address, device_info, location, user_id,
     username, real_name, create_time
   </sql>
   <select id="selectByExample" parameterType="com.coderman.admin.model.log.LogExample" resultMap="BaseResultMap">
@@ -91,7 +91,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from auth_log
     where log_id = #{logId,jdbcType=INTEGER}
@@ -107,13 +107,13 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.admin.model.log.LogModel">
-    insert into auth_log (log_id, log_info, log_module, 
-      log_level, ip_address, device_info, 
-      location, user_id, username, 
+    insert into auth_log (log_id, log_info, log_module,
+      log_level, ip_address, device_info,
+      location, user_id, username,
       real_name, create_time)
-    values (#{logId,jdbcType=INTEGER}, #{logInfo,jdbcType=VARCHAR}, #{logModule,jdbcType=INTEGER}, 
-      #{logLevel,jdbcType=INTEGER}, #{ipAddress,jdbcType=VARCHAR}, #{deviceInfo,jdbcType=VARCHAR}, 
-      #{location,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, 
+    values (#{logId,jdbcType=INTEGER}, #{logInfo,jdbcType=VARCHAR}, #{logModule,jdbcType=INTEGER},
+      #{logLevel,jdbcType=INTEGER}, #{ipAddress,jdbcType=VARCHAR}, #{deviceInfo,jdbcType=VARCHAR},
+      #{location,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR},
       #{realName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.admin.model.log.LogModel">
@@ -392,7 +392,15 @@
     log_id, log_info, log_module, log_level, user_id, username, real_name, create_time, ip_address, device_info, location
     from auth_log al
     <include refid="pageWhere"/>
-    order by log_id desc
+    order by
+    <choose>
+      <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
+        ${sortField} ${sortType}
+      </when>
+      <otherwise>
+        log_id desc
+      </otherwise>
+    </choose>
     limit #{offset},#{size}
   </select>
 
@@ -409,6 +417,9 @@
       </if>
       <if test="logLevel!=null and logLevel!=''">
         and al.log_level  = #{logLevel}
+      </if>
+      <if test="ipAddress!=null and ipAddress!=''">
+        and al.ip_address  = #{ipAddress}
       </if>
     </where>
   </sql>
