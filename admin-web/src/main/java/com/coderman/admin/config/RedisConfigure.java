@@ -19,7 +19,7 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 @Component(value = "adminRedisConfig")
 @Configuration
-public class RedisConfig extends BaseRedisConfig {
+public class RedisConfigure extends BaseRedisConfig {
 
 
     @Bean

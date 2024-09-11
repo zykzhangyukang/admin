@@ -81,11 +81,13 @@ sync:
       url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
       username: root
       password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
+      initial-size: 2
 
     - dbname: admin_dev_sync
       url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
       username: root
       password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
+      initial-size: 2
 
 #    - dbname:  ecp_cart_dev
 #      url: 127.0.0.1:27017

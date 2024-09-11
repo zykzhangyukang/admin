@@ -1,7 +1,7 @@
 package com.coderman.admin.config;
 
+import com.coderman.admin.interceptor.AuthChannelInterceptor;
 import com.coderman.admin.interceptor.AuthHandshakeInterceptor;
-import com.coderman.admin.interceptor.MyChannelInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -18,14 +18,13 @@ import javax.annotation.Resource;
  */
 @Configuration
 @EnableWebSocketMessageBroker
-@DependsOn(value = {"authHandshakeInterceptor","myChannelInterceptor"})
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+@DependsOn(value = {"authHandshakeInterceptor","authChannelInterceptor"})
+public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer {
 
     @Resource
     private AuthHandshakeInterceptor authHandshakeInterceptor;
-
     @Resource
-    private MyChannelInterceptor myChannelInterceptor;
+    private AuthChannelInterceptor authChannelInterceptor;
 
 
     // 客户端订阅服务器地址的前缀信息
@@ -56,7 +55,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(authHandshakeInterceptor , myChannelInterceptor);
+        registration.interceptors(authHandshakeInterceptor , authChannelInterceptor);
     }
 
 }

@@ -25,7 +25,7 @@ import java.security.Principal;
 @Component
 @Slf4j
 @Lazy(value = false)
-public class MyChannelInterceptor implements ChannelInterceptor {
+public class AuthChannelInterceptor implements ChannelInterceptor {
 
     @Resource
     private RedisService redisService;
