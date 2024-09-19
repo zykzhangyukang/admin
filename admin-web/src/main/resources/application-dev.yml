@@ -7,9 +7,6 @@ spring:
     username: root
     url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
     password: zhangyukang
-    schema: classpath:db/schema.sql
-    data: classpath:db/data.sql
-    initialization-mode: never
   redis:
     host: 127.0.0.1
     port: 6379
@@ -113,12 +110,11 @@ job:
 logging:
   level:
     root: info
+    com.coderman: info
     com.coderman.admin.dao: debug
-    com.coderman.sync: info
 
 # swagger
 swagger:
-  enabled: false
   title: 通用后台管理系统
   description: 帮助用户快速搭建稳定、高效的后台系统。
   version: 2.0.0
