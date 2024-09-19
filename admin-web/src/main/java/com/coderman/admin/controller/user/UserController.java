@@ -149,8 +149,8 @@ public class UserController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "UserVO", value = {"realName", "deptName", "password", "userStatus", "createTime",
-                    "updateTime", "userId", "deptCode", "username"})
+            @ApiReturnParam(name = "UserVO", value = {"realName", "deptName", "userStatus", "createTime",
+                    "updateTime", "userId", "deptCode", "username","roleList"})
     })
     public ResultVO<PageVO<List<UserVO>>> page(@RequestBody UserPageDTO queryVO) {
         return this.userService.page(queryVO);

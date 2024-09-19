@@ -21,6 +21,7 @@ import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.resc.RescVO;
+import com.coderman.admin.vo.role.RoleVO;
 import com.coderman.admin.vo.user.*;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.constant.ResultConstant;
@@ -357,11 +358,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (StringUtils.isNotBlank(queryVO.getUsername())) {
             conditionMap.put("username", queryVO.getUsername());
         }
-
         if (StringUtils.isNotBlank(queryVO.getRealName())) {
             conditionMap.put("realName", queryVO.getRealName());
         }
-
         if (Objects.nonNull(queryVO.getUserStatus())) {
             conditionMap.put("userStatus", queryVO.getUserStatus());
         }
@@ -383,10 +382,17 @@ public class UserServiceImpl extends BaseService implements UserService {
         Long count = this.userDAO.countPage(conditionMap);
 
         List<UserVO> userVOList = new ArrayList<>();
-
         if (count > 0) {
-
             userVOList = this.userDAO.selectPage(conditionMap);
+        }
+        for (UserVO userVO : userVOList) {
+            List<RoleModel> roleModels = this.roleDAO.selectUserRoleList(userVO.getUserId());
+            List<RoleVO> roles = roleModels.stream().map(e -> {
+                RoleVO roleVO = new RoleVO();
+                BeanUtils.copyProperties(e, roleVO);
+                return roleVO;
+            }).collect(Collectors.toList());
+            userVO.setRoleList(roles);
         }
 
 
@@ -611,10 +617,14 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         // 查询用户角色
-        List<String> roleNames = this.roleDAO.selectUserRoleList(userVO.getUserId()).stream()
-                .map(RoleModel::getRoleName)
+        List<RoleVO> roles = this.roleDAO.selectUserRoleList(userVO.getUserId()).stream()
+                .map(e->{
+                    RoleVO roleVO = new RoleVO();
+                    BeanUtils.copyProperties(e, roleVO);
+                    return roleVO;
+                })
                 .collect(Collectors.toList());
-        userVO.setRoleList(roleNames);
+        userVO.setRoleList(roles);
 
         return ResultUtil.getSuccess(UserVO.class, userVO);
     }

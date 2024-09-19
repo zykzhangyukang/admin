@@ -267,7 +267,6 @@
       u.user_id,
       u.username,
       u.real_name,
-      u.`password`,
       u.dept_code,
       u.user_status,
       u.create_time,

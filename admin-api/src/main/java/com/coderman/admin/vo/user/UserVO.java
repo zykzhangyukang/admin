@@ -1,6 +1,7 @@
 package com.coderman.admin.vo.user;
 
 import com.coderman.admin.model.user.UserModel;
+import com.coderman.admin.vo.role.RoleVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,5 +23,5 @@ public class UserVO extends UserModel {
     private String deptName;
 
     @ApiModelProperty(value = "角色信息")
-    private List<String> roleList;
+    private List<RoleVO> roleList;
 }
