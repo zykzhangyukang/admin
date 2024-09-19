@@ -5,45 +5,65 @@ spring:
     name: admin
   datasource:
     username: root
-    password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
-    url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_pro?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    password: zhangyukang
+    schema: classpath:db/schema.sql
+    data: classpath:db/data.sql
+    initialization-mode: never
   redis:
-    host: 10.41.188.160
-    password: DES@99D5518076FE8F32214D66F4B59766B7
+    host: 127.0.0.1
     port: 6379
   task:
     scheduling:
       pool:
-        size: 3
+        size: 4
 
-#服务端配置
-pub_mq_message.db: admin_pro
-pub_callback.db: club_pro
 sync:
+  # 回调&&发送库
+  db:
+    pub-mq-message: admin_dev
+    pub-callback: admin_dev_sync
   # es 配置
   elasticsearch:
-    clusterName: sync
-    hosts: 10.41.188.160:9200
+    clusterName: docker-cluster
+    hosts: 47.115.42.112:9200
     scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
     connectionRequestTimeOut: 500
     maxConnectNum: 100
     maxConnectNumPerRoute: 100
+    username: elastic
+    password:  DES@99D5518076FE8F32214D66F4B59766B7
+  # 消息队列配置
+  mq: rocketmq
+  rocketmq:
+    instantName: SYNC_INSTANT
+    namesrvAddr: 47.115.42.112:9876
+    retryTimes: 16
+    sendMsgTimeoutMillis: 10000
+    syncOrderTopic: SYNC_ORDER_TOPIC
+    syncTopic: SYNC_TOPIC
+    producerGroup: SYNC_PRODUCE_GROUP
+    producerOrderGroup: SYNC_PRODUCE_ORDER_GROUP
+    consumerGroup: SYNC_CONSUME_GROUP
+    consumerOrderGroup: SYNC_CONSUME_ORDER_GROUP
+    consumeThreadMax: 10
+    consumeThreadMin: 2
   activemq:
     queueName: SYNC_QUEUE_DEV
-    brokerUrl: vm://localhost
+    brokerUrl: nio://localhost:61616 # vm://localhost
     username: admin
     password: 123456
   # 同步回调配置
   callback:
     destList:
-      - project: admin
-        url: https://api.coderman.love
+      - project: sync
+        url: http://127.0.0.1:8787
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20
-    commonMaxWait: 5000
+    commonMaxWait: 1000
     commonMinIdle: 10
     commonMaxActive: 800
     commonTimeout: 20
@@ -57,18 +77,56 @@ sync:
     mysqlTestWhileIdle: true
     dbList:
 
-      - dbname: admin_pro
-        password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
-        url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_pro?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      - dbname: admin_dev
+        url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
+        password: zhangyukang
 
-      - dbname: club_pro
-        password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
-        url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/club_pro?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+      - dbname: admin_dev_sync
+        url: jdbc:mysql://127.0.0.1:3306/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
+        password: zhangyukang
 
+#    - dbname:  ecp_cart_dev
+#      url: 127.0.0.1:27017
+#      connectionsPerHost: 50
+#      connectTimeout: 1000
+#      type: mongo
+#      maxWaitTime: 1500
+#      serverSelectionTimeout: 10000
+#      socketKeepAlive: true
+#      socketTimeout: 600000
+#      threadsAllowedToBlockForConnectionMultiplier: 20
+#      password:  DES@99D5518076FE8F32214D66F4B59766B7
+#      username: root
+
+# job
+job:
+  enable: false
+  app-name: ${spring.application.name}
+  admin-addresses: http://192.168.2.97:8999/xxl-job-admin
+  port: 9991
+  log-retention-days: 30
+  log-path: D:\java\logs\xxl-job
+
+# log
 logging:
   level:
     root: info
-    com.coderman.admin.sync: info
+    com.coderman.admin.dao: debug
     com.coderman.sync: info
+
+# swagger
+swagger:
+  enabled: false
+  title: 通用后台管理系统
+  description: 帮助用户快速搭建稳定、高效的后台系统。
+  version: 2.0.0
+  contact:
+    name: coderman
+    email: 3053161401@qq.com
+    url: https://github.com/zykzhangyukang
+  exclude-auth:
+    - /auth/user/login
+    - /auth/user/logout
+    - /auth/const/all

@@ -5,8 +5,8 @@ spring:
     name: admin
   datasource:
     username: root
-    url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-    password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
+    url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    password: zhangyukang
     schema: classpath:db/schema.sql
     data: classpath:db/data.sql
     initialization-mode: never
@@ -77,17 +77,15 @@ sync:
     mysqlTestWhileIdle: true
     dbList:
 
-    - dbname: admin_dev
-      url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-      username: root
-      password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
-      initial-size: 2
+      - dbname: admin_dev
+        url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: zhangyukang
 
-    - dbname: admin_dev_sync
-      url: jdbc:mysql://gz-cynosdbmysql-grp-4e4x79rx.sql.tencentcdb.com:23688/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-      username: root
-      password: DES@402239CE2BC2750281C31F4CEA2619B91D0AE9C2129F6555
-      initial-size: 2
+      - dbname: admin_dev_sync
+        url: jdbc:mysql://127.0.0.1:3306/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: zhangyukang
 
 #    - dbname:  ecp_cart_dev
 #      url: 127.0.0.1:27017
@@ -111,11 +109,24 @@ job:
   log-retention-days: 30
   log-path: D:\java\logs\xxl-job
 
+# log
 logging:
   level:
     root: info
-    com.coderman.admin: info
     com.coderman.admin.dao: debug
-    org.elasticsearch: info
-    com.alibaba.druid: debug
     com.coderman.sync: info
+
+# swagger
+swagger:
+  enabled: false
+  title: 通用后台管理系统
+  description: 帮助用户快速搭建稳定、高效的后台系统。
+  version: 2.0.0
+  contact:
+    name: coderman
+    email: 3053161401@qq.com
+    url: https://github.com/zykzhangyukang
+  exclude-auth:
+    - /auth/user/login
+    - /auth/user/logout
+    - /auth/const/all
