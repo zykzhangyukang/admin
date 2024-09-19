@@ -291,7 +291,7 @@ public class RoleServiceImpl implements RoleService {
 
         roleUserInitVO.setRoleId(roleId);
 
-        // 查询全部角色信息
+        // 查询全部用户信息
         List<UserModel> userModelList = this.userDAO.selectByExample(null);
         roleUserInitVO.setUserList(userModelList);
 
@@ -307,7 +307,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @LogError(value = "角色分配用户")
-    public ResultVO<Void> updateRoleUser(Integer roleId, List<Integer> assignedIdList) {
+    public ResultVO<Void> updateRoleUser(Integer roleId, List<Integer> userIdList) {
 
         RoleModel roleModel = this.roleDAO.selectByPrimaryKey(roleId);
         if (roleModel == null) {
@@ -319,8 +319,8 @@ public class RoleServiceImpl implements RoleService {
         example.createCriteria().andRoleIdEqualTo(roleId);
         this.userRoleDAO.deleteByExample(example);
         // 批量新增
-        if (CollectionUtils.isNotEmpty(assignedIdList)) {
-            this.userRoleDAO.insertBatchByRoleId(roleId, assignedIdList);
+        if (CollectionUtils.isNotEmpty(userIdList)) {
+            this.userRoleDAO.insertBatchByRoleId(roleId, userIdList);
         }
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE,AuthConstant.LOG_MODULE_IMPORTANT, "角色分配用户");

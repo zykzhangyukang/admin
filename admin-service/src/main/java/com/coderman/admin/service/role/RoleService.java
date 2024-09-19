@@ -72,10 +72,10 @@ public interface RoleService {
     /**
      * 角色分配用户
      * @param roleId
-     * @param assignedIdList
+     * @param userIdList
      * @return
      */
-    ResultVO<Void> updateRoleUser(Integer roleId, List<Integer> assignedIdList);
+    ResultVO<Void> updateRoleUser(Integer roleId, List<Integer> userIdList);
 
 
 

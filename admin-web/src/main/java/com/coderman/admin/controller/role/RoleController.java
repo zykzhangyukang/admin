@@ -1,11 +1,8 @@
 package com.coderman.admin.controller.role;
 
+import com.coderman.admin.dto.role.*;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.admin.dto.role.RoleFuncUpdateDTO;
-import com.coderman.admin.dto.role.RolePageDTO;
-import com.coderman.admin.dto.role.RoleSaveDTO;
-import com.coderman.admin.dto.role.RoleUpdateDTO;
 import com.coderman.admin.service.role.RoleService;
 import com.coderman.admin.vo.role.RoleFuncCheckVO;
 import com.coderman.admin.vo.role.RoleFuncInitVO;
@@ -41,14 +38,14 @@ public class RoleController {
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST,value = "角色分配用户")
     @PostMapping(value = "/user/update")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_INT,value = "角色id",required = true),
-            @ApiImplicitParam(name = "assignedIdList",paramType = SwaggerConstant.PARAM_FORM,dataType = SwaggerConstant.DATA_OBJECT,value = "分配的用户id集合",required = true),
+            @ApiImplicitParam(name = "roleId",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_INT,value = "角色id"),
+            @ApiImplicitParam(name = "assignedIdList",paramType = SwaggerConstant.PARAM_BODY,dataType = SwaggerConstant.DATA_OBJECT,value = "分配的用户id集合"),
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
     })
-    public ResultVO<Void> updateRoleUser(@RequestParam(value = "roleId") Integer roleId, @RequestParam(value = "assignedIdList") List<Integer> assignedIdList){
-        return this.roleService.updateRoleUser(roleId,assignedIdList);
+    public ResultVO<Void> updateRoleUser(@RequestBody RoleUpdateUserDTO dto){
+        return this.roleService.updateRoleUser(dto.getRoleId(),dto.getUserIdList());
     }
 
 
@@ -59,7 +56,7 @@ public class RoleController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "RoleUserInitVO",value = {"assignedIdList", "userList", "roleId"})
+            @ApiReturnParam(name = "RoleUserInitVO",value = {"assignedIdList", "userList", "roleId","userIdList"})
     })
     public ResultVO<RoleUserInitVO> selectRoleUserInit(@RequestParam(value = "roleId") Integer roleId){
         return this.roleService.selectRoleUserInit(roleId);
