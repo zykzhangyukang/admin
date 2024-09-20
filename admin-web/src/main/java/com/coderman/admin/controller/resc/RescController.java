@@ -22,9 +22,9 @@ import java.util.List;
 
 /**
  * @author coderman
- * @Title: 资源
- * @Description: TOD
- * @date 2022/3/199:02
+ * @Title: 资源管理
+ * @Description: 资源管理控制器
+ * @date 2022/3/19 9:02
  */
 @Api(value = "资源管理", tags = "资源管理")
 @RestController
@@ -34,18 +34,16 @@ public class RescController {
     @Resource
     private RescService rescService;
 
-
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "资源列表")
     @PostMapping(value = "/page")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "RescVO", value = {"rescId","rescName", "rescUrl", "rescDomain", "createTime", "updateTime", "methodType"})
+            @ApiReturnParam(name = "RescVO", value = {"rescId", "rescName", "rescUrl", "rescDomain", "createTime", "updateTime", "methodType"})
     })
     public ResultVO<PageVO<List<RescVO>>> page(@RequestBody RescPageDTO rescPageDTO) {
         return this.rescService.page(rescPageDTO);
     }
-
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "新增资源")
     @PostMapping(value = "/save")
@@ -75,7 +73,6 @@ public class RescController {
             @ApiReturnParam(name = "RescVO", value = {"rescName", "rescUrl", "rescDomain", "createTime", "updateTime", "methodType"})
     })
     public ResultVO<List<RescVO>> search(@RequestParam(value = "keyword") String keyword) {
-
         return this.rescService.search(keyword);
     }
 
@@ -88,7 +85,6 @@ public class RescController {
     public ResultVO<Void> refresh() {
         return this.rescService.refresh();
     }
-
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_DELETE, value = "删除资源")
     @DeleteMapping(value = "/delete")
@@ -114,6 +110,4 @@ public class RescController {
     public ResultVO<RescVO> select(@RequestParam(value = "rescId") Integer rescId) {
         return this.rescService.selectById(rescId);
     }
-
-
 }

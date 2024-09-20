@@ -84,7 +84,7 @@ public interface RoleService {
      * @param roleId
      * @return
      */
-    ResultVO<RoleFuncInitVO> selectRoleFuncInit(String roleId);
+    ResultVO<RoleFuncInitVO> selectRoleFuncInit(Integer roleId);
 
 
     /**

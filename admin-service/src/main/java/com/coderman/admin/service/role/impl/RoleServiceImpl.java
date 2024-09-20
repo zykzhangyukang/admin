@@ -329,14 +329,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @LogError(value = "角色分配功能初始化")
-    public ResultVO<RoleFuncInitVO> selectRoleFuncInit(@LogErrorParam String roleIdStr) {
-
-        Integer roleId = null;
-
-        try {
-            roleId = Integer.parseInt(roleIdStr);
-        } catch (Exception ignored) {
-        }
+    public ResultVO<RoleFuncInitVO> selectRoleFuncInit(Integer roleId) {
 
         if (Objects.isNull(roleId)) {
 
