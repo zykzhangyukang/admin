@@ -2,6 +2,7 @@ package com.coderman.admin.sync.service.impl;
 
 import com.coderman.admin.sync.dto.*;
 import com.coderman.admin.sync.model.PlanHistoryModel;
+import com.coderman.admin.sync.util.XmlFormatter;
 import com.coderman.admin.utils.AuthUtil;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.util.ResultUtil;
@@ -95,7 +96,7 @@ public class PlanServiceImpl implements PlanService {
                     preparedStatement.setString(5, destDb);
                     preparedStatement.setString(6, srcProject);
                     preparedStatement.setString(7, destProject);
-                    preparedStatement.setString(8, planContent);
+                    preparedStatement.setString(8, XmlFormatter.toPrettyString(planContent, 2));
                     preparedStatement.setString(9, PlanConstant.STATUS_NORMAL);
                     preparedStatement.setObject(10, new Date());
                     preparedStatement.setObject(11, new Date());
@@ -462,11 +463,18 @@ public class PlanServiceImpl implements PlanService {
         List<PlanVO> list = getPlanVOByUuid(uuid);
 
         if (CollectionUtils.isEmpty(list)) {
-
             return ResultUtil.getWarn("同步计划不存在");
         }
+        PlanVO planVO = list.get(0);
 
-        return ResultUtil.getSuccess(PlanVO.class, list.get(0));
+        // 格式化xml
+        String planContent = planVO.getPlanContent();
+        if(StringUtils.isNotBlank(planContent)){
+            String xml = XmlFormatter.toPrettyString(planContent, 2);
+            planVO.setPlanContent(xml);
+        }
+
+        return ResultUtil.getSuccess(PlanVO.class, planVO);
     }
 
 }
