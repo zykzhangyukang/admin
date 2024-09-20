@@ -11,7 +11,7 @@
  Target Server Version : 50735
  File Encoding         : 65001
 
- Date: 19/09/2024 15:00:25
+ Date: 20/09/2024 17:18:25
 */
 
 SET NAMES utf8mb4;
@@ -253,6 +253,11 @@ CREATE TABLE `sync_auth_log`  (
 -- ----------------------------
 -- Records of sync_auth_log
 -- ----------------------------
+INSERT INTO `sync_auth_log` VALUES (586, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-19 14:45:39', '2024-09-19 15:01:24');
+INSERT INTO `sync_auth_log` VALUES (587, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 14:12:12', '2024-09-20 14:18:03');
+INSERT INTO `sync_auth_log` VALUES (589, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 14:20:08', '2024-09-20 14:20:08');
+INSERT INTO `sync_auth_log` VALUES (590, '更新资源信息', 2, 1, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 14:21:20', '2024-09-20 14:21:20');
+INSERT INTO `sync_auth_log` VALUES (591, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 16:53:34', '2024-09-20 16:53:36');
 
 -- ----------------------------
 -- Table structure for sync_auth_resc
@@ -302,7 +307,7 @@ INSERT INTO `sync_auth_resc` VALUES (31, '功能删除', '/auth/func/delete', 'a
 INSERT INTO `sync_auth_resc` VALUES (32, '功能新增', '/auth/func/save', 'auth', 'post', '2022-03-26 20:53:24', '2023-06-17 21:04:07', NULL);
 INSERT INTO `sync_auth_resc` VALUES (33, '功能查询', '/auth/func/page', 'auth', 'get', '2022-03-26 20:53:40', '2022-09-11 16:05:51', NULL);
 INSERT INTO `sync_auth_resc` VALUES (34, '功能树获取', '/auth/func/tree', 'auth', 'get', '2022-03-26 20:53:58', '2023-07-11 23:40:28', NULL);
-INSERT INTO `sync_auth_resc` VALUES (35, '角色分配用户初始化', '/auth/role/user/init', 'auth', 'get', '2022-03-26 21:07:44', '2023-07-11 23:50:51', NULL);
+INSERT INTO `sync_auth_resc` VALUES (35, '角色分配用户初始化', '/auth/role/user/update/init', 'auth', 'get', '2022-03-26 21:07:44', '2024-09-20 14:21:20', '2024-09-20 14:21:20');
 INSERT INTO `sync_auth_resc` VALUES (36, '角色分配用户', '/auth/role/user/update', 'auth', 'post', '2022-03-26 21:07:59', '2022-09-03 16:02:22', NULL);
 INSERT INTO `sync_auth_resc` VALUES (37, '角色授权功能初始化', '/auth/role/func/init', 'auth', 'get', '2022-04-04 17:46:28', '2023-07-11 23:54:43', NULL);
 INSERT INTO `sync_auth_resc` VALUES (38, '角色分配功能', '/auth/role/func/update', 'auth', 'post', '2022-04-04 17:46:57', '2023-07-08 10:09:07', NULL);

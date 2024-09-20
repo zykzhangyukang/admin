@@ -11,7 +11,7 @@
  Target Server Version : 50735
  File Encoding         : 65001
 
- Date: 19/09/2024 14:33:29
+ Date: 20/09/2024 17:18:17
 */
 
 SET NAMES utf8mb4;
@@ -50,9 +50,8 @@ CREATE TABLE `auth_func`  (
   `func_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '功能名称',
   `func_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '功能key',
   `func_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '功能类型(目录/功能)',
-  `func_icon` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '目录图标',
-  `func_sort` int(11) NULL DEFAULT NULL COMMENT '功能排序',
-  `func_dir_status` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '是否隐藏',
+  `hide` int(11) NOT NULL COMMENT '是否隐藏',
+  `func_sort` int(11) NOT NULL COMMENT '功能排序',
   `parent_id` int(11) NOT NULL COMMENT '父级功能id',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '更新时间',
@@ -64,60 +63,60 @@ CREATE TABLE `auth_func`  (
 -- ----------------------------
 -- Records of auth_func
 -- ----------------------------
-INSERT INTO `auth_func` VALUES (2, '权限系统', '/auth', 'dir', 'FacebookOutlined', 1, 'show', 0, '2022-03-19 15:57:28', '2024-06-16 20:51:25');
-INSERT INTO `auth_func` VALUES (3, '用户管理', '/auth/user', 'dir', 'UserAddOutlined', 1, 'show', 2, '2022-03-19 16:10:26', '2023-10-05 14:18:01');
-INSERT INTO `auth_func` VALUES (4, '角色管理', '/auth/role', 'dir', 'IdcardOutlined', 4, 'show', 2, '2022-03-19 16:11:29', '2023-09-15 21:40:09');
-INSERT INTO `auth_func` VALUES (5, '功能管理', '/auth/func', 'dir', 'CloudServerOutlined', 2, 'show', 2, '2022-03-19 16:11:41', '2024-06-16 20:51:29');
-INSERT INTO `auth_func` VALUES (6, '资源管理', '/auth/resc', 'dir', 'FundProjectionScreenOutlined', 5, 'show', 2, '2022-03-19 16:11:54', '2023-09-15 21:33:29');
-INSERT INTO `auth_func` VALUES (8, '角色删除', 'auth:role:delete', 'func', '', 7, 'show', 4, '2022-03-19 18:23:22', '2023-09-03 18:58:48');
-INSERT INTO `auth_func` VALUES (9, '角色更新', 'auth:role:update', 'func', '', 8, 'show', 4, '2022-03-19 18:23:38', '2022-03-19 18:23:40');
-INSERT INTO `auth_func` VALUES (11, '角色查询', 'auth:role:page', 'func', '', 9, 'show', 4, '2022-03-19 18:24:02', '2022-03-19 18:24:03');
-INSERT INTO `auth_func` VALUES (12, '功能查询', 'auth:func:page', 'func', '', 5, 'show', 5, '2022-03-19 18:24:30', '2023-09-03 18:58:58');
-INSERT INTO `auth_func` VALUES (13, '列表查询', 'auth:resc:page', 'func', '', 4, 'show', 6, '2022-03-19 18:24:51', '2023-07-15 23:17:47');
-INSERT INTO `auth_func` VALUES (14, '功能新增', 'auth:func:add', 'func', '', 6, 'show', 5, '2022-03-19 18:26:06', '2023-09-03 18:58:59');
-INSERT INTO `auth_func` VALUES (26, '资源添加', 'auth:resc:add', 'func', '', 5, 'show', 6, '2022-03-20 21:43:55', '2023-07-15 23:18:31');
-INSERT INTO `auth_func` VALUES (27, '资源删除', 'auth:resc:delete', 'func', '', 6, 'show', 6, '2022-03-20 21:44:03', '2023-09-03 18:58:47');
-INSERT INTO `auth_func` VALUES (54, '功能删除', 'auth:func:delete', 'func', '', 7, 'show', 5, '2022-03-26 20:57:44', '2023-09-03 18:58:41');
-INSERT INTO `auth_func` VALUES (55, '功能更新', 'auth:func:update', 'func', '', 8, 'show', 5, '2022-03-26 20:58:00', '2023-09-03 18:58:43');
-INSERT INTO `auth_func` VALUES (56, '资源编辑', 'auth:resc:update', 'func', '', 7, 'show', 6, '2022-03-26 21:00:16', '2023-07-15 23:18:21');
-INSERT INTO `auth_func` VALUES (57, '用户查询', 'auth:user:page', 'func', '', 2, 'show', 3, '2022-03-26 21:04:37', '2023-09-09 11:45:35');
-INSERT INTO `auth_func` VALUES (60, '用户编辑', 'auth:user:update', 'func', '', 5, 'show', 3, '2022-03-26 21:05:33', '2023-07-15 23:18:48');
-INSERT INTO `auth_func` VALUES (61, '用户删除', 'auth:user:delete', 'func', '', 6, 'show', 3, '2022-03-26 21:05:55', '2023-09-23 15:29:31');
-INSERT INTO `auth_func` VALUES (62, '分配角色', 'auth:user:roleUpdate', 'func', '', 7, 'show', 3, '2022-03-26 21:06:48', '2023-09-03 18:58:45');
-INSERT INTO `auth_func` VALUES (63, '分配用户', 'auth:role:userUpdate', 'func', '', 6, 'show', 4, '2022-03-26 21:08:39', '2023-07-15 15:28:20');
-INSERT INTO `auth_func` VALUES (71, '角色授权', '/auth/role/authorized', 'dir', 'HomeOutlined', 5, 'hide', 4, '2022-04-04 17:45:36', '2023-09-15 21:37:22');
-INSERT INTO `auth_func` VALUES (72, '角色新增', 'auth:role:add', 'func', '', 10, 'show', 4, '2022-04-16 11:13:19', '2023-07-01 11:12:50');
-INSERT INTO `auth_func` VALUES (73, '解绑用户', 'auth:func:userRemove', 'func', '', 9, 'show', 5, '2022-04-16 21:55:19', '2023-07-15 15:27:43');
-INSERT INTO `auth_func` VALUES (74, '解绑资源', 'auth:func:rescRemove', 'func', '', 10, 'show', 5, '2022-04-16 22:02:49', '2023-09-03 13:58:36');
-INSERT INTO `auth_func` VALUES (75, '用户添加', 'auth:user:add', 'func', '', 8, 'show', 3, '2022-05-02 11:40:57', '2023-07-15 23:19:01');
-INSERT INTO `auth_func` VALUES (84, '修改密码', 'auth:user:pwdUpdate', 'func', '', 9, 'show', 3, '2022-05-14 12:20:12', '2023-07-15 15:27:23');
-INSERT INTO `auth_func` VALUES (93, '同步系统', '/sync', 'dir', 'HddOutlined', 4, 'show', 0, '2022-09-13 20:54:26', '2023-11-09 20:34:18');
-INSERT INTO `auth_func` VALUES (94, '同步计划', '/sync/plan', 'dir', 'CarryOutOutlined', 0, 'show', 93, '2022-09-13 20:54:58', '2024-05-17 21:01:26');
-INSERT INTO `auth_func` VALUES (95, '同步记录', '/sync/result', 'dir', 'CloudSyncOutlined', 3, 'show', 93, '2022-12-04 23:48:14', '2023-10-31 09:51:55');
-INSERT INTO `auth_func` VALUES (96, '消息回调', '/sync/callback', 'dir', 'PartitionOutlined', 5, 'show', 93, '2022-12-04 23:48:39', '2023-10-14 22:24:08');
-INSERT INTO `auth_func` VALUES (97, '本地消息', '/sync/msg', 'dir', 'LaptopOutlined', 4, 'show', 93, '2022-12-04 23:49:04', '2023-10-14 22:24:37');
-INSERT INTO `auth_func` VALUES (102, '绑定资源', 'auth:func:rescUpdate', 'func', '', 4, 'show', 5, '2023-06-17 21:00:09', '2023-07-15 23:17:19');
-INSERT INTO `auth_func` VALUES (105, '授权初始化', 'auth:role:funcInit', 'func', '', 0, 'show', 71, '2023-06-21 21:02:03', '2023-09-24 21:44:26');
-INSERT INTO `auth_func` VALUES (106, '更新授权', 'auth:role:funcUpdate', 'func', '', 0, 'show', 71, '2023-06-21 21:02:29', '2023-10-05 14:19:56');
-INSERT INTO `auth_func` VALUES (128, '切换登录', 'auth:user:switchLogin', 'func', '', 9, 'show', 3, '2023-07-15 15:35:51', '2023-07-16 18:19:27');
-INSERT INTO `auth_func` VALUES (129, '状态更新', 'auth:user:statusUpdate', 'func', '', 4, 'show', 3, '2023-07-15 20:40:12', '2023-09-23 15:29:39');
-INSERT INTO `auth_func` VALUES (136, '计划查询', 'sync:plan:page', 'func', '', 0, 'show', 94, '2023-07-18 20:53:06', '2023-09-03 18:58:32');
-INSERT INTO `auth_func` VALUES (137, '新增计划', 'sync:plan:add', 'func', '', 1, 'show', 94, '2023-07-19 21:04:36', '2023-09-03 13:23:09');
-INSERT INTO `auth_func` VALUES (138, '编辑计划', 'sync:plan:update', 'func', '', 3, 'show', 94, '2023-07-19 22:08:32', '2023-09-03 18:58:36');
-INSERT INTO `auth_func` VALUES (139, '删除计划', 'sync:plan:delete', 'func', '', 4, 'show', 94, '2023-07-19 22:26:53', '2024-06-17 22:07:11');
-INSERT INTO `auth_func` VALUES (140, '启用禁用', 'sync:plan:updateStatus', 'func', '', 7, 'show', 94, '2023-09-03 13:19:10', '2023-09-03 15:20:12');
-INSERT INTO `auth_func` VALUES (141, '消息列表', 'sync:msg:page', 'func', '', 1, 'show', 97, '2023-09-03 19:10:00', '2023-09-03 19:10:00');
-INSERT INTO `auth_func` VALUES (142, '记录列表', 'sync:result:page', 'func', '', 1, 'show', 95, '2023-09-03 19:26:31', '2023-09-03 19:26:31');
-INSERT INTO `auth_func` VALUES (143, '标记成功', 'sync:result:signSuccess', 'func', '', 2, 'show', 95, '2023-09-03 19:32:55', '2023-09-03 19:32:55');
-INSERT INTO `auth_func` VALUES (144, '重新同步', 'sync:result:repeatSync', 'func', '', 3, 'show', 95, '2023-09-03 19:33:22', '2023-09-03 19:33:22');
-INSERT INTO `auth_func` VALUES (145, '校验结果', 'sync:result:validResultData', 'func', '', 4, 'show', 95, '2023-09-03 19:33:48', '2023-09-03 19:33:48');
-INSERT INTO `auth_func` VALUES (156, '功能关联', 'auth:resc:funcSearch', 'func', '', 1, 'show', 6, '2023-09-17 13:18:24', '2023-09-17 13:18:24');
-INSERT INTO `auth_func` VALUES (160, '操作日志', '/auth/log', 'dir', 'CloudSyncOutlined', 7, 'show', 2, '2023-09-28 11:05:24', '2023-09-28 11:05:24');
-INSERT INTO `auth_func` VALUES (161, '列表查询', 'auth:log:page', 'func', '', 1, 'show', 160, '2023-09-28 11:06:21', '2023-09-28 11:06:21');
-INSERT INTO `auth_func` VALUES (162, '资源刷新', 'auth:resc:refresh', 'func', '', 8, 'show', 6, '2023-09-28 11:51:58', '2023-09-28 11:51:58');
-INSERT INTO `auth_func` VALUES (171, '回调列表', 'sync:callback:page', 'func', '', 1, 'show', 96, '2023-11-09 20:35:55', '2023-11-09 20:35:55');
-INSERT INTO `auth_func` VALUES (172, '重新回调', 'sync:callback:repeat', 'func', '', 3, 'show', 96, '2023-11-09 20:36:32', '2023-11-11 21:23:42');
-INSERT INTO `auth_func` VALUES (173, '计划刷新', 'sync:plan:refresh', 'func', '', 3, 'show', 94, '2023-11-09 20:42:43', '2023-11-11 21:48:14');
+INSERT INTO `auth_func` VALUES (2, '权限系统', '/auth', 'dir', 0, 1, 0, '2022-03-19 15:57:28', '2024-06-16 20:51:25');
+INSERT INTO `auth_func` VALUES (3, '用户管理', '/auth/user', 'dir', 0, 1, 2, '2022-03-19 16:10:26', '2023-10-05 14:18:01');
+INSERT INTO `auth_func` VALUES (4, '角色管理', '/auth/role', 'dir', 0, 4, 2, '2022-03-19 16:11:29', '2023-09-15 21:40:09');
+INSERT INTO `auth_func` VALUES (5, '功能管理', '/auth/func', 'dir', 0, 2, 2, '2022-03-19 16:11:41', '2024-06-16 20:51:29');
+INSERT INTO `auth_func` VALUES (6, '资源管理', '/auth/resc', 'dir', 0, 5, 2, '2022-03-19 16:11:54', '2023-09-15 21:33:29');
+INSERT INTO `auth_func` VALUES (8, '角色删除', 'auth:role:delete', 'btn', 0, 7, 4, '2022-03-19 18:23:22', '2023-09-03 18:58:48');
+INSERT INTO `auth_func` VALUES (9, '角色更新', 'auth:role:update', 'btn', 0, 8, 4, '2022-03-19 18:23:38', '2022-03-19 18:23:40');
+INSERT INTO `auth_func` VALUES (11, '角色查询', 'auth:role:page', 'btn', 0, 9, 4, '2022-03-19 18:24:02', '2022-03-19 18:24:03');
+INSERT INTO `auth_func` VALUES (12, '功能查询', 'auth:func:page', 'btn', 0, 5, 5, '2022-03-19 18:24:30', '2023-09-03 18:58:58');
+INSERT INTO `auth_func` VALUES (13, '列表查询', 'auth:resc:page', 'btn', 0, 4, 6, '2022-03-19 18:24:51', '2023-07-15 23:17:47');
+INSERT INTO `auth_func` VALUES (14, '功能新增', 'auth:func:add', 'btn', 0, 6, 5, '2022-03-19 18:26:06', '2023-09-03 18:58:59');
+INSERT INTO `auth_func` VALUES (26, '资源添加', 'auth:resc:add', 'btn', 0, 5, 6, '2022-03-20 21:43:55', '2023-07-15 23:18:31');
+INSERT INTO `auth_func` VALUES (27, '资源删除', 'auth:resc:delete', 'btn', 0, 6, 6, '2022-03-20 21:44:03', '2023-09-03 18:58:47');
+INSERT INTO `auth_func` VALUES (54, '功能删除', 'auth:func:delete', 'btn', 0, 7, 5, '2022-03-26 20:57:44', '2023-09-03 18:58:41');
+INSERT INTO `auth_func` VALUES (55, '功能更新', 'auth:func:update', 'btn', 0, 8, 5, '2022-03-26 20:58:00', '2023-09-03 18:58:43');
+INSERT INTO `auth_func` VALUES (56, '资源编辑', 'auth:resc:update', 'btn', 0, 7, 6, '2022-03-26 21:00:16', '2023-07-15 23:18:21');
+INSERT INTO `auth_func` VALUES (57, '用户查询', 'auth:user:page', 'btn', 0, 2, 3, '2022-03-26 21:04:37', '2023-09-09 11:45:35');
+INSERT INTO `auth_func` VALUES (60, '用户编辑', 'auth:user:update', 'btn', 0, 5, 3, '2022-03-26 21:05:33', '2023-07-15 23:18:48');
+INSERT INTO `auth_func` VALUES (61, '用户删除', 'auth:user:delete', 'btn', 0, 6, 3, '2022-03-26 21:05:55', '2023-09-23 15:29:31');
+INSERT INTO `auth_func` VALUES (62, '分配角色', 'auth:user:roleUpdate', 'btn', 0, 7, 3, '2022-03-26 21:06:48', '2023-09-03 18:58:45');
+INSERT INTO `auth_func` VALUES (63, '分配用户', 'auth:role:userUpdate', 'btn', 0, 6, 4, '2022-03-26 21:08:39', '2023-07-15 15:28:20');
+INSERT INTO `auth_func` VALUES (71, '角色授权', '/auth/role/authorized', 'dir', 0, 5, 4, '2022-04-04 17:45:36', '2023-09-15 21:37:22');
+INSERT INTO `auth_func` VALUES (72, '角色新增', 'auth:role:add', 'btn', 0, 10, 4, '2022-04-16 11:13:19', '2023-07-01 11:12:50');
+INSERT INTO `auth_func` VALUES (73, '解绑用户', 'auth:func:userRemove', 'btn', 0, 9, 5, '2022-04-16 21:55:19', '2023-07-15 15:27:43');
+INSERT INTO `auth_func` VALUES (74, '解绑资源', 'auth:func:rescRemove', 'btn', 0, 10, 5, '2022-04-16 22:02:49', '2023-09-03 13:58:36');
+INSERT INTO `auth_func` VALUES (75, '用户添加', 'auth:user:add', 'btn', 0, 8, 3, '2022-05-02 11:40:57', '2023-07-15 23:19:01');
+INSERT INTO `auth_func` VALUES (84, '修改密码', 'auth:user:pwdUpdate', 'btn', 0, 9, 3, '2022-05-14 12:20:12', '2023-07-15 15:27:23');
+INSERT INTO `auth_func` VALUES (93, '同步系统', '/sync', 'dir', 0, 4, 0, '2022-09-13 20:54:26', '2023-11-09 20:34:18');
+INSERT INTO `auth_func` VALUES (94, '同步计划', '/sync/plan', 'dir', 0, 0, 93, '2022-09-13 20:54:58', '2024-05-17 21:01:26');
+INSERT INTO `auth_func` VALUES (95, '同步记录', '/sync/result', 'dir', 0, 3, 93, '2022-12-04 23:48:14', '2023-10-31 09:51:55');
+INSERT INTO `auth_func` VALUES (96, '消息回调', '/sync/callback', 'dir', 0, 5, 93, '2022-12-04 23:48:39', '2023-10-14 22:24:08');
+INSERT INTO `auth_func` VALUES (97, '本地消息', '/sync/msg', 'dir', 0, 4, 93, '2022-12-04 23:49:04', '2023-10-14 22:24:37');
+INSERT INTO `auth_func` VALUES (102, '绑定资源', 'auth:func:rescUpdate', 'btn', 0, 4, 5, '2023-06-17 21:00:09', '2023-07-15 23:17:19');
+INSERT INTO `auth_func` VALUES (105, '授权初始化', 'auth:role:funcInit', 'btn', 0, 0, 71, '2023-06-21 21:02:03', '2023-09-24 21:44:26');
+INSERT INTO `auth_func` VALUES (106, '更新授权', 'auth:role:funcUpdate', 'btn', 0, 0, 71, '2023-06-21 21:02:29', '2023-10-05 14:19:56');
+INSERT INTO `auth_func` VALUES (128, '切换登录', 'auth:user:switchLogin', 'btn', 0, 9, 3, '2023-07-15 15:35:51', '2023-07-16 18:19:27');
+INSERT INTO `auth_func` VALUES (129, '状态更新', 'auth:user:statusUpdate', 'btn', 0, 4, 3, '2023-07-15 20:40:12', '2023-09-23 15:29:39');
+INSERT INTO `auth_func` VALUES (136, '计划查询', 'sync:plan:page', 'btn', 0, 0, 94, '2023-07-18 20:53:06', '2023-09-03 18:58:32');
+INSERT INTO `auth_func` VALUES (137, '新增计划', 'sync:plan:add', 'btn', 0, 1, 94, '2023-07-19 21:04:36', '2023-09-03 13:23:09');
+INSERT INTO `auth_func` VALUES (138, '编辑计划', 'sync:plan:update', 'btn', 0, 3, 94, '2023-07-19 22:08:32', '2023-09-03 18:58:36');
+INSERT INTO `auth_func` VALUES (139, '删除计划', 'sync:plan:delete', 'btn', 0, 4, 94, '2023-07-19 22:26:53', '2024-06-17 22:07:11');
+INSERT INTO `auth_func` VALUES (140, '启用禁用', 'sync:plan:updateStatus', 'btn', 0, 7, 94, '2023-09-03 13:19:10', '2023-09-03 15:20:12');
+INSERT INTO `auth_func` VALUES (141, '消息列表', 'sync:msg:page', 'btn', 0, 1, 97, '2023-09-03 19:10:00', '2023-09-03 19:10:00');
+INSERT INTO `auth_func` VALUES (142, '记录列表', 'sync:result:page', 'btn', 0, 1, 95, '2023-09-03 19:26:31', '2023-09-03 19:26:31');
+INSERT INTO `auth_func` VALUES (143, '标记成功', 'sync:result:signSuccess', 'btn', 0, 2, 95, '2023-09-03 19:32:55', '2023-09-03 19:32:55');
+INSERT INTO `auth_func` VALUES (144, '重新同步', 'sync:result:repeatSync', 'btn', 0, 3, 95, '2023-09-03 19:33:22', '2023-09-03 19:33:22');
+INSERT INTO `auth_func` VALUES (145, '校验结果', 'sync:result:validResultData', 'btn', 0, 4, 95, '2023-09-03 19:33:48', '2023-09-03 19:33:48');
+INSERT INTO `auth_func` VALUES (156, '功能关联', 'auth:resc:funcSearch', 'btn', 0, 1, 6, '2023-09-17 13:18:24', '2023-09-17 13:18:24');
+INSERT INTO `auth_func` VALUES (160, '操作日志', '/auth/log', 'dir', 0, 7, 2, '2023-09-28 11:05:24', '2023-09-28 11:05:24');
+INSERT INTO `auth_func` VALUES (161, '列表查询', 'auth:log:page', 'btn', 0, 1, 160, '2023-09-28 11:06:21', '2023-09-28 11:06:21');
+INSERT INTO `auth_func` VALUES (162, '资源刷新', 'auth:resc:refresh', 'btn', 0, 8, 6, '2023-09-28 11:51:58', '2023-09-28 11:51:58');
+INSERT INTO `auth_func` VALUES (171, '回调列表', 'sync:callback:page', 'btn', 0, 1, 96, '2023-11-09 20:35:55', '2023-11-09 20:35:55');
+INSERT INTO `auth_func` VALUES (172, '重新回调', 'sync:callback:repeat', 'btn', 0, 3, 96, '2023-11-09 20:36:32', '2023-11-11 21:23:42');
+INSERT INTO `auth_func` VALUES (173, '计划刷新', 'sync:plan:refresh', 'btn', 0, 3, 94, '2023-11-09 20:42:43', '2023-11-11 21:48:14');
 
 -- ----------------------------
 -- Table structure for auth_func_resc
@@ -211,12 +210,18 @@ CREATE TABLE `auth_log`  (
   INDEX `idx_log_module`(`log_module`) USING BTREE,
   INDEX `idx_user_id_name`(`user_id`, `username`) USING BTREE,
   INDEX `idx_log_level`(`log_level`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 586 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 592 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of auth_log
 -- ----------------------------
 INSERT INTO `auth_log` VALUES (585, '更新用户信息', 0, 1, '192.168.2.108', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-08-05 16:46:20');
+INSERT INTO `auth_log` VALUES (586, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-19 14:45:39');
+INSERT INTO `auth_log` VALUES (587, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 14:12:12');
+INSERT INTO `auth_log` VALUES (588, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 14:16:59');
+INSERT INTO `auth_log` VALUES (589, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 14:20:08');
+INSERT INTO `auth_log` VALUES (590, '更新资源信息', 2, 1, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 14:21:20');
+INSERT INTO `auth_log` VALUES (591, '用户登录系统', 0, 0, '192.168.2.98', 'Windows', '内网IP', 61, 'admin', '管理员', '2024-09-20 16:53:34');
 
 -- ----------------------------
 -- Table structure for auth_resc
@@ -265,7 +270,7 @@ INSERT INTO `auth_resc` VALUES (31, '功能删除', '/auth/func/delete', 'auth',
 INSERT INTO `auth_resc` VALUES (32, '功能新增', '/auth/func/save', 'auth', 'post', '2022-03-26 20:53:24', '2023-06-17 21:04:07');
 INSERT INTO `auth_resc` VALUES (33, '功能查询', '/auth/func/page', 'auth', 'get', '2022-03-26 20:53:40', '2022-09-11 16:05:51');
 INSERT INTO `auth_resc` VALUES (34, '功能树获取', '/auth/func/tree', 'auth', 'get', '2022-03-26 20:53:58', '2023-07-11 23:40:28');
-INSERT INTO `auth_resc` VALUES (35, '角色分配用户初始化', '/auth/role/user/init', 'auth', 'get', '2022-03-26 21:07:44', '2023-07-11 23:50:51');
+INSERT INTO `auth_resc` VALUES (35, '角色分配用户初始化', '/auth/role/user/update/init', 'auth', 'get', '2022-03-26 21:07:44', '2024-09-20 14:21:20');
 INSERT INTO `auth_resc` VALUES (36, '角色分配用户', '/auth/role/user/update', 'auth', 'post', '2022-03-26 21:07:59', '2022-09-03 16:02:22');
 INSERT INTO `auth_resc` VALUES (37, '角色授权功能初始化', '/auth/role/func/init', 'auth', 'get', '2022-04-04 17:46:28', '2023-07-11 23:54:43');
 INSERT INTO `auth_resc` VALUES (38, '角色分配功能', '/auth/role/func/update', 'auth', 'post', '2022-04-04 17:46:57', '2023-07-08 10:09:07');
@@ -500,13 +505,20 @@ CREATE TABLE `pub_mq_message`  (
   INDEX `ix_create_time`(`create_time`) USING BTREE,
   INDEX `ix_deal_status`(`deal_status`) USING BTREE,
   INDEX `ix_src_project_dest_project_create_time`(`src_project`, `dest_project`, `create_time`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3832 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3839 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of pub_mq_message
 -- ----------------------------
 INSERT INTO `pub_mq_message` VALUES (3830, '2a9b23374dfd4b65a61ee2ceacf42ceb', 'ID:CHINAMI-MC5KLHT-17080-1722847551131-6:2:1:1:1', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"585\"]}],\"createTime\":\"2024-08-05 16:46:19\",\"src\":\"admin\",\"msgId\":\"2a9b23374dfd4b65a61ee2ceacf42ceb\"}', 'admin', 'log', '2024-08-05 16:46:19', '2024-08-05 16:46:19', NULL, 'success', 0, 'wait');
 INSERT INTO `pub_mq_message` VALUES (3831, 'da55e050c661432cad0e36376d3b1e26', 'ID:CHINAMI-MC5KLHT-17080-1722847551131-6:3:1:1:1', '{\"plan\":\"update_admin_sync_user\",\"tables\":[{\"code\":\"update_admin_sync_user\",\"unique\":[\"83\"]}],\"createTime\":\"2024-08-05 16:46:19\",\"src\":\"admin\",\"msgId\":\"da55e050c661432cad0e36376d3b1e26\"}', 'admin', 'sync', '2024-08-05 16:46:19', '2024-08-05 16:46:19', NULL, 'success', 0, 'wait');
+INSERT INTO `pub_mq_message` VALUES (3832, 'b135e8eb882541359473e66cd598feb3', 'C0A80262852818B4AAC25FDD4FE10000', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', '2024-09-19 14:45:38', '2024-09-19 14:45:39', '2024-09-19 15:01:24', 'success', 1, 'success');
+INSERT INTO `pub_mq_message` VALUES (3833, '69bff3bec3044c36bbb6503e89d00185', '', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"587\"]}],\"createTime\":\"2024-09-20 14:12:11\",\"src\":\"admin\",\"msgId\":\"69bff3bec3044c36bbb6503e89d00185\"}', 'admin', 'log', '2024-09-20 14:12:11', '2024-09-20 14:12:22', '2024-09-20 14:18:03', 'fail', 1, 'success');
+INSERT INTO `pub_mq_message` VALUES (3834, 'a2178cb39f554e108ad488e4f9f5d613', '', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"588\"]}],\"createTime\":\"2024-09-20 14:16:59\",\"src\":\"admin\",\"msgId\":\"a2178cb39f554e108ad488e4f9f5d613\"}', 'admin', 'log', '2024-09-20 14:16:59', '2024-09-20 14:17:06', NULL, 'fail', 0, 'wait');
+INSERT INTO `pub_mq_message` VALUES (3835, 'ef9defb1f43a454288a2cfee357b4f4c', 'C0A80262605418B4AAC264EC4F8D0002', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"589\"]}],\"createTime\":\"2024-09-20 14:20:07\",\"src\":\"admin\",\"msgId\":\"ef9defb1f43a454288a2cfee357b4f4c\"}', 'admin', 'log', '2024-09-20 14:20:07', '2024-09-20 14:20:08', '2024-09-20 14:20:09', 'success', 1, 'success');
+INSERT INTO `pub_mq_message` VALUES (3836, '3a5bbb963807475c9878506610537119', 'C0A80262605418B4AAC264ED66E80003', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"590\"]}],\"createTime\":\"2024-09-20 14:21:19\",\"src\":\"admin\",\"msgId\":\"3a5bbb963807475c9878506610537119\"}', 'admin', 'log', '2024-09-20 14:21:19', '2024-09-20 14:21:19', '2024-09-20 14:21:20', 'success', 1, 'success');
+INSERT INTO `pub_mq_message` VALUES (3837, '006de981aaf242028fafd6355bf42367', 'C0A80262605418B4AAC264ED66FC0004', '{\"plan\":\"update_admin_sync_resc\",\"tables\":[{\"code\":\"update_admin_sync_resc\",\"unique\":[\"35\"]}],\"createTime\":\"2024-09-20 14:21:19\",\"src\":\"admin\",\"msgId\":\"006de981aaf242028fafd6355bf42367\"}', 'admin', 'sync', '2024-09-20 14:21:19', '2024-09-20 14:21:20', '2024-09-20 14:21:20', 'success', 1, 'success');
+INSERT INTO `pub_mq_message` VALUES (3838, '790752ea95874c47a5da634b0eda903e', 'C0A80262280C18B4AAC26578CC590000', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"591\"]}],\"createTime\":\"2024-09-20 16:53:34\",\"src\":\"admin\",\"msgId\":\"790752ea95874c47a5da634b0eda903e\"}', 'admin', 'log', '2024-09-20 16:53:34', '2024-09-20 16:53:35', '2024-09-20 16:53:36', 'success', 1, 'success');
 
 -- ----------------------------
 -- Table structure for pub_mq_msg
@@ -676,7 +688,20 @@ CREATE TABLE `sync_result`  (
 -- ----------------------------
 -- Records of sync_result
 -- ----------------------------
+INSERT INTO `sync_result` VALUES ('027398e0cdb84745b3b9da128b1c9c31', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262280C18B4AAC26578CC590000', '790752ea95874c47a5da634b0eda903e', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"591\"]}],\"createTime\":\"2024-09-20 16:53:34\",\"src\":\"admin\",\"msgId\":\"790752ea95874c47a5da634b0eda903e\"}', 'admin', 'log', '{\"insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);\":[[591,\"用户登录系统\",0,0,\"192.168.2.98\",\"Windows\",\"内网IP\",61,\"admin\",\"管理员\",\"2024-09-20 16:53:34\",\"2024-09-20 16:53:35\"]],\"影响行数\":[1]}', '2024-09-20 16:53:34', '2024-09-20 16:53:36', 'success', '', 0, NULL, b'1');
+INSERT INTO `sync_result` VALUES ('15048d93cde04646b6b05bedd8d3b15c', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262605418B4AAC264E50B310000', '69bff3bec3044c36bbb6503e89d00185', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"587\"]}],\"createTime\":\"2024-09-20 14:12:11\",\"src\":\"admin\",\"msgId\":\"69bff3bec3044c36bbb6503e89d00185\"}', 'admin', 'log', '{\"insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);\":[[587,\"用户登录系统\",0,0,\"192.168.2.98\",\"Windows\",\"内网IP\",61,\"admin\",\"管理员\",\"2024-09-20 14:12:12\",\"2024-09-20 14:18:02\"]],\"影响行数\":[1]}', '2024-09-20 14:12:11', '2024-09-20 14:18:03', 'success', '', 0, NULL, b'0');
+INSERT INTO `sync_result` VALUES ('1f2c5686085642c18e45d936eb10120b', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262852818B4AAC25FDD4FE10000', 'b135e8eb882541359473e66cd598feb3', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', NULL, '2024-09-19 14:45:38', '2024-09-19 14:49:20', 'success', '未知异常,tableCode:insert_admin_sync_log,msg:null,目标库:null,error:org.springframework.jdbc.BadSqlGrammarException: PreparedStatementCallback; bad SQL grammar [insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);]; nested exception is java.sql.BatchUpdateException: Unknown column \'ip_address\' in \'field list\'', 4, '系统标记成功', b'1');
+INSERT INTO `sync_result` VALUES ('20ecba1ab311450fa7ca5c0753047a4c', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262605418B4AAC264EC4F8D0002', 'ef9defb1f43a454288a2cfee357b4f4c', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"589\"]}],\"createTime\":\"2024-09-20 14:20:07\",\"src\":\"admin\",\"msgId\":\"ef9defb1f43a454288a2cfee357b4f4c\"}', 'admin', 'log', '{\"insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);\":[[589,\"用户登录系统\",0,0,\"192.168.2.98\",\"Windows\",\"内网IP\",61,\"admin\",\"管理员\",\"2024-09-20 14:20:08\",\"2024-09-20 14:20:08\"]],\"影响行数\":[1]}', '2024-09-20 14:20:07', '2024-09-20 14:20:08', 'success', '', 0, NULL, b'0');
+INSERT INTO `sync_result` VALUES ('29146955bf104e2bbb318b9aa42d5c34', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262852818B4AAC25FDD4FE10000', 'b135e8eb882541359473e66cd598feb3', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', NULL, '2024-09-19 14:45:38', '2024-09-19 14:45:39', 'success', '未知异常,tableCode:insert_admin_sync_log,msg:null,目标库:null,error:org.springframework.jdbc.BadSqlGrammarException: PreparedStatementCallback; bad SQL grammar [insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);]; nested exception is java.sql.BatchUpdateException: Unknown column \'ip_address\' in \'field list\'', 0, '系统标记成功', b'1');
+INSERT INTO `sync_result` VALUES ('4c7c9b97d2da49359d7efcb5df761cbc', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262852818B4AAC25FDD4FE10000', 'b135e8eb882541359473e66cd598feb3', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', NULL, '2024-09-19 14:45:38', '2024-09-19 14:47:20', 'success', '未知异常,tableCode:insert_admin_sync_log,msg:null,目标库:null,error:org.springframework.jdbc.BadSqlGrammarException: PreparedStatementCallback; bad SQL grammar [insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);]; nested exception is java.sql.BatchUpdateException: Unknown column \'ip_address\' in \'field list\'', 3, '系统标记成功', b'1');
 INSERT INTO `sync_result` VALUES ('5b9102c5d64846e28ffad67008de58a3', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'active_mq', 'ID:CHINAMI-MC5KLHT-17080-1722847551131-6:2:1:1:1', '2a9b23374dfd4b65a61ee2ceacf42ceb', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"585\"]}],\"createTime\":\"2024-08-05 16:46:19\",\"src\":\"admin\",\"msgId\":\"2a9b23374dfd4b65a61ee2ceacf42ceb\"}', 'admin', 'log', NULL, '2024-08-05 16:46:19', '2024-08-05 16:46:21', 'fail', 'insert_admin_sync_log中源表数据不存在', 2, NULL, b'0');
+INSERT INTO `sync_result` VALUES ('6cded2a6ebcf464fb76b9886a260a7ee', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262852818B4AAC25FDD4FE10000', 'b135e8eb882541359473e66cd598feb3', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', '{\"insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);\":[[586,\"用户登录系统\",0,0,\"192.168.2.98\",\"Windows\",\"内网IP\",61,\"admin\",\"管理员\",\"2024-09-19 14:45:39\",\"2024-09-19 15:01:24\"]],\"影响行数\":[1]}', '2024-09-19 14:45:38', '2024-09-19 15:01:24', 'success', '', 7, NULL, b'1');
+INSERT INTO `sync_result` VALUES ('8c962c2b74984b46b6b88f011d6245f3', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262852818B4AAC25FDD4FE10000', 'b135e8eb882541359473e66cd598feb3', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', NULL, '2024-09-19 14:45:38', '2024-09-19 14:45:50', 'success', '未知异常,tableCode:insert_admin_sync_log,msg:null,目标库:null,error:org.springframework.jdbc.BadSqlGrammarException: PreparedStatementCallback; bad SQL grammar [insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);]; nested exception is java.sql.BatchUpdateException: Unknown column \'ip_address\' in \'field list\'', 1, '系统标记成功', b'1');
 INSERT INTO `sync_result` VALUES ('964b907058cd4c839fdbcc7216a2e87a', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'active_mq', 'ID:CHINAMI-MC5KLHT-17080-1722847551131-6:2:1:1:1', '2a9b23374dfd4b65a61ee2ceacf42ceb', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"585\"]}],\"createTime\":\"2024-08-05 16:46:19\",\"src\":\"admin\",\"msgId\":\"2a9b23374dfd4b65a61ee2ceacf42ceb\"}', 'admin', 'log', NULL, '2024-08-05 16:46:19', '2024-08-05 16:46:20', 'fail', 'insert_admin_sync_log中源表数据不存在', 1, NULL, b'1');
+INSERT INTO `sync_result` VALUES ('985ad2859c5e4e49836dac183c11ab6f', '2aae46089860446685191dac3c33d488', 'update_admin_sync_resc', '更新系统资源', 'rocket_mq', 'C0A80262605418B4AAC264ED66FC0004', '006de981aaf242028fafd6355bf42367', '{\"plan\":\"update_admin_sync_resc\",\"tables\":[{\"code\":\"update_admin_sync_resc\",\"unique\":[\"35\"]}],\"createTime\":\"2024-09-20 14:21:19\",\"src\":\"admin\",\"msgId\":\"006de981aaf242028fafd6355bf42367\"}', 'admin', 'sync', '{\"update sync_auth_resc set resc_id = ?, resc_name = ?, resc_url = ?, resc_domain = ?, method_type = ?, create_time = ?, update_time = ?, sync_time = ? where resc_id = ?;\":[[35,\"角色分配用户初始化\",\"/auth/role/user/update/init\",\"auth\",\"get\",\"2022-03-26 21:07:44\",\"2024-09-20 14:21:20\",\"2024-09-20 14:21:20\",35]],\"影响行数\":[1]}', '2024-09-20 14:21:19', '2024-09-20 14:21:20', 'success', '', 0, NULL, b'0');
+INSERT INTO `sync_result` VALUES ('9e9c21f3dab34fe6abe450157d47d065', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262852818B4AAC25FDD4FE10000', 'b135e8eb882541359473e66cd598feb3', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', NULL, '2024-09-19 14:45:38', '2024-09-19 14:46:20', 'success', '未知异常,tableCode:insert_admin_sync_log,msg:null,目标库:null,error:org.springframework.jdbc.BadSqlGrammarException: PreparedStatementCallback; bad SQL grammar [insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);]; nested exception is java.sql.BatchUpdateException: Unknown column \'ip_address\' in \'field list\'', 2, '系统标记成功', b'1');
+INSERT INTO `sync_result` VALUES ('df7a3c2d2a784dde838dbeba360773ae', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262605418B4AAC264ED66E80003', '3a5bbb963807475c9878506610537119', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"590\"]}],\"createTime\":\"2024-09-20 14:21:19\",\"src\":\"admin\",\"msgId\":\"3a5bbb963807475c9878506610537119\"}', 'admin', 'log', '{\"insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);\":[[590,\"更新资源信息\",2,1,\"192.168.2.98\",\"Windows\",\"内网IP\",61,\"admin\",\"管理员\",\"2024-09-20 14:21:20\",\"2024-09-20 14:21:19\"]],\"影响行数\":[1]}', '2024-09-20 14:21:19', '2024-09-20 14:21:20', 'success', '', 0, NULL, b'0');
+INSERT INTO `sync_result` VALUES ('e8b816bb0b1d438b99efafeb26d312f2', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262852818B4AAC25FDD4FE10000', 'b135e8eb882541359473e66cd598feb3', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', NULL, '2024-09-19 14:45:38', '2024-09-19 14:52:24', 'success', '未知异常,tableCode:insert_admin_sync_log,msg:null,目标库:null,error:org.springframework.jdbc.BadSqlGrammarException: PreparedStatementCallback; bad SQL grammar [insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);]; nested exception is java.sql.BatchUpdateException: Unknown column \'ip_address\' in \'field list\'', 5, '系统标记成功', b'1');
+INSERT INTO `sync_result` VALUES ('f9eb60fda1ed490d9f8478ca52fa2cb3', '074e8e9a33b140109d4ff98d5b21b0c1', 'insert_admin_sync_log', '新增系统日志', 'rocket_mq', 'C0A80262852818B4AAC25FDD4FE10000', 'b135e8eb882541359473e66cd598feb3', '{\"plan\":\"insert_admin_sync_log\",\"tables\":[{\"code\":\"insert_admin_sync_log\",\"unique\":[\"586\"]}],\"createTime\":\"2024-09-19 14:45:38\",\"src\":\"admin\",\"msgId\":\"b135e8eb882541359473e66cd598feb3\"}', 'admin', 'log', NULL, '2024-09-19 14:45:38', '2024-09-19 14:56:24', 'success', '未知异常,tableCode:insert_admin_sync_log,msg:null,目标库:null,error:org.springframework.jdbc.BadSqlGrammarException: PreparedStatementCallback; bad SQL grammar [insert into sync_auth_log(log_id,log_info,log_module,log_level,ip_address,device_info,location,user_id,username,real_name,create_time,sync_time) values (?,?,?,?,?,?,?,?,?,?,?,?);]; nested exception is java.sql.BatchUpdateException: Unknown column \'ip_address\' in \'field list\'', 6, '系统标记成功', b'1');
 
 SET FOREIGN_KEY_CHECKS = 1;

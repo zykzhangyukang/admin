@@ -89,7 +89,7 @@ public class FuncController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "FuncVO", value = {"funcSort", "funcDirStatus", "userVOList", "rescVOList", "funcName", "funcKey", "createTime", "funcType", "funcIcon",
+            @ApiReturnParam(name = "FuncVO", value = {"funcSort", "hide", "userVOList", "rescVOList", "funcName", "funcKey", "createTime", "funcType",
                     "updateTime", "children", "funcId", "parentId", "rescIdList"})
     })
     public ResultVO<PageVO<List<FuncVO>>> page(@RequestBody FuncPageDTO funcPageDTO) {
@@ -137,8 +137,8 @@ public class FuncController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "FuncVO", value = {"funcSort", "funcDirStatus", "userVOList", "rescVOList", "rescIdList",
-                    "funcName", "funcIcon", "funcKey", "createTime", "updateTime", "childrenList", "funcId", "parentId", "funcType"})
+            @ApiReturnParam(name = "FuncVO", value = {"funcSort", "hide", "userVOList", "rescVOList", "rescIdList",
+                    "funcName","funcKey", "createTime", "updateTime", "childrenList", "funcId", "parentId", "funcType"})
     })
     public ResultVO<FuncVO> selectById(@RequestParam(value = "funcId") Integer funcId) {
         return this.funcService.selectById(funcId);

@@ -77,13 +77,10 @@ public interface AuthConstant {
 
     @ConstList(group = METHOD_TYPE, name = "GET")
     String METHOD_TYPE_GET = "get";
-
     @ConstList(group = METHOD_TYPE, name = "POST")
     String METHOD_TYPE_POST = "post";
-
     @ConstList(group = METHOD_TYPE, name = "DELETE")
     String METHOD_TYPE_DELETE = "delete";
-
     @ConstList(group = METHOD_TYPE, name = "PUT")
     String METHOD_TYPE_PUT = "put";
 
@@ -100,9 +97,8 @@ public interface AuthConstant {
 
     @ConstList(group = FUNC_TYPE_GROUP, name = "目录")
     String FUNC_TYPE_DIR = "dir";
-
-    @ConstList(group = FUNC_TYPE_GROUP, name = "功能")
-    String FUNC_TYPE_FUNC = "func";
+    @ConstList(group = FUNC_TYPE_GROUP, name = "按钮")
+    String FUNC_TYPE_FUNC = "btn";
 
     /**
      * 是否隐藏菜单
@@ -110,8 +106,7 @@ public interface AuthConstant {
     String FUNC_DIR_STATUS_GROUP = "func_dir_status_group";
 
     @ConstList(group = FUNC_DIR_STATUS_GROUP, name = "隐藏")
-    String FUNC_DIR_STATUS_HIDE = "hide";
-
+    Integer FUNC_DIR_STATUS_HIDE = 0;
     @ConstList(group = FUNC_DIR_STATUS_GROUP, name = "显示")
-    String FUNC_DIR_STATUS_SHOW =  "show";
+    Integer FUNC_DIR_STATUS_SHOW =  1;
 }

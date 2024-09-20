@@ -24,12 +24,9 @@ public class FuncUpdateDTO extends BaseModel {
     @ApiModelProperty("功能类型(目录/功能)")
     private String funcType;
 
-    @ApiModelProperty("目录图标")
-    private String funcIcon;
-
     @ApiModelProperty("功能排序")
     private Integer funcSort;
 
     @ApiModelProperty("是否隐藏")
-    private String funcDirStatus;
+    private Integer hide;
 }

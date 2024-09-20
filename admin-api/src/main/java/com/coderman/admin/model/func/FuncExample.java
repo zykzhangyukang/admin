@@ -375,73 +375,63 @@ public class FuncExample {
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconIsNull() {
-            addCriterion("func_icon is null");
+        public Criteria andHideIsNull() {
+            addCriterion("hide is null");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconIsNotNull() {
-            addCriterion("func_icon is not null");
+        public Criteria andHideIsNotNull() {
+            addCriterion("hide is not null");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconEqualTo(String value) {
-            addCriterion("func_icon =", value, "funcIcon");
+        public Criteria andHideEqualTo(Integer value) {
+            addCriterion("hide =", value, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconNotEqualTo(String value) {
-            addCriterion("func_icon <>", value, "funcIcon");
+        public Criteria andHideNotEqualTo(Integer value) {
+            addCriterion("hide <>", value, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconGreaterThan(String value) {
-            addCriterion("func_icon >", value, "funcIcon");
+        public Criteria andHideGreaterThan(Integer value) {
+            addCriterion("hide >", value, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconGreaterThanOrEqualTo(String value) {
-            addCriterion("func_icon >=", value, "funcIcon");
+        public Criteria andHideGreaterThanOrEqualTo(Integer value) {
+            addCriterion("hide >=", value, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconLessThan(String value) {
-            addCriterion("func_icon <", value, "funcIcon");
+        public Criteria andHideLessThan(Integer value) {
+            addCriterion("hide <", value, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconLessThanOrEqualTo(String value) {
-            addCriterion("func_icon <=", value, "funcIcon");
+        public Criteria andHideLessThanOrEqualTo(Integer value) {
+            addCriterion("hide <=", value, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconLike(String value) {
-            addCriterion("func_icon like", value, "funcIcon");
+        public Criteria andHideIn(List<Integer> values) {
+            addCriterion("hide in", values, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconNotLike(String value) {
-            addCriterion("func_icon not like", value, "funcIcon");
+        public Criteria andHideNotIn(List<Integer> values) {
+            addCriterion("hide not in", values, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconIn(List<String> values) {
-            addCriterion("func_icon in", values, "funcIcon");
+        public Criteria andHideBetween(Integer value1, Integer value2) {
+            addCriterion("hide between", value1, value2, "hide");
             return (Criteria) this;
         }
 
-        public Criteria andFuncIconNotIn(List<String> values) {
-            addCriterion("func_icon not in", values, "funcIcon");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncIconBetween(String value1, String value2) {
-            addCriterion("func_icon between", value1, value2, "funcIcon");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncIconNotBetween(String value1, String value2) {
-            addCriterion("func_icon not between", value1, value2, "funcIcon");
+        public Criteria andHideNotBetween(Integer value1, Integer value2) {
+            addCriterion("hide not between", value1, value2, "hide");
             return (Criteria) this;
         }
 
@@ -502,76 +492,6 @@ public class FuncExample {
 
         public Criteria andFuncSortNotBetween(Integer value1, Integer value2) {
             addCriterion("func_sort not between", value1, value2, "funcSort");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusIsNull() {
-            addCriterion("func_dir_status is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusIsNotNull() {
-            addCriterion("func_dir_status is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusEqualTo(String value) {
-            addCriterion("func_dir_status =", value, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusNotEqualTo(String value) {
-            addCriterion("func_dir_status <>", value, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusGreaterThan(String value) {
-            addCriterion("func_dir_status >", value, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusGreaterThanOrEqualTo(String value) {
-            addCriterion("func_dir_status >=", value, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusLessThan(String value) {
-            addCriterion("func_dir_status <", value, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusLessThanOrEqualTo(String value) {
-            addCriterion("func_dir_status <=", value, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusLike(String value) {
-            addCriterion("func_dir_status like", value, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusNotLike(String value) {
-            addCriterion("func_dir_status not like", value, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusIn(List<String> values) {
-            addCriterion("func_dir_status in", values, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusNotIn(List<String> values) {
-            addCriterion("func_dir_status not in", values, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusBetween(String value1, String value2) {
-            addCriterion("func_dir_status between", value1, value2, "funcDirStatus");
-            return (Criteria) this;
-        }
-
-        public Criteria andFuncDirStatusNotBetween(String value1, String value2) {
-            addCriterion("func_dir_status not between", value1, value2, "funcDirStatus");
             return (Criteria) this;
         }
 

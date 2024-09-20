@@ -83,7 +83,7 @@ public class FuncServiceImpl implements FuncService {
         String funcKey = funcPageDTO.getFuncKey();
         String funcType = funcPageDTO.getFuncType();
         Integer parentId = funcPageDTO.getParentId();
-        String funcDirStatus = funcPageDTO.getFuncDirStatus();
+        Integer hide = funcPageDTO.getHide();
         String rescUrl = funcPageDTO.getRescUrl();
 
         Integer currentPage = funcPageDTO.getCurrentPage();
@@ -95,8 +95,8 @@ public class FuncServiceImpl implements FuncService {
         if (StringUtils.isNotBlank(funcType)) {
             conditionMap.put("funcType", funcType);
         }
-        if (StringUtils.isNotBlank(funcDirStatus)) {
-            conditionMap.put("funcDirStatus", funcDirStatus);
+        if (Objects.nonNull(hide)) {
+            conditionMap.put("hide", hide);
         }
         if (StringUtils.isNotBlank(funcKey)) {
             conditionMap.put("funcKey", funcKey.trim());
@@ -150,8 +150,7 @@ public class FuncServiceImpl implements FuncService {
         String funcKey = funcSaveDTO.getFuncKey();
         String funcType = funcSaveDTO.getFuncType();
         Integer funcSort = funcSaveDTO.getFuncSort();
-        String funcDirStatus = funcSaveDTO.getFuncDirStatus();
-        String funcIcon = funcSaveDTO.getFuncIcon();
+        Integer hide = funcSaveDTO.getHide();
 
         if (StringUtils.isBlank(funcName) || StringUtils.length(funcName) > 15) {
 
@@ -173,7 +172,7 @@ public class FuncServiceImpl implements FuncService {
             return ResultUtil.getWarn("功能排序不能为空，请输入0-100之间的整数！");
         }
 
-        if (StringUtils.equals(AuthConstant.FUNC_TYPE_DIR, funcType) && StringUtils.isBlank(funcDirStatus)) {
+        if (StringUtils.equals(AuthConstant.FUNC_TYPE_DIR, funcType) && Objects.isNull(hide)) {
 
             return ResultUtil.getWarn("请选择目录是显示还是隐藏！");
         }
@@ -192,8 +191,6 @@ public class FuncServiceImpl implements FuncService {
         insert.setParentId(parentId == null ? 0 : parentId);
         insert.setFuncType(funcType);
         insert.setFuncSort(funcSort);
-        insert.setFuncDirStatus(funcDirStatus);
-        insert.setFuncIcon(funcIcon);
         insert.setUpdateTime(new Date());
         this.funcDAO.insertSelectiveReturnKey(insert);
 
@@ -218,8 +215,7 @@ public class FuncServiceImpl implements FuncService {
         String funcKey = funcUpdateDTO.getFuncKey();
         String funcType = funcUpdateDTO.getFuncType();
         Integer funcSort = funcUpdateDTO.getFuncSort();
-        String funcDirStatus = funcUpdateDTO.getFuncDirStatus();
-        String funcIcon = funcUpdateDTO.getFuncIcon();
+        Integer hide = funcUpdateDTO.getHide();
 
         if (Objects.isNull(funcId)) {
 
@@ -252,7 +248,7 @@ public class FuncServiceImpl implements FuncService {
             return ResultUtil.getWarn("功能类型不能为空！");
         }
 
-        if (AuthConstant.FUNC_TYPE_DIR.equals(funcType) && StringUtils.isBlank(funcDirStatus)) {
+        if (AuthConstant.FUNC_TYPE_DIR.equals(funcType) && Objects.isNull(hide)) {
 
             return ResultUtil.getWarn("请选择目录是显示还是隐藏！");
         }
@@ -272,8 +268,7 @@ public class FuncServiceImpl implements FuncService {
         update.setFuncName(funcName);
         update.setFuncType(funcType);
         update.setFuncSort(funcSort);
-        update.setFuncDirStatus(funcDirStatus);
-        update.setFuncIcon(funcIcon);
+        update.setHide(hide);
         update.setUpdateTime(new Date());
         this.funcDAO.updateByPrimaryKeySelective(update);
 

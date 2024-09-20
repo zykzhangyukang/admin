@@ -33,11 +33,8 @@ public class FuncTreeVO extends BaseModel {
     @ApiModelProperty(value = "功能类型")
     private String funcType;
 
-    @ApiModelProperty(value = "功能图标")
-    private String funcIcon;
-
     @ApiModelProperty(value = "是否显示")
-    private String funcDirStatus;
+    private Integer hide;
 
     @ApiModelProperty(value = "子级功能")
     private List<FuncTreeVO> children;
