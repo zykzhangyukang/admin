@@ -71,7 +71,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    func_id, func_name, func_key, func_type, hide, func_sort, parent_id, create_time, 
+    func_id, func_name, func_key, func_type, hide, func_sort, parent_id, create_time,
     update_time
   </sql>
   <select id="selectByExample" parameterType="com.coderman.admin.model.func.FuncExample" resultMap="BaseResultMap">
@@ -89,7 +89,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from auth_func
     where func_id = #{funcId,jdbcType=INTEGER}
@@ -105,12 +105,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.admin.model.func.FuncModel">
-    insert into auth_func (func_id, func_name, func_key, 
-      func_type, hide, func_sort, 
+    insert into auth_func (func_id, func_name, func_key,
+      func_type, hide, func_sort,
       parent_id, create_time, update_time
       )
-    values (#{funcId,jdbcType=INTEGER}, #{funcName,jdbcType=VARCHAR}, #{funcKey,jdbcType=VARCHAR}, 
-      #{funcType,jdbcType=VARCHAR}, #{hide,jdbcType=INTEGER}, #{funcSort,jdbcType=INTEGER}, 
+    values (#{funcId,jdbcType=INTEGER}, #{funcName,jdbcType=VARCHAR}, #{funcKey,jdbcType=VARCHAR},
+      #{funcType,jdbcType=VARCHAR}, #{hide,jdbcType=INTEGER}, #{funcSort,jdbcType=INTEGER},
       #{parentId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
@@ -337,7 +337,7 @@
     f.update_time,
     f.func_type,
     f.func_sort,
-    f.func_dir_status
+    f.hide
     FROM
     auth_func f
     <include refid="pageWhere"></include>
@@ -360,7 +360,7 @@
     left join auth_func fp on f.parent_id  = fp.func_id
     <include refid="pageWhere"></include>
   </select>
-  
+
   <sql id="pageWhere">
     <where>
       <if test="funcName!=null and funcName!=''">
@@ -499,7 +499,7 @@
     f.func_type,
     f.parent_id,
     f.func_sort,
-    f.func_dir_status
+    f.hide
     FROM
     auth_func f
     INNER JOIN auth_role_func rf ON f.func_id = rf.func_id
@@ -559,7 +559,7 @@
         f.update_time,
         f.func_type,
         f.func_sort,
-        f.func_dir_status
+        f.hide
     FROM
         auth_func f
     WHERE
@@ -583,7 +583,7 @@
         f.func_key,
         f.func_type,
         f.func_sort,
-        f.func_dir_status,
+        f.hide,
         f.parent_id,
         f.create_time,
         f.update_time
