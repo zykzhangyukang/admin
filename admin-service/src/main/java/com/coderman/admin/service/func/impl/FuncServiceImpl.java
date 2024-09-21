@@ -111,22 +111,9 @@ public class FuncServiceImpl implements FuncService {
         // 字段排序
         String sortType = funcPageDTO.getSortType();
         String sortField = funcPageDTO.getSortField();
-        String val = StringUtils.EMPTY;
         if (StringUtils.isNotBlank(sortType)) {
-
-            if (StringUtils.equals(sortField, "funcKey")) {
-                val = "func_key";
-            } else if (StringUtils.equals(sortField, "funcName")) {
-                val = "func_name";
-            } else if (StringUtils.equals(sortField, "funcType")) {
-                val = "func_type";
-            } else if (StringUtils.equals(sortField, "createTime")) {
-                val = "create_time";
-            } else if (StringUtils.equals(sortField, "funcSort")) {
-                val = "func_sort";
-            }
             conditionMap.put("sortType", sortType);
-            conditionMap.put("sortField", val);
+            conditionMap.put("sortField", sortField);
         }
 
         List<FuncVO> funcVOList = new ArrayList<>();
@@ -189,6 +176,7 @@ public class FuncServiceImpl implements FuncService {
         insert.setFuncName(funcName);
         insert.setCreateTime(new Date());
         insert.setParentId(parentId == null ? 0 : parentId);
+        insert.setHide(hide);
         insert.setFuncType(funcType);
         insert.setFuncSort(funcSort);
         insert.setUpdateTime(new Date());

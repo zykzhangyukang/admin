@@ -341,7 +341,6 @@
     FROM
     auth_func f
     <include refid="pageWhere"></include>
-    group by  f.func_id, f.func_name, f.func_key, f.parent_id, f.create_time, f.update_time
     order by
     <choose>
       <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
@@ -432,6 +431,9 @@
       <if test="funcType != null">
         func_type,
       </if>
+      <if test="hide != null">
+        hide,
+      </if>
       <if test="funcSort != null">
         func_sort,
       </if>
@@ -457,6 +459,9 @@
       </if>
       <if test="funcType != null">
         #{funcType,jdbcType=VARCHAR},
+      </if>
+      <if test="hide != null">
+        #{hide,jdbcType=INTEGER},
       </if>
       <if test="funcSort != null">
         #{funcSort,jdbcType=INTEGER},
