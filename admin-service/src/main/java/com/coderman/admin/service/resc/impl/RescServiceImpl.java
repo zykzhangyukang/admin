@@ -274,6 +274,11 @@ public class RescServiceImpl implements RescService {
 
     @Override
     public ResultVO<List<RescVO>> search(String keyword) {
+
+        if(StringUtils.isBlank(keyword)){
+            return ResultUtil.getSuccessList(RescVO.class, Collections.emptyList());
+        }
+
         List<RescVO> rescVOList = this.rescDAO.selectByKeyword(keyword);
         return ResultUtil.getSuccessList(RescVO.class, rescVOList);
     }

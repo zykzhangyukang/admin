@@ -19,19 +19,11 @@ public class FuncRescUpdateDTO extends BaseModel {
     @ApiModelProperty(value = "功能id")
     private Integer funcId;
 
+    @ApiModelProperty(value = "更新类型(add|remove)")
+    private String type;
+
     @ApiModelProperty(value = "资源集合")
-    private List<FuncRescUpdateItem> rescVOList;
-
-    @EqualsAndHashCode(callSuper = true)
-    @Data
-    public static class FuncRescUpdateItem extends BaseModel{
-
-        @ApiModelProperty(value = "资源id")
-        private Integer key;
-
-        @ApiModelProperty(value = "标签")
-        private String label;
-    }
+    private Integer rescId;
 }
 
 

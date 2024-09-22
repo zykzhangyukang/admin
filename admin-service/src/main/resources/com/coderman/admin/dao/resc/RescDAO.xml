@@ -287,12 +287,13 @@
   </sql>
 
   <select id="selectByKeyword" resultMap="BaseResultMap">
-    select
+    SELECT
     <include refid="Base_Column_List" />
-    from auth_resc
+    FROM auth_resc
     <where>
       <if test="keyword!=null and keyword!=''">
-        and (resc_name like concat('%',#{keyword},'%') or resc_url like concat('%',#{keyword},'%') )
+        AND (resc_name LIKE concat('%',#{keyword},'%')
+        OR resc_url LIKE concat('%',#{keyword},'%') )
       </if>
     </where>
   </select>

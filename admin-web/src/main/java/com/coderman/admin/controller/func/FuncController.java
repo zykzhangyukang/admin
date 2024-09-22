@@ -1,5 +1,6 @@
 package com.coderman.admin.controller.func;
 
+import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.dto.func.FuncPageDTO;

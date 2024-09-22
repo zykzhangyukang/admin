@@ -1,7 +1,11 @@
 package com.coderman.admin.service.func.impl;
 
+import com.coderman.admin.model.func.FuncRescExample;
+import com.coderman.admin.model.func.FuncRescModel;
 import com.coderman.admin.vo.func.MenuVO;
+import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.api.constant.ResultConstant;
+import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
@@ -105,7 +109,6 @@ public class FuncServiceImpl implements FuncService {
             conditionMap.put("rescUrl", rescUrl.trim());
         }
         if (Objects.nonNull(parentId)) {
-
             conditionMap.put("parentId", parentId);
         }
         // 字段排序
@@ -464,22 +467,32 @@ public class FuncServiceImpl implements FuncService {
     @LogError(value = "功能绑定资源")
     public ResultVO<Void> updateFuncResc(@LogErrorParam FuncRescUpdateDTO rescBindDTO) {
 
-        List<FuncRescUpdateDTO.FuncRescUpdateItem> rescVOList = rescBindDTO.getRescVOList();
         Integer funcId = rescBindDTO.getFuncId();
+        String type = rescBindDTO.getType();
+        Integer rescId = rescBindDTO.getRescId();
 
+        if (StringUtils.isBlank(type)) {
+            return ResultUtil.getWarn("参数错误！");
+        }
         if (Objects.isNull(funcId)) {
-
             return ResultUtil.getWarn("资源id不能为空！");
         }
 
-        this.funcRescDAO.deleteByFuncId(funcId);
+        // 新增
+        if ("add".equals(type)) {
 
-        if (CollectionUtils.isNotEmpty(rescVOList)) {
+            FuncRescExample example = new FuncRescExample();
+            example.createCriteria().andFuncIdEqualTo(funcId).andRescIdEqualTo(rescId);
+            List<FuncRescModel> funcRescModels = this.funcRescDAO.selectByExample(example);
+            if (CollectionUtils.isNotEmpty(funcRescModels)) {
+                return ResultUtil.getWarn("资源已绑定，请勿重复操作！");
+            }
 
-            List<Integer> rescIdList = rescVOList.stream()
-                    .map(FuncRescUpdateDTO.FuncRescUpdateItem::getKey).distinct().collect(Collectors.toList());
+            this.funcRescDAO.insertBatchByFuncId(funcId, Collections.singletonList(rescId));
 
-            this.funcRescDAO.insertBatchByFuncId(funcId, rescIdList);
+        } else if ("remove".equals(type)) {
+            // 删除
+            this.funcRescDAO.deleteByFuncIdAndRescId(funcId, rescId);
         }
 
         return ResultUtil.getSuccess();

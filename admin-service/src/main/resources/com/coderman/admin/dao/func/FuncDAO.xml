@@ -347,7 +347,17 @@
         ${sortField} ${sortType}
       </when>
       <otherwise>
-        f.create_time desc
+        <choose>
+          <when test="parentId!=null">
+            FIELD(
+            f.func_id,
+            #{parentId}
+            ) desc, f.create_time desc
+          </when>
+          <otherwise>
+            f.create_time desc
+          </otherwise>
+        </choose>
       </otherwise>
     </choose>
     limit #{offset},#{size}
@@ -378,15 +388,16 @@
         and (f.parent_id = #{parentId} or f.func_id = #{parentId})
       </if>
       <if test="rescUrl!=null and rescUrl!=''">
-        and f.func_id in (
-        select
-        f.func_id
-        from
-        auth_func f
-        inner join auth_func_resc fr on f.func_id = fr.func_id
-        inner join auth_resc r on fr.resc_id = r.resc_id
-        where
-        r.resc_url like concat('%',#{rescUrl},'%')
+        AND EXISTS (
+        SELECT
+        1
+        FROM
+        auth_func_resc fr
+        INNER JOIN
+        auth_resc r ON fr.resc_id = r.resc_id
+        WHERE
+        f.func_id = fr.func_id
+        AND r.resc_url LIKE CONCAT('%', #{rescUrl}, '%')
         )
       </if>
     </where>

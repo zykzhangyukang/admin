@@ -82,7 +82,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from auth_func_resc
     where func_resc_id = #{funcRescId,jdbcType=INTEGER}
@@ -201,6 +201,11 @@
   <delete id="deleteByFuncId">
     delete from auth_func_resc
     where func_id = #{funcId}
+  </delete>
+
+  <delete id="deleteByFuncIdAndRescId">
+    delete from auth_func_resc
+    where func_id = #{funcId} and resc_id  = #{rescId}
   </delete>
 
 </mapper>

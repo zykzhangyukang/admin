@@ -40,4 +40,11 @@ public interface FuncRescDAO extends BaseDAO<FuncRescModel, FuncRescExample> {
      * @param funcId
      */
     void deleteByFuncId(@Param(value = "funcId") Integer funcId);
+
+    /**
+     * 移除功能对应的资源
+     * @param funcId
+     * @param rescId
+     */
+    void deleteByFuncIdAndRescId(@Param(value = "funcId") Integer funcId, @Param(value = "rescId") Integer rescId);
 }

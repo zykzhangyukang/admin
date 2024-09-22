@@ -2,6 +2,7 @@ package com.coderman.admin.service.func;
 
 
 import com.coderman.admin.vo.func.MenuVO;
+import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.dto.func.FuncPageDTO;
