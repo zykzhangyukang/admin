@@ -1,14 +1,18 @@
-package com.coderman.admin.service.websocket.impl;
+package com.coderman.admin.service.notification.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.coderman.api.constant.RedisDbConstant;
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.constant.WebSocketChannelEnum;
+import com.coderman.admin.dao.notification.NotificationDAO;
 import com.coderman.admin.dto.websocket.WebsocketRedisMsg;
-import com.coderman.admin.service.websocket.WebSocketService;
+import com.coderman.admin.model.notification.NotificationModel;
+import com.coderman.admin.service.notification.NotificationService;
+import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
@@ -16,35 +20,51 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
- * @author zhangyukang
+ * @author ：zhangyukang
+ * @date ：2024/09/23 18:06
  */
 @Service
 @Slf4j
-public class WebSocketServiceImpl implements WebSocketService {
+public class NotificationServiceImpl implements NotificationService {
 
+    @Resource
+    private NotificationDAO notificationDAO;
     @Resource
     private SimpUserRegistry simpUserRegistry;
-
     @Resource
     private SimpMessagingTemplate simpMessagingTemplate;
-
     @Resource
     private RedisService redisService;
+
+    @Override
+    public void notify(Integer userId, JSONObject data, String type) {
+
+        // 保存消息
+        NotificationModel notificationModel = new NotificationModel();
+        notificationModel.setCreateTime(new Date());
+        notificationModel.setIsMark(0);
+        notificationModel.setIsProcessed(0);
+        notificationModel.setNotificationType(type);
+        notificationModel.setData(data.toJSONString());
+        notificationModel.setUserId(userId);
+        this.notificationDAO.insertSelective(notificationModel);
+
+        // 实时提示
+        this.sendToUser(userId, notificationModel);
+    }
 
     /**
      * 发送消息到用户的方法
      *
-     * @param senderId   发送方id
      * @param receiverId 接收方id
      * @param payload    消息内容
      * @return void
      */
-    @Override
-    public void sendToUser(Integer senderId, Integer receiverId, Object payload) {
+    public void sendToUser(Integer receiverId, Object payload) {
 
-        String sender = String.valueOf(senderId);
         String receiver = String.valueOf(receiverId);
         String destination = String.format(WebSocketChannelEnum.USER_SYS_MSG.getSubscribeUrl(), receiverId);
         SimpUser simpUser = simpUserRegistry.getUser(receiver);
@@ -61,26 +81,21 @@ public class WebSocketServiceImpl implements WebSocketService {
             WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(receiver, destination, payload);
             redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
         }
-        //否则将消息存储到redis，等用户上线后主动拉取未读消息
         else {
-
-            String listKey = RedisConstant.REDIS_UNREAD_MSG_PREFIX + ":" + receiver + ":" + destination;
-            log.info("消息接收者:{}还未建立WebSocket连接，{} 发送的消息【{}】将被存储到Redis的【{}】列表中", receiver, sender, payload, listKey);
-            this.redisService.setListAppend(listKey, payload, RedisDbConstant.REDIS_DB_DEFAULT);
+            log.info("用户离线不提示信息:{}", JSON.toJSONString(payload));
         }
     }
 
     /**
-     *
      * 广播主题消息
-     * @param senderId   发送人id
-     * @param payload 消息内容
+     *
+     * @param senderId 发送人id
+     * @param payload  消息内容
      */
-    @Override
     public void sendToTopic(Integer senderId, Object payload) {
 
         String destination = WebSocketChannelEnum.TOPIC_SYS_MSG.getSubscribeUrl();
-        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(null, destination,payload);
+        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(null, destination, payload);
         // 广播消息
         redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
     }
@@ -100,13 +115,13 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         // 广播类型
         WebSocketChannelEnum webSocketChannelEnum = WebSocketChannelEnum.getBySubUrl(destination);
-        if(WebSocketChannelEnum.TOPIC_SYS_MSG.equals(webSocketChannelEnum)){
+        if (WebSocketChannelEnum.TOPIC_SYS_MSG.equals(webSocketChannelEnum)) {
 
             //  广播发送
             simpMessagingTemplate.convertAndSend(destination, content);
             log.info("handWebSocketNotify-websocket推送广播消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
 
-        }else {
+        } else {
 
             // 取出用户名并判断是否连接到当前应用节点的WebSocket
             SimpUser simpUser = simpUserRegistry.getUser(receiver);

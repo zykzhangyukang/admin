@@ -3,7 +3,10 @@ package com.coderman.admin.service.user;
 
 import com.coderman.admin.dto.user.*;
 import com.coderman.admin.vo.func.PermissionVO;
-import com.coderman.admin.vo.user.*;
+import com.coderman.admin.vo.user.AuthUserVO;
+import com.coderman.admin.vo.user.TokenResultVO;
+import com.coderman.admin.vo.user.UserRoleInitVO;
+import com.coderman.admin.vo.user.UserVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 
@@ -157,14 +160,6 @@ public interface UserService {
      * @return
      */
     ResultVO<TokenResultVO> refreshToken(String refreshToken);
-
-    /**
-     * 用户离线消息拉取
-     *
-     * @param userId 用户id
-     * @return
-     */
-    ResultVO<List<Object>> pullNotify(Integer userId);
 
     /**
      * 获取用户权限信息

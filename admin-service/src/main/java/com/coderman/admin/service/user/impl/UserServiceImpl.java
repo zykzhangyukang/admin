@@ -1,5 +1,6 @@
 package com.coderman.admin.service.user.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.AuthConstant;
 import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.constant.WebSocketChannelEnum;
@@ -14,6 +15,7 @@ import com.coderman.admin.model.user.UserRoleExample;
 import com.coderman.admin.model.user.UserRoleModel;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
+import com.coderman.admin.service.notification.NotificationService;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.utils.*;
@@ -77,6 +79,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     private LogService logService;
     @Resource
     private RedisLockService redisLockService;
+    @Resource
+    private NotificationService notificationService;
 
     @Override
     @LogError(value = "切换用户登录")
@@ -136,17 +140,25 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getWarn("用户已被禁用！");
         }
 
-        final String lockName = "USER_LOGIN_LOCK_" + username;
+        final String lockName = "USER_TOKEN_LOCK_" + username;
         boolean lock = this.redisLockService.tryLock(lockName, TimeUnit.SECONDS.toMillis(30), TimeUnit.SECONDS.toMillis(5));
         if (!lock) {
             return ResultUtil.getFail("请勿重复登录!!");
         }
+
         try {
 
             AuthUserVO authUserVO = this.createSession(dbUser.getUsername());
 
             // 记录日志
             this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(), "用户登录系统");
+
+            // 欢迎消息
+            JSONObject data =  new JSONObject();
+            data.put("message","欢迎您登录系统!");
+            data.put("url","/home");
+            data.put("title","欢迎您登录系统!");
+            this.notificationService.notify(authUserVO.getUserId(), data,  "登录欢迎");
 
             TokenResultVO response = TokenResultVO.builder()
                     .accessToken(authUserVO.getAccessToken())
@@ -217,39 +229,50 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "用户刷新令牌")
     public ResultVO<TokenResultVO> refreshToken(String refreshToken) {
 
-        // 检查刷新令牌是否存在
-        AuthUserVO refreshObj = this.redisService.getObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken,
-                AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
-        if (refreshObj == null) {
-
-            return ResultUtil.getFail("用户会话已过期,请重新登录!");
+        final String lockName = "USER_REFRESH_TOKEN_LOCK_" + refreshToken;
+        boolean lock = this.redisLockService.tryLock(lockName, TimeUnit.SECONDS.toMillis(30), TimeUnit.SECONDS.toMillis(5));
+        if (!lock) {
+            return ResultUtil.getFail("请勿重复登录!!");
         }
 
-        // 原先的访问令牌是否过期
-        AuthUserVO tokenObj = this.redisService.getObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshObj.getAccessToken(),
-                AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+        try {
+            // 检查刷新令牌是否存在
+            AuthUserVO refreshObj = this.redisService.getObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken,
+                    AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+            if (refreshObj == null) {
 
-        TokenResultVO tokenResultVO = new TokenResultVO();
-        tokenResultVO.setExpiresIn(AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND.longValue());
-
-        if (tokenObj != null) {
-            tokenResultVO.setAccessToken(tokenObj.getAccessToken());
-            tokenResultVO.setRefreshToken(tokenObj.getRefreshToken());
-        } else {
-
-            UserVO userVO = this.selectUserByName(refreshObj.getUsername());
-            if (Objects.equals(AuthConstant.USER_STATUS_DISABLE, userVO.getUserStatus())) {
-                return ResultUtil.getFail("当前用户状态已被禁用!");
+                return ResultUtil.getFail("用户会话已过期,请重新登录!");
             }
 
-            AuthUserVO authUserVO = this.createSession(userVO.getUsername());
-            tokenResultVO.setAccessToken(authUserVO.getAccessToken());
-            tokenResultVO.setRefreshToken(authUserVO.getRefreshToken());
-            // 删除之前的刷新令牌
-            this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, RedisDbConstant.REDIS_DB_AUTH);
-        }
+            // 原先的访问令牌是否过期
+            AuthUserVO tokenObj = this.redisService.getObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshObj.getAccessToken(),
+                    AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
 
-        return ResultUtil.getSuccess(TokenResultVO.class, tokenResultVO);
+            TokenResultVO tokenResultVO = new TokenResultVO();
+            tokenResultVO.setExpiresIn(AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND.longValue());
+
+            if (tokenObj != null) {
+                tokenResultVO.setAccessToken(tokenObj.getAccessToken());
+                tokenResultVO.setRefreshToken(tokenObj.getRefreshToken());
+            } else {
+
+                UserVO userVO = this.selectUserByName(refreshObj.getUsername());
+                if (Objects.equals(AuthConstant.USER_STATUS_DISABLE, userVO.getUserStatus())) {
+                    return ResultUtil.getFail("当前用户状态已被禁用!");
+                }
+
+                AuthUserVO authUserVO = this.createSession(userVO.getUsername());
+                tokenResultVO.setAccessToken(authUserVO.getAccessToken());
+                tokenResultVO.setRefreshToken(authUserVO.getRefreshToken());
+                // 删除之前的刷新令牌
+                this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, RedisDbConstant.REDIS_DB_AUTH);
+            }
+
+            return ResultUtil.getSuccess(TokenResultVO.class, tokenResultVO);
+        }finally {
+
+            this.redisLockService.unlock(lockName);
+        }
     }
 
 
@@ -771,21 +794,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         return ResultUtil.getSuccess();
     }
 
-    @Override
-    @LogError(value = "用户离线消息拉取")
-    public ResultVO<List<Object>> pullNotify(Integer userId) {
-
-        // 离线消息key
-        String target = String.format(WebSocketChannelEnum.USER_SYS_MSG.getSubscribeUrl(), userId);
-        String listKey = RedisConstant.REDIS_UNREAD_MSG_PREFIX + ":" + userId + ":" + target;
-
-        // 拉取消息
-        List<Object> list = this.redisService.getListData(listKey, Object.class, RedisDbConstant.REDIS_DB_DEFAULT);
-        // 删除消息
-        this.redisService.del(listKey, RedisDbConstant.REDIS_DB_DEFAULT);
-
-        return ResultUtil.getSuccessList(Object.class, list);
-    }
 
     @Override
     public ResultVO<PermissionVO> getPermission() {
