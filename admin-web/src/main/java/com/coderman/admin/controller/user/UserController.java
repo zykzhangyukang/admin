@@ -79,7 +79,7 @@ public class UserController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "RefreshTokenVO", value = {"accessToken", "refreshToken"}),
+            @ApiReturnParam(name = "TokenResultVO", value = {"expiresIn", "accessToken", "refreshToken"}),
     })
     public ResultVO<TokenResultVO> refreshToken(String refreshToken) {
         return userService.refreshToken(refreshToken);

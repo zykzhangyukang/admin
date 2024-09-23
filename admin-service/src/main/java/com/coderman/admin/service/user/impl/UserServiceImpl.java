@@ -1,5 +1,6 @@
 package com.coderman.admin.service.user.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.AuthConstant;
 import com.coderman.admin.constant.RedisConstant;
@@ -267,6 +268,8 @@ public class UserServiceImpl extends BaseService implements UserService {
                 // 删除之前的刷新令牌
                 this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, RedisDbConstant.REDIS_DB_AUTH);
             }
+
+            log.warn("用户刷新令牌，refreshToken:{}, tokenResultVO:{}",refreshToken, JSON.toJSONString(tokenResultVO));
 
             return ResultUtil.getSuccess(TokenResultVO.class, tokenResultVO);
         }finally {
