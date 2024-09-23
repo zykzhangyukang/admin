@@ -20,4 +20,7 @@ public class TokenResultVO extends BaseModel {
 
     @ApiModelProperty(value = "刷新令牌")
     private String refreshToken;
+
+    @ApiModelProperty(value = "访问令牌有效期（单位秒）")
+    private Long expiresIn;
 }

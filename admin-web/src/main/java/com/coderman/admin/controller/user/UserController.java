@@ -56,7 +56,7 @@ public class UserController {
     @PostMapping(value = "/token")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "TokenResultVO", value = {"accessToken","refreshToken"})
+            @ApiReturnParam(name = "TokenResultVO", value = {"accessToken","refreshToken","expiresIn"})
     })
     public ResultVO<TokenResultVO> token(@RequestBody UserLoginDTO userLoginDTO) {
         return userService.token(userLoginDTO);

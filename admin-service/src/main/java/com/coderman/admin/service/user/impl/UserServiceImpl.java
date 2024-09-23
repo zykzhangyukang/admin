@@ -106,6 +106,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         TokenResultVO response = TokenResultVO.builder()
                 .accessToken(authUserVO.getAccessToken())
                 .refreshToken(authUserVO.getRefreshToken())
+                .expiresIn(AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND.longValue())
                 .build();
         return ResultUtil.getSuccess(TokenResultVO.class, response);
     }
@@ -150,6 +151,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             TokenResultVO response = TokenResultVO.builder()
                     .accessToken(authUserVO.getAccessToken())
                     .refreshToken(authUserVO.getRefreshToken())
+                    .expiresIn(AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND.longValue())
                     .build();
             return ResultUtil.getSuccess(TokenResultVO.class, response);
 
@@ -228,6 +230,8 @@ public class UserServiceImpl extends BaseService implements UserService {
                 AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
 
         TokenResultVO tokenResultVO = new TokenResultVO();
+        tokenResultVO.setExpiresIn(AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND.longValue());
+
         if (tokenObj != null) {
             tokenResultVO.setAccessToken(tokenObj.getAccessToken());
             tokenResultVO.setRefreshToken(tokenObj.getRefreshToken());
