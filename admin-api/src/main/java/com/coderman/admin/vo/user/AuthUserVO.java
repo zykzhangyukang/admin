@@ -21,9 +21,6 @@ public class AuthUserVO extends BaseModel {
     @ApiModelProperty(value = "用户名")
     private String username;
 
-    @ApiModelProperty(value = "密码")
-    private String password;
-
     @ApiModelProperty(value = "部门名称")
     private String deptName;
 
@@ -33,12 +30,18 @@ public class AuthUserVO extends BaseModel {
     @ApiModelProperty(value = "真实名称")
     private String realName;
 
-    @ApiModelProperty(value = "登入token")
-    private String token;
+    @ApiModelProperty(value = "访问令牌")
+    private String accessToken;
+
+    @ApiModelProperty(value = "刷新令牌")
+    private String refreshToken;
 
     @ApiModelProperty(value = "会话过期时间")
     private Long expiredTime;
 
     @ApiModelProperty(value = "资源id")
     private List<Integer> rescIdList;
+
+    @ApiModelProperty(value = "角色")
+    private List<String> roleList;
 }

@@ -123,6 +123,7 @@ swagger:
     email: 3053161401@qq.com
     url: https://github.com/zykzhangyukang
   exclude-auth:
-    - /auth/user/login
+    - /auth/user/token
+    - /auth/user/refresh/token
     - /auth/user/logout
     - /auth/const/all

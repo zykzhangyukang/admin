@@ -25,6 +25,7 @@ import com.coderman.sync.util.MsgBuilder;
 import com.coderman.sync.util.ProjectEnum;
 import com.coderman.sync.util.SyncUtil;
 import com.coderman.sync.vo.PlanMsg;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.stereotype.Service;
@@ -285,6 +286,10 @@ public class RescServiceImpl implements RescService {
 
     @Override
     public List<RescVO> selectRescListByUsername(String username) {
+        if(StringUtils.isBlank(username)){
+            return Lists.newArrayList();
+        }
+
         return this.rescDAO.selectRescListByUsername(username);
     }
 

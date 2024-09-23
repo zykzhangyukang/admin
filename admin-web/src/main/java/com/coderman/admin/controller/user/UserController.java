@@ -2,12 +2,8 @@ package com.coderman.admin.controller.user;
 
 import com.coderman.admin.dto.user.*;
 import com.coderman.admin.service.user.UserService;
-import com.coderman.admin.utils.AuthUtil;
 import com.coderman.admin.vo.func.PermissionVO;
-import com.coderman.admin.vo.user.UserLoginRespVO;
-import com.coderman.admin.vo.user.UserPermissionVO;
-import com.coderman.admin.vo.user.UserRoleInitVO;
-import com.coderman.admin.vo.user.UserVO;
+import com.coderman.admin.vo.user.*;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author coderman
@@ -46,14 +41,25 @@ public class UserController {
         return userService.getPermission();
     }
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "用户登录")
-    @PostMapping(value = "/login")
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取菜单权限")
+    @GetMapping(value = "/info")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserLoginRespVO", value = {"realName", "deptCode", "username", "token", "deptName"})
+            @ApiReturnParam(name = "UserVO", value = {"userId","username","realName","deptName","deptCode","roleList","createTime","updateTime","userStatus"}),
     })
-    public ResultVO<UserLoginRespVO> login(@RequestBody UserLoginDTO userLoginDTO) {
-        return userService.login(userLoginDTO);
+    public ResultVO<UserVO> info() {
+        return userService.getUserInfo();
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "获取访问令牌")
+    @PostMapping(value = "/token")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "TokenResultVO", value = {"accessToken","refreshToken"})
+    })
+    public ResultVO<TokenResultVO> token(@RequestBody UserLoginDTO userLoginDTO) {
+        return userService.token(userLoginDTO);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "切换登录")
@@ -62,48 +68,33 @@ public class UserController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "UserLoginRespVO", value = {"realName", "deptCode", "username", "token", "deptName"})
     })
-    public ResultVO<UserLoginRespVO> switchLogin(@RequestBody UserSwitchLoginDTO userSwitchLoginDTO) {
+    public ResultVO<TokenResultVO> switchLogin(@RequestBody UserSwitchLoginDTO userSwitchLoginDTO) {
         return userService.switchLogin(userSwitchLoginDTO);
     }
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "用户离线消息拉取")
-    @PostMapping(value = "/pull/notify")
-    @ApiReturnParams({
-            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-    })
-    public ResultVO<List<Object>> pullNotify() {
-        return userService.pullNotify(Objects.requireNonNull(AuthUtil.getCurrent()).getUserId());
-    }
-
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "刷新会话")
-    @PostMapping(value = "/refresh/login")
-    @ApiReturnParams({
-            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-    })
-    public ResultVO<String> refreshLogin() {
-        return userService.refreshLogin(Objects.requireNonNull(AuthUtil.getCurrent()).getToken());
-    }
-
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "注销登录")
-    @PostMapping(value = "/logout")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "刷新用户令牌")
+    @GetMapping(value = "/refresh/token")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_STRING, value = "用户token")
+            @ApiImplicitParam(name = "refreshToken", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_STRING, value = "用户刷新令牌")
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "RefreshTokenVO", value = {"accessToken", "refreshToken"}),
     })
-    public ResultVO<Void> logout(@RequestBody UserLogoutDTO userLogoutDTO) {
-        return userService.logout(userLogoutDTO.getToken());
+    public ResultVO<TokenResultVO> refreshToken(String refreshToken) {
+        return userService.refreshToken(refreshToken);
     }
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取菜单权限")
-    @GetMapping(value = "/info")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "注销登录")
+    @GetMapping(value = "/logout")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "accessToken", paramType = SwaggerConstant.PARAM_QUERY, dataType = SwaggerConstant.DATA_STRING, value = "用户刷新令牌")
+    })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserPermissionVO", value = {"realName", "deptCode", "deptName", "username", "token", "userId", "buttons", "menus", "expiredTime"}),
     })
-    public ResultVO<UserPermissionVO> info() {
-        return userService.info(Objects.requireNonNull(AuthUtil.getCurrent()).getToken());
+    public ResultVO<Void> logout(String accessToken) {
+        return userService.logout(accessToken);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "分配角色初始化")

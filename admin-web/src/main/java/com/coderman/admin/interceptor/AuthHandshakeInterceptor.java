@@ -62,14 +62,12 @@ public class AuthHandshakeInterceptor implements ChannelInterceptor {
         }
 
         String token = nativeHeader.get(0);
-        ResultVO<AuthUserVO> resultVO = this.userApi.getUserByToken(token);
-        if (!ResultConstant.RESULT_CODE_200.equals(resultVO.getCode())) {
-
-            log.error("未登录系统，禁止连接WebSocket! , resultVO:{}, sessionId:{}", JSON.toJSON(resultVO), sessionId);
+        AuthUserVO authUserVO = this.userApi.getUserByToken(token);
+        if (authUserVO == null) {
+            log.error("未登录系统，禁止连接WebSocket!, sessionId:{}", sessionId);
             return null;
         }
 
-        AuthUserVO authUserVO = resultVO.getResult();
         Integer userId = authUserVO.getUserId();
 
         // 单节点会话

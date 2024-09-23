@@ -3,7 +3,6 @@ package com.coderman.admin.aop;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.api.constant.AopConstant;
-import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.utils.AuthUtil;
@@ -88,10 +87,10 @@ public class AuthAspect {
     public void init() {
 
         // 白名单URL
-        whiteListUrl.addAll(Arrays.asList("/auth/user/login", "/auth/user/logout","/auth/const/all"));
+        whiteListUrl.addAll(Arrays.asList("/auth/user/token", "/auth/user/refresh/token", "/auth/user/logout","/auth/const/all"));
 
         // 无需拦截且有会话信息URL
-        unFilterHasLoginInfoUrl.addAll(Arrays.asList("/auth/user/info", "/auth/user/refresh/login","/auth/user/pull/notify","/auth/user/permission"));
+        unFilterHasLoginInfoUrl.addAll(Arrays.asList("/auth/user/info","/auth/user/permission"));
 
         // 刷新系统资源
         refreshSystemAllRescMap();
@@ -125,7 +124,7 @@ public class AuthAspect {
         }
 
         // 访问令牌
-        String token = AuthUtil.getToken();
+        String token = AuthUtil.getAccessToken();
 
         if (StringUtils.isBlank(token)) {
 
@@ -146,7 +145,7 @@ public class AuthAspect {
             authUserVO = USER_TOKEN_CACHE_MAP.get(token, () -> {
 
                 log.debug("尝试从redis中获取用户信息结果.token:{}", token);
-                return userApi.getUserByToken(token).getResult();
+                return userApi.getUserByToken(token);
             });
         } catch (Exception e) {
 

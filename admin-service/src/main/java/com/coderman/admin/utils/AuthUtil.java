@@ -4,6 +4,7 @@ import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.admin.constant.AuthConstant;
 import com.coderman.admin.vo.user.AuthUserVO;
+import com.coderman.api.exception.BusinessException;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.util.HttpContextUtil;
 import com.coderman.service.util.SpringContextUtil;
@@ -11,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -46,7 +46,7 @@ public class AuthUtil {
 
                     RedisService redisService = SpringContextUtil.getBean(RedisService.class);
 
-                    authUserVO = redisService.getObject(AuthConstant.AUTH_TOKEN_NAME + token, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+                    authUserVO = redisService.getObject(AuthConstant.AUTH_ACCESS_TOKEN_NAME + token, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
 
                 } catch (Exception e) {
                     log.error("从redis获取用户信息失败！error:{}", e.getMessage(), e);
@@ -57,6 +57,36 @@ public class AuthUtil {
         return null;
     }
 
+    /**
+     * 获取用户名
+     * @return
+     */
+    public static String getUserName(){
+
+        AuthUserVO current = getCurrent();
+        if(current == null){
+
+            throw new BusinessException("用户未登录!");
+        }
+
+        return current.getUsername();
+    }
+
+
+    /**
+     * 获取用户id
+     * @return
+     */
+    public static Integer getUserId(){
+
+        AuthUserVO current = getCurrent();
+        if(current == null){
+
+            throw new BusinessException("用户未登录!");
+        }
+
+        return current.getUserId();
+    }
 
     /**
      * 设置当前会话
@@ -73,12 +103,12 @@ public class AuthUtil {
      *
      * @return
      */
-    public static String getToken() {
+    public static String getAccessToken() {
 
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (token != null && token.startsWith("Bearer ")) {
-            return token.substring(7); // 去掉"Bearer "前缀
+            return token.substring(7);
         }
 
         return null;

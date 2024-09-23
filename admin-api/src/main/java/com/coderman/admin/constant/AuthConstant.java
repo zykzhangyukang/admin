@@ -14,14 +14,19 @@ import com.coderman.api.anntation.ConstList;
 public interface AuthConstant {
 
     /**
-     * 登录会话过期时间 - 12个小时
+     * 访问令牌过期时间 - 12个小时
      */
-    Integer AUTH_EXPIRED_SECOND = 60 * 60 * 12;
+    Integer ACCESS_TOKEN_EXPIRED_SECOND = 10;
+    /**
+     * 刷新令牌过期时间 7 天
+     */
+    Integer REFRESH_TOKEN_EXPIRED_SECOND = 60 * 60 * 24 * 7;
 
     /**
      * 用户会话redis key 前缀
      */
-    String AUTH_TOKEN_NAME = "auth:token:";
+    String AUTH_ACCESS_TOKEN_NAME = "auth:access_token:";
+    String AUTH_REFRESH_TOKEN_NAME = "auth:refresh_token:";
 
     /**
      * 用户状态

@@ -7,6 +7,7 @@ import com.coderman.admin.dao.role.RoleDAO;
 import com.coderman.admin.dao.user.UserDAO;
 import com.coderman.admin.dao.user.UserRoleDAO;
 import com.coderman.admin.dto.user.*;
+import com.coderman.admin.model.resc.RescModel;
 import com.coderman.admin.model.role.RoleModel;
 import com.coderman.admin.model.user.UserModel;
 import com.coderman.admin.model.user.UserRoleExample;
@@ -15,16 +16,14 @@ import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
-import com.coderman.admin.service.websocket.WebSocketService;
 import com.coderman.admin.utils.*;
-import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.admin.vo.role.RoleVO;
 import com.coderman.admin.vo.user.*;
 import com.coderman.api.constant.RedisDbConstant;
-import com.coderman.api.constant.ResultConstant;
+import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
@@ -49,6 +48,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -75,269 +75,224 @@ public class UserServiceImpl extends BaseService implements UserService {
     private FuncService funcService;
     @Resource
     private LogService logService;
+    @Resource
+    private RedisLockService redisLockService;
 
     @Override
     @LogError(value = "切换用户登录")
-    public ResultVO<UserLoginRespVO> switchLogin(@LogErrorParam UserSwitchLoginDTO userSwitchLoginDTO) {
+    public ResultVO<TokenResultVO> switchLogin(@LogErrorParam UserSwitchLoginDTO userSwitchLoginDTO) {
 
         String username = userSwitchLoginDTO.getUsername();
         AuthUserVO current = AuthUtil.getCurrent();
-
         if (current == null) {
-
             return ResultUtil.getFail("请先登录后访问！");
         }
 
-        Assert.isTrue(StringUtils.isNotBlank(username), "登录账号不能为空！");
-
-        ResultVO<UserVO> resultVO = this.selectUserByName(username);
-        if (!ResultConstant.RESULT_CODE_200.equals(resultVO.getCode())) {
-
-            return ResultUtil.getFail(resultVO.getMsg());
-        }
-
-        UserVO dbUser = resultVO.getResult();
-
-        if (Objects.isNull(dbUser)) {
-
+        UserVO user = this.selectUserByName(username);
+        if (Objects.isNull(user)) {
             return ResultUtil.getWarn("用户不存在！");
         }
 
-        if (!AuthConstant.USER_STATUS_ENABLE.equals(dbUser.getUserStatus())) {
-
+        if (AuthConstant.USER_STATUS_DISABLE.equals(user.getUserStatus())) {
             return ResultUtil.getWarn("用户已被禁用！");
         }
 
-        UserLoginRespVO response = this.generateAndStoreToken(dbUser);
+        AuthUserVO authUserVO = this.createSession(user.getUsername());
 
-        // 删除当前token
-        this.redisService.del(this.getRedisKey(current.getToken()), RedisDbConstant.REDIS_DB_AUTH);
+        // 删除当前访问令牌和刷新令牌
+        this.redisService.del(AuthConstant.AUTH_ACCESS_TOKEN_NAME + current.getAccessToken(), RedisDbConstant.REDIS_DB_AUTH);
+        this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + current.getRefreshToken(), RedisDbConstant.REDIS_DB_AUTH);
 
-        return ResultUtil.getSuccess(UserLoginRespVO.class, response);
-    }
-
-    /**
-     * 签发token并保存到redis中
-     *
-     * @param dbUser
-     * @return
-     */
-    private UserLoginRespVO generateAndStoreToken(UserVO dbUser) {
-
-        Assert.isTrue(Objects.nonNull(dbUser), "userVO is null");
-
-        int expiredSecond = AuthConstant.AUTH_EXPIRED_SECOND;
-
-        String token = RandomStringUtils.randomAlphanumeric(32);
-
-        AuthUserVO authUserVO = new AuthUserVO();
-        authUserVO.setToken(token);
-        authUserVO.setUserId(dbUser.getUserId());
-        authUserVO.setUsername(dbUser.getUsername());
-        authUserVO.setDeptCode(dbUser.getDeptCode());
-        authUserVO.setRealName(dbUser.getRealName());
-        authUserVO.setDeptName(dbUser.getDeptName());
-        authUserVO.setRescIdList(getUserRescIds(dbUser.getUsername()));
-        authUserVO.setExpiredTime(DateUtils.addSeconds(new Date(), expiredSecond).getTime());
-
-        // 写会话到redis
-        this.redisService.setObject(this.getRedisKey(token), authUserVO, expiredSecond, RedisDbConstant.REDIS_DB_AUTH);
-
-        // 组装响应给前台的对象
-        return this.assembleUserInfo(authUserVO);
+        TokenResultVO response = TokenResultVO.builder()
+                .accessToken(authUserVO.getAccessToken())
+                .refreshToken(authUserVO.getRefreshToken())
+                .build();
+        return ResultUtil.getSuccess(TokenResultVO.class, response);
     }
 
     @Override
     @LogError(value = "用户登录")
-    public ResultVO<UserLoginRespVO> login(@LogErrorParam UserLoginDTO userLoginDTO) {
+    public ResultVO<TokenResultVO> token(@LogErrorParam UserLoginDTO userLoginDTO) {
 
+        String username = userLoginDTO.getUsername();
+        String password = userLoginDTO.getPassword();
+
+        if (StringUtils.isBlank(username)) {
+            return ResultUtil.getWarn("用户名不能为空！");
+        }
+        if (StringUtils.isBlank(password)) {
+            return ResultUtil.getWarn("登录密码不能为空！");
+        }
+
+        UserVO dbUser = this.userDAO.selectByUsernameVos(username);
+        if (Objects.isNull(dbUser)) {
+            return ResultUtil.getWarn("用户名或密码错误！");
+        }
+        if (!StringUtils.equals(PasswordUtils.encryptSHA256(password), dbUser.getPassword())) {
+            return ResultUtil.getWarn("用户名或密码错误！");
+        }
+        if (Objects.equals(dbUser.getUserStatus(), AuthConstant.USER_STATUS_DISABLE)) {
+            return ResultUtil.getWarn("用户已被禁用！");
+        }
+
+        final String lockName = "USER_LOGIN_LOCK_" + username;
+        boolean lock = this.redisLockService.tryLock(lockName, TimeUnit.SECONDS.toMillis(30), TimeUnit.SECONDS.toMillis(5));
+        if (!lock) {
+            return ResultUtil.getFail("请勿重复登录!!");
+        }
         try {
 
-            String username = userLoginDTO.getUsername();
-            String password = userLoginDTO.getPassword();
-
-            if (StringUtils.isBlank(username)) {
-
-                return ResultUtil.getWarn("用户名不能为空！");
-            }
-
-            if (StringUtils.isBlank(password)) {
-
-                return ResultUtil.getWarn("登录密码不能为空！");
-            }
-
-            UserVO dbUser = this.userDAO.selectByUsernameVos(username);
-            if (Objects.isNull(dbUser)) {
-                return ResultUtil.getWarn("用户名或密码错误！");
-            }
-
-            if (!StringUtils.equals(PasswordUtils.encryptSHA256(password), dbUser.getPassword())) {
-                return ResultUtil.getWarn("用户名或密码错误！");
-            }
-
-            if (Objects.equals(dbUser.getUserStatus(), AuthConstant.USER_STATUS_DISABLE)) {
-
-                return ResultUtil.getWarn("用户已被禁用！");
-            }
-
-            // 签发token
-            UserLoginRespVO response = this.generateAndStoreToken(dbUser);
+            AuthUserVO authUserVO = this.createSession(dbUser.getUsername());
 
             // 记录日志
             this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(), "用户登录系统");
 
-            return ResultUtil.getSuccess(UserLoginRespVO.class, response);
-        } catch (Exception e) {
+            TokenResultVO response = TokenResultVO.builder()
+                    .accessToken(authUserVO.getAccessToken())
+                    .refreshToken(authUserVO.getRefreshToken())
+                    .build();
+            return ResultUtil.getSuccess(TokenResultVO.class, response);
 
-            logger.error("用户登录失败,username:{},msg:{}", userLoginDTO.getUsername(), e.getMessage(), e);
-
-            return ResultUtil.getFail("登录失败,请联系技术人员处理.");
+        } finally {
+            this.redisLockService.unlock(lockName);
         }
-
-    }
-
-    /**
-     * 组装响应给前台的用户信息
-     *
-     * @param authUserVO
-     * @return
-     */
-    private UserLoginRespVO assembleUserInfo(AuthUserVO authUserVO) {
-
-        Assert.notNull(authUserVO, "authUserVO is null");
-        UserLoginRespVO userLoginRespVO = new UserLoginRespVO();
-        userLoginRespVO.setUsername(authUserVO.getUsername());
-        userLoginRespVO.setToken(authUserVO.getToken());
-        userLoginRespVO.setDeptCode(authUserVO.getDeptCode());
-        userLoginRespVO.setToken(authUserVO.getToken());
-        userLoginRespVO.setRealName(authUserVO.getRealName());
-        userLoginRespVO.setDeptName(authUserVO.getDeptName());
-        return userLoginRespVO;
-    }
-
-    /**
-     * 获取用户拥有的资源id
-     *
-     * @param username 用户名
-     * @return
-     */
-    @LogError(value = "获取用户拥有的资源id")
-    private List<Integer> getUserRescIds(String username) {
-        return this.rescService.selectRescListByUsername(username).stream()
-                .map(RescVO::getRescId)
-                .distinct()
-                .collect(Collectors.toList());
     }
 
     @Override
     @LogError(value = "获取用户信息")
-    public ResultVO<UserPermissionVO> info(String token) {
+    public ResultVO<UserVO> getUserInfo() {
 
-        AuthUserVO authUserVO = AuthUtil.getCurrent();
-        if(authUserVO == null){
-
-            return ResultUtil.getFail("请先登录后访问！");
+        UserVO userVO = this.selectUserByName(AuthUtil.getUserName());
+        if (userVO == null) {
+            throw new BusinessException("当前用户不存在!");
+        }
+        if (Objects.equals(userVO.getUserStatus(), AuthConstant.USER_STATUS_DISABLE)) {
+            throw new BusinessException("当前用户已被禁用!");
         }
 
-        // 这里查一下数据库,获取实时的用户信息
-        String username = authUserVO.getUsername();
-        ResultVO<UserVO> voResultVO = this.selectUserByName(username);
-        if (!ResultConstant.RESULT_CODE_200.equals(voResultVO.getCode()) || Objects.isNull(voResultVO.getResult())) {
-
-            return ResultUtil.getFail(ResultConstant.RESULT_CODE_401, String.format("登录用户[%s]不存在！", username));
-        }
-
-        Integer userId = authUserVO.getUserId();
-
-        // 查询菜单
-        ResultVO<List<FuncTreeVO>> r1 = this.funcService.selectMenusTreeByUserId(userId);
-        if (!ResultConstant.RESULT_CODE_200.equals(r1.getCode())) {
-
-            return ResultUtil.getFail("获取菜单失败！");
-        }
-
-        // 查询功能
-        ResultVO<List<String>> vo = this.funcService.selectFuncKeyListByUserId(userId);
-        if (!ResultConstant.RESULT_CODE_200.equals(vo.getCode())) {
-
-            return ResultUtil.getFail("获取功能失败！");
-        }
-
-        UserPermissionVO userPermissionVO = new UserPermissionVO();
-        userPermissionVO.setUserId(userId);
-        userPermissionVO.setUsername(username);
-        userPermissionVO.setDeptCode(authUserVO.getDeptCode());
-        userPermissionVO.setDeptName(authUserVO.getDeptName());
-        userPermissionVO.setRealName(authUserVO.getRealName());
-        userPermissionVO.setExpiredTime(new Date(authUserVO.getExpiredTime()));
-        userPermissionVO.setMenus(r1.getResult());
-        userPermissionVO.setButtons(vo.getResult());
-        return ResultUtil.getSuccess(UserPermissionVO.class, userPermissionVO);
+        UserVO vo = new UserVO();
+        vo.setUserId(userVO.getUserId());
+        vo.setUsername(userVO.getUsername());
+        vo.setRealName(userVO.getRealName());
+        vo.setDeptCode(userVO.getDeptCode());
+        vo.setDeptName(userVO.getDeptName());
+        vo.setRoleList(userVO.getRoleList());
+        vo.setCreateTime(userVO.getCreateTime());
+        vo.setUpdateTime(userVO.getUpdateTime());
+        vo.setUserStatus(userVO.getUserStatus());
+        return ResultUtil.getSuccess(UserVO.class, userVO);
     }
 
     @Override
     @LogError(value = "根据token获取用户信息")
-    public ResultVO<AuthUserVO> getUserByToken(String token) {
-
-        AuthUserVO authUserVO = this.redisService.getObject(this.getRedisKey(token), AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
-
-        if (Objects.isNull(authUserVO)) {
-
-            return ResultUtil.getWarn("用户登录会话已过期！");
-        }
-
-        return ResultUtil.getSuccess(AuthUserVO.class, authUserVO);
+    public AuthUserVO getUserByToken(String token) {
+        return this.redisService.getObject(this.getRedisKey(token), AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
     }
 
     @Override
     @LogError(value = "用户退出登录")
-    public ResultVO<Void> logout(@LogErrorParam String token) {
+    public ResultVO<Void> logout(@LogErrorParam String accessToken) {
 
-        if (StringUtils.isNotBlank(token)) {
-
-            String redisKey = this.getRedisKey(token);
-            AuthUserVO authUserVO = this.redisService.getObject(redisKey, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
-            if (Objects.nonNull(authUserVO)) {
-
-                this.redisService.del(redisKey, RedisDbConstant.REDIS_DB_AUTH);
-                this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "用户注销登录");
-            }
+        if (StringUtils.isNotBlank(accessToken)) {
+            return ResultUtil.getSuccess();
         }
+
+        AuthUserVO authUserVO = this.redisService.getObject(AuthConstant.AUTH_ACCESS_TOKEN_NAME + accessToken, AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+        if (Objects.isNull(authUserVO)) {
+            return ResultUtil.getSuccess();
+        }
+
+        String refreshToken = authUserVO.getRefreshToken();
+        this.redisService.del(AuthConstant.AUTH_ACCESS_TOKEN_NAME + accessToken, RedisDbConstant.REDIS_DB_AUTH);
+        this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, RedisDbConstant.REDIS_DB_AUTH);
+
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "用户注销登录");
 
         return ResultUtil.getSuccess();
     }
 
     @Override
-    @LogError(value = "用户刷新登录")
-    public ResultVO<String> refreshLogin(String oldToken) {
+    @LogError(value = "用户刷新令牌")
+    public ResultVO<TokenResultVO> refreshToken(String refreshToken) {
 
-        ResultVO<UserPermissionVO> permissionByToken = this.info(oldToken);
+        // 检查刷新令牌是否存在
+        AuthUserVO refreshObj = this.redisService.getObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken,
+                AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
+        if (refreshObj == null) {
 
-        if (!ResultConstant.RESULT_CODE_200.equals(permissionByToken.getCode())) {
-
-            return ResultUtil.getFail(permissionByToken.getMsg());
+            return ResultUtil.getFail("用户会话已过期,请重新登录!");
         }
 
-        UserPermissionVO userPermissionVO = permissionByToken.getResult();
+        // 原先的访问令牌是否过期
+        AuthUserVO tokenObj = this.redisService.getObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshObj.getAccessToken(),
+                AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
 
-        UserVO userVO = this.userDAO.selectByUsernameVos(userPermissionVO.getUsername());
+        TokenResultVO tokenResultVO = new TokenResultVO();
+        if (tokenObj != null) {
+            tokenResultVO.setAccessToken(tokenObj.getAccessToken());
+            tokenResultVO.setRefreshToken(tokenObj.getRefreshToken());
+        } else {
 
-        Assert.isTrue(Objects.nonNull(userVO), "userVO is null");
+            UserVO userVO = this.selectUserByName(refreshObj.getUsername());
+            if (Objects.equals(AuthConstant.USER_STATUS_DISABLE, userVO.getUserStatus())) {
+                return ResultUtil.getFail("当前用户状态已被禁用!");
+            }
 
-        // 签发token
-        UserLoginRespVO response = this.generateAndStoreToken(userVO);
-        // 删除当前token
-        this.redisService.del(this.getRedisKey(oldToken), RedisDbConstant.REDIS_DB_AUTH);
+            AuthUserVO authUserVO = this.createSession(userVO.getUsername());
+            tokenResultVO.setAccessToken(authUserVO.getAccessToken());
+            tokenResultVO.setRefreshToken(authUserVO.getRefreshToken());
+            // 删除之前的刷新令牌
+            this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, RedisDbConstant.REDIS_DB_AUTH);
+        }
 
-        return ResultUtil.getSuccess(String.class, response.getToken());
+        return ResultUtil.getSuccess(TokenResultVO.class, tokenResultVO);
     }
 
+
+    /**
+     * 创建用户会话信息
+     *
+     * @return 返回用户会话VO
+     */
+    private AuthUserVO createSession(String username) {
+
+        UserVO user = this.selectUserByName(username);
+        Assert.notNull(user, "用户不存在");
+
+        // 令牌生成
+        String accessToken = RandomStringUtils.randomAlphanumeric(32);
+        String refreshToken = RandomStringUtils.randomAlphanumeric(32);
+
+        // 用户资源获取
+        List<RescVO> rescVOS = this.rescService.selectRescListByUsername(username);
+        List<Integer> rescIdList = rescVOS.stream().map(RescModel::getRescId).distinct().collect(Collectors.toList());
+
+        // 用户角色获取
+        List<String> roleList = user.getRoleList().stream().map(RoleModel::getRoleName).distinct().collect(Collectors.toList());
+
+        AuthUserVO authUserVO = new AuthUserVO();
+        authUserVO.setAccessToken(accessToken);
+        authUserVO.setRefreshToken(refreshToken);
+        authUserVO.setUserId(user.getUserId());
+        authUserVO.setUsername(user.getUsername());
+        authUserVO.setDeptCode(user.getDeptCode());
+        authUserVO.setRealName(user.getRealName());
+        authUserVO.setDeptName(user.getDeptName());
+        authUserVO.setRescIdList(rescIdList);
+        authUserVO.setRoleList(roleList);
+        authUserVO.setExpiredTime(DateUtils.addSeconds(new Date(), AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND).getTime());
+
+        // 保存会话信息到redis
+        this.redisService.setObject(AuthConstant.AUTH_ACCESS_TOKEN_NAME + accessToken, authUserVO, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
+        this.redisService.setObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, authUserVO, AuthConstant.REFRESH_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
+        return authUserVO;
+    }
 
     private String getRedisKey(String userToken) {
 
         Assert.isTrue(StringUtils.isNotBlank(userToken), "userToken is blank");
 
-        return AuthConstant.AUTH_TOKEN_NAME + userToken;
+        return AuthConstant.AUTH_ACCESS_TOKEN_NAME + userToken;
     }
 
     /**
@@ -503,7 +458,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
             return ResultUtil.getFail("用户信息不存在！");
         }
-        if (AuthConstant.USER_STATUS_ENABLE.equals(dbUserModel.getUserStatus())) {
+        if (!AuthConstant.USER_STATUS_DISABLE.equals(dbUserModel.getUserStatus())) {
 
             return ResultUtil.getWarn("请删除禁用状态的记录！");
         }
@@ -603,30 +558,27 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     @Override
     @LogError(value = "根据用户名获取用户信息")
-    public ResultVO<UserVO> selectUserByName(String username) {
+    public UserVO selectUserByName(String username) {
 
         if (StringUtils.isBlank(username)) {
-
-            return ResultUtil.getFail(UserVO.class, null, "用户名参数必传！");
+            throw new BusinessException("用户名参数必传！");
         }
 
         UserVO userVO = this.userDAO.selectByUsernameVos(username);
-        if (userVO == null) {
-
-            return ResultUtil.getFail(UserVO.class, null, "用户信息不存在,username=" + username);
+        if(userVO == null){
+            return null;
         }
 
         // 查询用户角色
         List<RoleVO> roles = this.roleDAO.selectUserRoleList(userVO.getUserId()).stream()
-                .map(e->{
+                .map(e -> {
                     RoleVO roleVO = new RoleVO();
                     BeanUtils.copyProperties(e, roleVO);
                     return roleVO;
                 })
                 .collect(Collectors.toList());
         userVO.setRoleList(roles);
-
-        return ResultUtil.getSuccess(UserVO.class, userVO);
+        return userVO;
     }
 
     @Override
@@ -634,7 +586,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<Void> updateEnable(Integer userId) {
 
         AuthUserVO current = AuthUtil.getCurrent();
-        if(current == null){
+        if (current == null) {
 
             return ResultUtil.getFail("请先登录后访问！");
         }
@@ -659,7 +611,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, "启用用户账号");
 
-        PlanMsg build = MsgBuilder.createOrderlyMsg("update_admin_sync_user_status", ProjectEnum.ADMIN, ProjectEnum.SYNC,String.valueOf(userId))
+        PlanMsg build = MsgBuilder.createOrderlyMsg("update_admin_sync_user_status", ProjectEnum.ADMIN, ProjectEnum.SYNC, String.valueOf(userId))
                 .addIntList("update_admin_sync_user_status", Collections.singletonList(userId))
                 .build();
         SyncUtil.sync(build);
@@ -672,7 +624,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<Void> updateDisable(Integer userId) {
 
         AuthUserVO current = AuthUtil.getCurrent();
-        if(current == null){
+        if (current == null) {
 
             return ResultUtil.getFail("请先登录后访问！");
         }
@@ -834,9 +786,9 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     public ResultVO<PermissionVO> getPermission() {
         AuthUserVO currentUser = AuthUtil.getCurrent();
-        Assert.notNull(currentUser , "当前用户未登录!");
+        Assert.notNull(currentUser, "当前用户未登录!");
 
-        PermissionVO permissionVO =  new PermissionVO();
+        PermissionVO permissionVO = new PermissionVO();
 
         List<MenuVO> userMenus = this.funcService.selectUserMenus(currentUser.getUserId());
         permissionVO.setMenus(userMenus);

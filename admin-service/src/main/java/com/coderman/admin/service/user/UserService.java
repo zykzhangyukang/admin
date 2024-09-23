@@ -2,7 +2,6 @@ package com.coderman.admin.service.user;
 
 
 import com.coderman.admin.dto.user.*;
-import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.user.*;
 import com.coderman.api.vo.PageVO;
@@ -64,7 +63,7 @@ public interface UserService {
      * @param username
      * @return
      */
-    ResultVO<UserVO> selectUserByName(String username);
+    UserVO selectUserByName(String username);
 
 
     /**
@@ -115,7 +114,7 @@ public interface UserService {
      * @param userLoginDTO
      * @return
      */
-    ResultVO<UserLoginRespVO> login(UserLoginDTO userLoginDTO);
+    ResultVO<TokenResultVO> token(UserLoginDTO userLoginDTO);
 
 
     /**
@@ -124,15 +123,14 @@ public interface UserService {
      * @param userSwitchLoginDTO
      * @return
      */
-    ResultVO<UserLoginRespVO> switchLogin(UserSwitchLoginDTO userSwitchLoginDTO);
+    ResultVO<TokenResultVO> switchLogin(UserSwitchLoginDTO userSwitchLoginDTO);
 
 
     /**
      * 获取用户信息
-     * @param token  令牌
      * @return
      */
-    ResultVO<UserPermissionVO> info(String token);
+    ResultVO<UserVO> getUserInfo();
 
 
     /**
@@ -141,24 +139,24 @@ public interface UserService {
      * @param token token
      * @return
      */
-    ResultVO<AuthUserVO> getUserByToken(String token);
+    AuthUserVO getUserByToken(String token);
 
 
     /**
      * 用户注销登录
      *
-     * @param token 令牌
+     * @param accessToken 访问令牌
      * @return
      */
-    ResultVO<Void> logout(String token);
+    ResultVO<Void> logout(String accessToken);
 
 
     /**
      * 用户刷新登录
-     * @param token 令牌
+     * @param refreshToken 刷新令牌
      * @return
      */
-    ResultVO<String> refreshLogin(String token);
+    ResultVO<TokenResultVO> refreshToken(String refreshToken);
 
     /**
      * 用户离线消息拉取
