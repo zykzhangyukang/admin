@@ -16,7 +16,7 @@ public interface AuthConstant {
     /**
      * 访问令牌过期时间 - 30分钟
      */
-    Integer ACCESS_TOKEN_EXPIRED_SECOND = 30 * 60;
+    Integer ACCESS_TOKEN_EXPIRED_SECOND = 30;
     /**
      * 刷新令牌过期时间 7 天
      */
