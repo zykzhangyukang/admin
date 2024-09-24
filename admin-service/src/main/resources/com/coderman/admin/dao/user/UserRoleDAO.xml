@@ -197,6 +197,28 @@
     </foreach>
   </select>
 
+  <select id="selectRoleUserListBatch" resultType="com.coderman.admin.vo.role.RoleUserVO">
+    SELECT
+    u.user_id,
+    u.username,
+    u.real_name,
+    u.user_status,
+    u.create_time,
+    u.update_time,
+    u.dept_code,
+    d.dept_name,
+    ur.role_id
+    FROM
+    auth_user_role ur
+    INNER JOIN auth_user u ON ur.user_id = u.user_id
+    LEFT JOIN auth_dept d ON u.dept_code = d.dept_code
+    WHERE
+    ur.role_id IN
+    <foreach collection="roleIdList" item="item" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </select>
+
   <insert id="insertBatchByUserId">
     insert into auth_user_role (user_id, role_id )
     values

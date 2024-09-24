@@ -97,7 +97,7 @@ public class RoleController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "RoleVO", value = {"roleDesc", "createTime", "roleId", "roleName", "updateTime", "userNameList"})
+            @ApiReturnParam(name = "RoleVO", value = {"roleDesc", "createTime", "roleId", "roleName", "updateTime","userVOList"})
     })
     public ResultVO<PageVO<List<RoleVO>>> page(@RequestBody RolePageDTO rolePageDTO) {
         return this.roleService.page(rolePageDTO);

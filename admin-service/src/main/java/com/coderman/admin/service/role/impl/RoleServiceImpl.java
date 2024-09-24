@@ -1,5 +1,6 @@
 package com.coderman.admin.service.role.impl;
 
+import com.coderman.admin.vo.role.*;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
@@ -27,10 +28,6 @@ import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.role.RoleService;
 import com.coderman.admin.utils.TreeUtils;
 import com.coderman.admin.vo.func.FuncTreeVO;
-import com.coderman.admin.vo.role.RoleFuncCheckVO;
-import com.coderman.admin.vo.role.RoleFuncInitVO;
-import com.coderman.admin.vo.role.RoleUserInitVO;
-import com.coderman.admin.vo.role.RoleVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.sync.util.MsgBuilder;
@@ -96,16 +93,28 @@ public class RoleServiceImpl implements RoleService {
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
 
-        List<RoleVO> rolevos = new ArrayList<>();
+        List<RoleVO> roleVOS = new ArrayList<>();
 
         Long count = this.roleDAO.countPage(conditionMap);
 
         if (count > 0) {
 
-            rolevos = this.roleDAO.page(conditionMap);
+            roleVOS = this.roleDAO.page(conditionMap);
         }
 
-        return ResultUtil.getSuccessPage(RoleVO.class, new PageVO<>(count, rolevos, currentPage, pageSize));
+        // 查询角色对应的用户列表
+        if(CollectionUtils.isNotEmpty(roleVOS)){
+            List<Integer> roleIdList = roleVOS.stream().map(RoleModel::getRoleId).distinct().collect(Collectors.toList());
+            Map<Integer, List<RoleUserVO>> roleUsersMap = this.userRoleDAO.selectRoleUserListBatch(roleIdList).stream()
+                    .collect(Collectors.groupingBy(RoleUserVO::getRoleId));
+
+            for (RoleVO roleVO : roleVOS) {
+                List<RoleUserVO> userList = roleUsersMap.getOrDefault(roleVO.getRoleId(), new ArrayList<>());
+                roleVO.setUserVOList(userList);
+            }
+        }
+
+        return ResultUtil.getSuccessPage(RoleVO.class, new PageVO<>(count, roleVOS, currentPage, pageSize));
     }
 
     @Override
