@@ -46,7 +46,7 @@ public class UserController {
     @GetMapping(value = "/info")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserVO", value = {"userId","username","realName","deptName","deptCode","roleList","createTime","updateTime","userStatus"}),
+            @ApiReturnParam(name = "UserVO", value = {"userId","username","realName","deptName","deptCode","roleList","createTime","updateTime","userStatus","password"}),
     })
     public ResultVO<UserVO> info() {
         return userService.getUserInfo();

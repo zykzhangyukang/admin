@@ -43,6 +43,7 @@ import com.coderman.sync.vo.PlanMsg;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -156,7 +157,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
             // 欢迎消息
             JSONObject data =  new JSONObject();
-            data.put("message","欢迎您登录系统!");
+            data.put("message","欢迎您登录系统, 当前时间:"+ DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             data.put("url","/home");
             data.put("title","欢迎您登录系统!");
             this.notificationService.notify(authUserVO.getUserId(), data,  "登录欢迎");
@@ -195,6 +196,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         vo.setCreateTime(userVO.getCreateTime());
         vo.setUpdateTime(userVO.getUpdateTime());
         vo.setUserStatus(userVO.getUserStatus());
+        vo.setPassword(null);
         return ResultUtil.getSuccess(UserVO.class, userVO);
     }
 
