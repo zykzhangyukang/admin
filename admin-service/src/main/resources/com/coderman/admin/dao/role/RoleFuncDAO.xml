@@ -82,7 +82,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from auth_role_func
     where role_func_id = #{roleFuncId,jdbcType=INTEGER}
@@ -178,6 +178,23 @@
       func_id = #{funcId,jdbcType=INTEGER}
     where role_func_id = #{roleFuncId,jdbcType=INTEGER}
   </update>
+
+  <select id="selectUserListByFuncId" resultType="com.coderman.admin.vo.user.UserVO">
+    SELECT DISTINCT
+      u.user_id,
+      u.username,
+      u.user_status,
+      u.dept_code,
+      u.real_name,
+      d.dept_name
+    FROM
+      auth_role_func rf
+        INNER JOIN auth_user_role ur ON rf.role_id = ur.role_id
+        INNER JOIN auth_user u ON ur.user_id = u.user_id
+        INNER JOIN auth_dept d ON u.dept_code = d.dept_code
+    WHERE
+      rf.func_id = #{funcId}
+  </select>
 
   <insert id="batchInsertByRoleId">
    insert into auth_role_func(role_id,func_id)

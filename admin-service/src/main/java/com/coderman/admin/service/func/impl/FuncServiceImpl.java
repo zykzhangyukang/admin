@@ -1,15 +1,5 @@
 package com.coderman.admin.service.func.impl;
 
-import com.coderman.admin.model.func.FuncRescExample;
-import com.coderman.admin.model.func.FuncRescModel;
-import com.coderman.admin.vo.func.MenuVO;
-import com.coderman.admin.vo.resc.RescVO;
-import com.coderman.api.constant.ResultConstant;
-import com.coderman.api.exception.BusinessException;
-import com.coderman.api.util.PageUtil;
-import com.coderman.api.util.ResultUtil;
-import com.coderman.api.vo.PageVO;
-import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.constant.AuthConstant;
 import com.coderman.admin.dao.func.FuncDAO;
 import com.coderman.admin.dao.func.FuncRescDAO;
@@ -21,6 +11,8 @@ import com.coderman.admin.dto.func.FuncSaveDTO;
 import com.coderman.admin.dto.func.FuncUpdateDTO;
 import com.coderman.admin.model.func.FuncExample;
 import com.coderman.admin.model.func.FuncModel;
+import com.coderman.admin.model.func.FuncRescExample;
+import com.coderman.admin.model.func.FuncRescModel;
 import com.coderman.admin.model.role.RoleFuncExample;
 import com.coderman.admin.model.role.RoleFuncModel;
 import com.coderman.admin.model.user.UserRoleExample;
@@ -28,8 +20,15 @@ import com.coderman.admin.model.user.UserRoleModel;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.utils.TreeUtils;
+import com.coderman.admin.vo.func.FuncRescVO;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.FuncVO;
+import com.coderman.admin.vo.func.MenuVO;
+import com.coderman.api.constant.ResultConstant;
+import com.coderman.api.util.PageUtil;
+import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.PageVO;
+import com.coderman.api.vo.ResultVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.sync.util.MsgBuilder;
@@ -38,6 +37,7 @@ import com.coderman.sync.util.SyncUtil;
 import com.coderman.sync.vo.PlanMsg;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -56,16 +56,12 @@ public class FuncServiceImpl implements FuncService {
 
     @Resource
     private FuncDAO funcDAO;
-
     @Resource
     private LogService logService;
-
     @Resource
     private RoleFuncDAO roleFuncDAO;
-
     @Resource
     private FuncRescDAO funcRescDAO;
-
     @Resource
     private UserRoleDAO userRoleDAO;
 
@@ -126,6 +122,18 @@ public class FuncServiceImpl implements FuncService {
         if (count > 0) {
 
             funcVOList = this.funcDAO.page(conditionMap);
+        }
+
+        // 设置资源列表
+        if(CollectionUtils.isNotEmpty(funcVOList)){
+            List<Integer> funcIdList = funcVOList.stream().map(FuncModel::getFuncId).distinct().collect(Collectors.toList());
+            Map<Integer, List<FuncRescVO>> funcRescVoMap = this.funcRescDAO.selectResListByFuncId(funcIdList).stream()
+                    .collect(Collectors.groupingBy(FuncRescVO::getFuncId));
+
+            for (FuncVO vo : funcVOList) {
+                List<FuncRescVO> list = funcRescVoMap.getOrDefault(vo.getFuncId(), new ArrayList<>());
+                vo.setRescVOList(list);
+            }
         }
 
         return ResultUtil.getSuccessPage(FuncVO.class, new PageVO<>(count, funcVOList, currentPage, pageSize));
@@ -341,12 +349,18 @@ public class FuncServiceImpl implements FuncService {
             return ResultUtil.getWarn("功能id不能为空！");
         }
 
-        FuncVO funcVO = this.funcDAO.selectFuncInfo(funcId);
-        if (null == funcVO) {
+        FuncModel funcModel = this.funcDAO.selectByPrimaryKey(funcId);
+        if (null == funcModel) {
 
             return ResultUtil.getWarn("功能不存在！");
         }
 
+        // 查询资源信息
+        List<FuncRescVO> rescVOS = this.funcRescDAO.selectResListByFuncId(Collections.singletonList(funcModel.getFuncId()));
+
+        FuncVO funcVO = new FuncVO();
+        BeanUtils.copyProperties(funcModel, funcVO);
+        funcVO.setRescVOList(rescVOS);
         return ResultUtil.getSuccess(FuncVO.class, funcVO);
     }
 
@@ -418,8 +432,8 @@ public class FuncServiceImpl implements FuncService {
             return ResultUtil.getWarn("功能id不能为空！");
         }
 
-        FuncVO funcVO = this.funcDAO.selectFuncInfo(funcId);
-        if (null == funcVO) {
+        FuncModel funcModel = this.funcDAO.selectByPrimaryKey(funcId);
+        if (null == funcModel) {
 
             return ResultUtil.getWarn("功能不存在");
         }
@@ -431,36 +445,6 @@ public class FuncServiceImpl implements FuncService {
         this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT, "功能解绑资源");
 
         return ResultUtil.getSuccess();
-    }
-
-    @Override
-    @LogError(value = "查询菜单树")
-    public ResultVO<List<FuncTreeVO>> selectMenusTreeByUserId(@LogErrorParam Integer userId) {
-
-        if (Objects.isNull(userId)) {
-            return ResultUtil.getWarn("用户id不能为空！");
-        }
-        // 查询目录类型的功能
-        List<FuncTreeVO> funcTreeVOList = this.funcDAO.selectAllByUserIdAndFuncType(userId, AuthConstant.FUNC_TYPE_DIR);
-        List<FuncTreeVO> treeVos = TreeUtils.buildFuncTreeByList(funcTreeVOList);
-        return ResultUtil.getSuccessList(FuncTreeVO.class, treeVos);
-    }
-
-
-    @Override
-    @LogError(value = "查询功能按钮key")
-    public ResultVO<List<String>> selectFuncKeyListByUserId(@LogErrorParam Integer userId) {
-
-        if (Objects.isNull(userId)) {
-
-            return ResultUtil.getWarn("用户id不能为空！");
-        }
-
-        List<String> buttonKeys = this.funcDAO.selectAllByUserIdAndFuncType(userId, AuthConstant.FUNC_TYPE_FUNC).stream()
-                .map(FuncTreeVO::getFuncKey)
-                .distinct().collect(Collectors.toList());
-
-        return ResultUtil.getSuccessList(String.class, buttonKeys);
     }
 
     @Override

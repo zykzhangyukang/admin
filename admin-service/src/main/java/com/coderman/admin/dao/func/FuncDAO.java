@@ -56,23 +56,6 @@ public interface FuncDAO extends BaseDAO<FuncModel, FuncExample> {
      */
     Long countPage(Map<String, Object> conditionMap);
 
-    /**
-     * 根据功能id获取用户
-     *
-     * @param funcId
-     * @return
-     */
-    List<UserVO> selectUserListByFuncId(@Param(value = "funcId") Integer funcId);
-
-
-    /**
-     * 根据功能id查询资源
-     *
-     * @param funcId
-     * @return
-     */
-    List<RescVO> selectResListByFuncId(@Param(value = "funcId") Integer funcId);
-
 
     /**
      * 插入返回组件
@@ -80,16 +63,6 @@ public interface FuncDAO extends BaseDAO<FuncModel, FuncExample> {
      * @param insert
      */
     void insertSelectiveReturnKey(FuncModel insert);
-
-
-    /**
-     * 查询功能信息
-     *
-     * @param funcId
-     * @return
-     */
-    FuncVO selectFuncInfo(@Param(value = "funcId") Integer funcId);
-
 
     /**
      * 查询功能信息

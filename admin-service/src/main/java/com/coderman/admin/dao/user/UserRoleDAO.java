@@ -2,6 +2,7 @@ package com.coderman.admin.dao.user;
 
 import com.coderman.admin.model.user.UserRoleExample;
 import com.coderman.admin.model.user.UserRoleModel;
+import com.coderman.admin.vo.user.UserRoleVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,4 +34,12 @@ public interface UserRoleDAO extends BaseDAO<UserRoleModel, UserRoleExample> {
      * @param userId
      */
     void deleteByUserId(@Param(value = "userId") Integer userId);
+
+    /**
+     * 批量查询用户角色
+     * @param userIdList
+     * @return
+     */
+    List<UserRoleVO> selectUserRoleListBatch(@Param(value = "userIdList") List<Integer> userIdList);
+
 }

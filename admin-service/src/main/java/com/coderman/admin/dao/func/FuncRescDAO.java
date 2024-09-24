@@ -2,6 +2,7 @@ package com.coderman.admin.dao.func;
 
 import com.coderman.admin.model.func.FuncRescExample;
 import com.coderman.admin.model.func.FuncRescModel;
+import com.coderman.admin.vo.func.FuncRescVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
 
@@ -47,4 +48,12 @@ public interface FuncRescDAO extends BaseDAO<FuncRescModel, FuncRescExample> {
      * @param rescId
      */
     void deleteByFuncIdAndRescId(@Param(value = "funcId") Integer funcId, @Param(value = "rescId") Integer rescId);
+
+    /**
+     * 根据功能id查询资源
+     *
+     * @param funcIdList
+     * @return
+     */
+    List<FuncRescVO> selectResListByFuncId(@Param(value = "funcIdList") List<Integer> funcIdList);
 }

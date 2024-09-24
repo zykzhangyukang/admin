@@ -198,6 +198,24 @@
     from auth_func_resc where func_id  = #{funcId}
   </select>
 
+  <select id="selectResListByFuncId" resultType="com.coderman.admin.vo.func.FuncRescVO">
+    SELECT
+    fr.func_id,
+    r.resc_name,
+    r.resc_url,
+    r.resc_domain,
+    r.resc_id,
+    r.method_type
+    FROM
+    auth_func_resc fr
+    INNER JOIN auth_resc r ON fr.resc_id = r.resc_id
+    WHERE
+    fr.func_id IN
+    <foreach collection="funcIdList" item="item" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </select>
+
   <delete id="deleteByFuncId">
     delete from auth_func_resc
     where func_id = #{funcId}

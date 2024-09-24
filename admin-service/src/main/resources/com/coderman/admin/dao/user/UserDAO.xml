@@ -87,7 +87,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from auth_user
     where user_id = #{userId,jdbcType=INTEGER}
@@ -103,11 +103,11 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.admin.model.user.UserModel">
-    insert into auth_user (user_id, username, real_name, 
-      password, dept_code, user_status, 
+    insert into auth_user (user_id, username, real_name,
+      password, dept_code, user_status,
       create_time, update_time)
-    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, 
-      #{password,jdbcType=VARCHAR}, #{deptCode,jdbcType=VARCHAR}, #{userStatus,jdbcType=INTEGER}, 
+    values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR},
+      #{password,jdbcType=VARCHAR}, #{deptCode,jdbcType=VARCHAR}, #{userStatus,jdbcType=INTEGER},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.admin.model.user.UserModel">
@@ -256,13 +256,8 @@
     where user_id = #{userId,jdbcType=INTEGER}
   </update>
 
-
-  <resultMap id="pageBaseResultMap" extends="BaseResultMap" type="com.coderman.admin.vo.user.UserVO">
-    <result column="dept_name" property="deptName"/>
-  </resultMap>
-
   <!-- 用户列表 -->
-  <select id="selectPage" resultMap="pageBaseResultMap">
+  <select id="selectPage" resultType="com.coderman.admin.vo.user.UserVO">
       SELECT
       u.user_id,
       u.username,
@@ -316,7 +311,7 @@
     </where>
   </sql>
 
-  <select id="selectByUsernameVos" resultMap="pageBaseResultMap">
+  <select id="selectByUsernameVos" resultType="com.coderman.admin.vo.user.UserVO">
     SELECT
       u.user_id,
       u.username,

@@ -3,8 +3,6 @@ package com.coderman.admin.service.user.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.AuthConstant;
-import com.coderman.admin.constant.RedisConstant;
-import com.coderman.admin.constant.WebSocketChannelEnum;
 import com.coderman.admin.dao.role.RoleDAO;
 import com.coderman.admin.dao.user.UserDAO;
 import com.coderman.admin.dao.user.UserRoleDAO;
@@ -19,7 +17,8 @@ import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.notification.NotificationService;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
-import com.coderman.admin.utils.*;
+import com.coderman.admin.utils.AuthUtil;
+import com.coderman.admin.utils.PasswordUtils;
 import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.resc.RescVO;
@@ -41,6 +40,7 @@ import com.coderman.sync.util.ProjectEnum;
 import com.coderman.sync.util.SyncUtil;
 import com.coderman.sync.vo.PlanMsg;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -48,7 +48,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -300,7 +299,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         List<Integer> rescIdList = rescVOS.stream().map(RescModel::getRescId).distinct().collect(Collectors.toList());
 
         // 用户角色获取
-        List<String> roleList = user.getRoleList().stream().map(RoleModel::getRoleName).distinct().collect(Collectors.toList());
+        List<String> roleList = user.getRoleList().stream().map(UserRoleVO::getRoleName).distinct().collect(Collectors.toList());
 
         AuthUserVO authUserVO = new AuthUserVO();
         authUserVO.setAccessToken(accessToken);
@@ -372,16 +371,17 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (count > 0) {
             userVOList = this.userDAO.selectPage(conditionMap);
         }
-        for (UserVO userVO : userVOList) {
-            List<RoleModel> roleModels = this.roleDAO.selectUserRoleList(userVO.getUserId());
-            List<RoleVO> roles = roleModels.stream().map(e -> {
-                RoleVO roleVO = new RoleVO();
-                BeanUtils.copyProperties(e, roleVO);
-                return roleVO;
-            }).collect(Collectors.toList());
-            userVO.setRoleList(roles);
-        }
 
+        // 批量查询用户对应的角色
+        if(CollectionUtils.isNotEmpty(userVOList)){
+            List<Integer> userIdList = userVOList.stream().map(UserModel::getUserId).distinct().collect(Collectors.toList());
+            Map<Integer, List<UserRoleVO>> userRoleMap = this.userRoleDAO.selectUserRoleListBatch(userIdList).stream()
+                    .collect(Collectors.groupingBy(UserRoleVO::getUserId));
+            for (UserVO userVO : userVOList) {
+                List<UserRoleVO> roleList = userRoleMap.getOrDefault(userVO.getUserId(), new ArrayList<>());
+                userVO.setRoleList(roleList);
+            }
+        }
 
         return ResultUtil.getSuccessPage(UserVO.class, PageUtil.getPageVO(count, userVOList, currentPage, pageSize));
     }
@@ -602,9 +602,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         // 查询用户角色
-        List<RoleVO> roles = this.roleDAO.selectUserRoleList(userVO.getUserId()).stream()
+        List<UserRoleVO> roles = this.roleDAO.selectUserRoleList(userVO.getUserId()).stream()
                 .map(e -> {
-                    RoleVO roleVO = new RoleVO();
+                    UserRoleVO roleVO = new UserRoleVO();
                     BeanUtils.copyProperties(e, roleVO);
                     return roleVO;
                 })

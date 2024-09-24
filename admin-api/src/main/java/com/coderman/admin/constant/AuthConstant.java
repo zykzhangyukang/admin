@@ -71,7 +71,7 @@ public interface AuthConstant {
 
     @ConstList(group = PROJECT_DOMAIN, name = "权限模块")
     String PROJECT_DOMAIN_AUTH = "auth";
-    @ConstList(group = PROJECT_DOMAIN, name = "同步模块")
+    @ConstList(group = PROJECT_DOMAIN, name = "同步系统")
     String PROJECT_DOMAIN_SYNC= "sync";
 
 

@@ -2,6 +2,7 @@ package com.coderman.admin.dao.role;
 
 import com.coderman.admin.model.role.RoleFuncExample;
 import com.coderman.admin.model.role.RoleFuncModel;
+import com.coderman.admin.vo.user.UserVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
 
@@ -41,4 +42,12 @@ public interface RoleFuncDAO extends BaseDAO<RoleFuncModel, RoleFuncExample> {
      * @return
      */
     List<RoleFuncModel> selectAllByRoleId(@Param(value = "roleId") Integer roleId);
+
+    /**
+     * 根据功能id获取用户
+     *
+     * @param funcId
+     * @return
+     */
+    List<UserVO> selectUserListByFuncId(@Param(value = "funcId") Integer funcId);
 }

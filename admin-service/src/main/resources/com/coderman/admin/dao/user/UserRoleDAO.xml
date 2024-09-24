@@ -82,7 +82,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from auth_user_role
     where user_role_id = #{userRoleId,jdbcType=INTEGER}
@@ -178,6 +178,24 @@
       role_id = #{roleId,jdbcType=INTEGER}
     where user_role_id = #{userRoleId,jdbcType=INTEGER}
   </update>
+
+  <select id="selectUserRoleListBatch" resultType="com.coderman.admin.vo.user.UserRoleVO">
+    SELECT
+    r.role_id,
+    r.role_name,
+    r.role_desc,
+    r.create_time,
+    r.update_time,
+    ur.user_id
+    FROM
+    auth_user_role ur
+    INNER JOIN auth_role r ON ur.role_id = r.role_id
+    WHERE
+    ur.user_id IN
+    <foreach collection="userIdList" item="item" separator="," open="(" close=")">
+      #{item}
+    </foreach>
+  </select>
 
   <insert id="insertBatchByUserId">
     insert into auth_user_role (user_id, role_id )

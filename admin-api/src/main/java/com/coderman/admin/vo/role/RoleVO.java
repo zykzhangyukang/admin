@@ -1,6 +1,7 @@
 package com.coderman.admin.vo.role;
 
 import com.coderman.admin.model.role.RoleModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,6 +14,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class RoleVO extends RoleModel {
-
 
 }

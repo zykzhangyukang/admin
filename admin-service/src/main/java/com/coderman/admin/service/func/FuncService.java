@@ -1,10 +1,6 @@
 package com.coderman.admin.service.func;
 
 
-import com.coderman.admin.vo.func.MenuVO;
-import com.coderman.admin.vo.resc.RescVO;
-import com.coderman.api.vo.PageVO;
-import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.dto.func.FuncPageDTO;
 import com.coderman.admin.dto.func.FuncRescUpdateDTO;
 import com.coderman.admin.dto.func.FuncSaveDTO;
@@ -12,6 +8,9 @@ import com.coderman.admin.dto.func.FuncUpdateDTO;
 import com.coderman.admin.model.func.FuncModel;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.FuncVO;
+import com.coderman.admin.vo.func.MenuVO;
+import com.coderman.api.vo.PageVO;
+import com.coderman.api.vo.ResultVO;
 
 import java.util.Collection;
 import java.util.List;
@@ -87,25 +86,6 @@ public interface FuncService {
      * @return
      */
     ResultVO<Void> deleteResourceBind(Integer funcId);
-
-
-    /**
-     * 查询菜单树
-     *
-     * @param userId
-     * @return
-     */
-    ResultVO<List<FuncTreeVO>> selectMenusTreeByUserId(Integer userId);
-
-
-    /**
-     * 查询功能按钮key
-     *
-     * @param userId
-     * @return
-     */
-    ResultVO<List<String>> selectFuncKeyListByUserId(Integer userId);
-
 
     /**
      * 功能绑定资源
