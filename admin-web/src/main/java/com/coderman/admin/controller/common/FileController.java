@@ -1,9 +1,9 @@
 package com.coderman.admin.controller.common;
 
-import com.alibaba.fastjson.JSON;
 import com.coderman.admin.dto.common.FileChunkDTO;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.oss.util.AliYunOssUtil;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
@@ -37,6 +37,16 @@ public class FileController {
         TimeUnit.SECONDS.sleep(2);
         logger.info(fileChunkDTO.toString());
         return ResultUtil.getSuccess();
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "文件分片上传任务创建")
+    @PostMapping(value = "/upload/chunk/start")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<String> uploadChunkStart(String objectName) throws InterruptedException {
+        String uploadId = AliYunOssUtil.getInstance().getUploadId(objectName);
+        return ResultUtil.getSuccess(String.class, uploadId);
     }
 
 }

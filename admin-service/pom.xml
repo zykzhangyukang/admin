@@ -136,6 +136,11 @@
             <artifactId>activeio-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.coderman</groupId>
+            <artifactId>base-aliyun-oss</artifactId>
+        </dependency>
+
 
     </dependencies>
 
