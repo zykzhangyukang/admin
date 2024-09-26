@@ -111,7 +111,7 @@ logging:
   level:
     root: info
     com.coderman: info
-    com.coderman.admin.dao: warn
+    com.coderman.admin.dao: debug
 
 # oss
 aliyun:

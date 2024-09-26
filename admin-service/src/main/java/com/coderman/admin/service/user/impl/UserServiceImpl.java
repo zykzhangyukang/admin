@@ -564,6 +564,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setUserStatus(userStatus);
         updateModel.setDeptId(deptId);
         updateModel.setEmail(email);
+        updateModel.setPhone(phone);
 
         // 更新用户
         this.userDAO.updateByPrimaryKeySelective(updateModel);
