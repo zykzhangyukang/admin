@@ -19,6 +19,10 @@ public class UserUpdateDTO extends BaseModel {
     @ApiModelProperty(value = "真实名称")
     private String realName;
 
+
+    @ApiModelProperty(value = "邮箱")
+    private String email;
+
     @ApiModelProperty(value = "联系方式")
     private String phone;
 

@@ -21,6 +21,9 @@ public class UserSaveDTO extends BaseModel {
     @ApiModelProperty(value = "联系方式")
     private String phone;
 
+    @ApiModelProperty(value = "邮箱")
+    private String email;
+
     @ApiModelProperty(value = "真实名称")
     private String realName;
 

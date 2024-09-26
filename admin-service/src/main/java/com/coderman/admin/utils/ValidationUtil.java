@@ -18,13 +18,15 @@ public class ValidationUtil {
     private static final String NAME_REGEX = "^[\\u4e00-\\u9fa5]{2,20}$";
     // 密码强度正则表达式（至少8位，包含大写字母、小写字母、数字和特殊字符）
     private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
-
+    // 用户账号正则表达式（3到20个字符，以字母开头，可以包含字母、数字、下划线和连字符）
+    private static final String USERNAME_REGEX = "^[a-zA-Z][a-zA-Z0-9_-]{2,19}$";
 
     private static final Pattern PHONE_PATTERN = Pattern.compile(PHONE_REGEX);
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
     private static final Pattern URL_PATTERN = Pattern.compile(URL_REGEX);
     private static final Pattern NAME_PATTERN = Pattern.compile(NAME_REGEX);
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(PASSWORD_REGEX);
+    private static final Pattern USERNAME_PATTERN = Pattern.compile(USERNAME_REGEX);
 
     /**
      * 校验手机号
@@ -75,5 +77,14 @@ public class ValidationUtil {
         return PASSWORD_PATTERN.matcher(password).matches();
     }
 
-
+    /**
+     * 校验用户账号的合法性。
+     * 用户账号必须是 3 到 20 个字符，以字母开头，可以包含字母、数字、下划线和连字符。
+     *
+     * @param username 待校验的用户账号
+     * @return 如果用户账号合法返回 true，否则返回 false
+     */
+    public static boolean isValidUsername(String username) {
+        return USERNAME_PATTERN.matcher(username).matches();
+    }
 }

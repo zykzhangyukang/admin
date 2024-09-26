@@ -18,6 +18,7 @@ import com.coderman.admin.service.notification.NotificationService;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.utils.AuthUtil;
+import com.coderman.admin.utils.MaskUtil;
 import com.coderman.admin.utils.PasswordUtils;
 import com.coderman.admin.utils.ValidationUtil;
 import com.coderman.admin.vo.func.MenuVO;
@@ -380,6 +381,10 @@ public class UserServiceImpl extends BaseService implements UserService {
             for (UserVO userVO : userVOList) {
                 List<UserRoleVO> roleList = userRoleMap.getOrDefault(userVO.getUserId(), new ArrayList<>());
                 userVO.setRoleList(roleList);
+
+                // 隐藏敏感信息
+                userVO.setPhone(MaskUtil.maskPhone(userVO.getPhone()));
+                userVO.setEmail(MaskUtil.maskPhone(userVO.getEmail()));
             }
         }
 
@@ -396,7 +401,6 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "新增用户信息")
     public ResultVO<Void> save(@LogErrorParam UserSaveDTO userSaveDTO) {
 
-        AuthUserVO current = AuthUtil.getCurrent();
         String username = userSaveDTO.getUsername();
         String realName = userSaveDTO.getRealName();
         String password = userSaveDTO.getPassword();
@@ -404,14 +408,11 @@ public class UserServiceImpl extends BaseService implements UserService {
         Integer deptId = userSaveDTO.getDeptId();
         Date currentDate = new Date();
         String phone = userSaveDTO.getPhone();
+        String email = userSaveDTO.getEmail();
 
-        Assert.notNull(current, "current is null!");
 
-        if (StringUtils.isBlank(username)) {
-            return ResultUtil.getWarn("用户账号不能为空");
-        }
-        if (StringUtils.length(username) < 4 || StringUtils.length(username) > 15) {
-            return ResultUtil.getWarn("用户账号4-15个字符!");
+        if(!ValidationUtil.isValidUsername(username)){
+            return ResultUtil.getWarn("用户账号必须是 3 到 20 个字符，以字母开头，可以包含字母、数字、下划线和连字符！");
         }
         if (StringUtils.isBlank(realName)) {
             return ResultUtil.getWarn("真实姓名不能为空！");
@@ -434,6 +435,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         if(!ValidationUtil.isValidPhone(phone)){
             return ResultUtil.getWarn("手机号填写不合法");
         }
+        if(!ValidationUtil.isValidEmail(email)){
+            return ResultUtil.getWarn("邮箱填写不合法");
+        }
 
         // 校验是否存在账号
         UserVO userVO = this.userDAO.selectByUsernameVos(username);
@@ -451,6 +455,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         insertModel.setUpdateTime(currentDate);
         insertModel.setUserStatus(userStatus);
         insertModel.setDeptId(deptId);
+        insertModel.setEmail(email);
 
         // 新增用户
         this.userDAO.insertReturnKey(insertModel);
@@ -518,6 +523,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         Integer deptId = userUpdateDTO.getDeptId();
         Integer userStatus = userUpdateDTO.getUserStatus();
         String phone = userUpdateDTO.getPhone();
+        String email = userUpdateDTO.getEmail();
 
         if (Objects.isNull(userId)) {
             return ResultUtil.getWarn("用户id不能为空！");
@@ -543,9 +549,11 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getWarn("真实姓名2-10个字符！");
         }
         if(!ValidationUtil.isValidPhone(phone)){
-            return ResultUtil.getWarn("手机号填写不合法");
+            return ResultUtil.getWarn("手机号填写不合法！");
         }
-
+        if(!ValidationUtil.isValidEmail(email)){
+            return ResultUtil.getWarn("邮箱填写不合法！");
+        }
 
         UserModel updateModel = new UserModel();
         updateModel.setUserId(userId);
@@ -553,6 +561,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setRealName(realName);
         updateModel.setUserStatus(userStatus);
         updateModel.setDeptId(deptId);
+        updateModel.setEmail(email);
 
         // 更新用户
         this.userDAO.updateByPrimaryKeySelective(updateModel);
