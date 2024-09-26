@@ -1,8 +1,10 @@
 package com.coderman.admin.controller.common;
 
 import com.coderman.admin.dto.common.FileChunkDTO;
+import com.coderman.admin.service.common.FileService;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.oss.enums.FileModuleEnum;
 import com.coderman.oss.util.AliYunOssUtil;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -26,27 +29,35 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping(value = "/auth/file")
 public class FileController {
 
-    private final static Logger logger = LoggerFactory.getLogger(FileController.class);
+    @Resource
+    private FileService fileService;
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "文件分片上传")
-    @PostMapping(value = "/upload/chunk")
-    @ApiReturnParams({
-            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-    })
-    public ResultVO<Void> uploadChunk(FileChunkDTO fileChunkDTO) throws InterruptedException {
-        TimeUnit.SECONDS.sleep(2);
-        logger.info(fileChunkDTO.toString());
-        return ResultUtil.getSuccess();
-    }
-
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "文件分片上传任务创建")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "分片上传开始")
     @PostMapping(value = "/upload/chunk/start")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
-    public ResultVO<String> uploadChunkStart(String objectName) throws InterruptedException {
-        String uploadId = AliYunOssUtil.getInstance().getUploadId(objectName);
-        return ResultUtil.getSuccess(String.class, uploadId);
+    public ResultVO<String> uploadChunkStart(String fileName) {
+        return this.fileService.uploadChunkStart(fileName);
+    }
+
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "分片上传")
+    @PostMapping(value = "/upload/chunk")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<Void> uploadChunk(FileChunkDTO fileChunkDTO) {
+        return this.fileService.uploadChunk(fileChunkDTO);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "分片上传结束")
+    @PostMapping(value = "/upload/chunk/finish")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<String> uploadChunkFinish(String uploadId) {
+        return this.fileService.uploadChunkFinish(uploadId);
     }
 
 }

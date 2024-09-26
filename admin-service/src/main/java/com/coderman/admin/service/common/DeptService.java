@@ -1,4 +1,4 @@
-package com.coderman.admin.service.dept;
+package com.coderman.admin.service.common;
 
 
 import com.coderman.api.vo.ResultVO;

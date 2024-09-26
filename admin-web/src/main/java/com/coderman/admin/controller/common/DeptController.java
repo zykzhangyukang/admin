@@ -1,8 +1,8 @@
-package com.coderman.admin.controller.dept;
+package com.coderman.admin.controller.common;
 
 import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.model.dept.DeptModel;
-import com.coderman.admin.service.dept.DeptService;
+import com.coderman.admin.service.common.DeptService;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
