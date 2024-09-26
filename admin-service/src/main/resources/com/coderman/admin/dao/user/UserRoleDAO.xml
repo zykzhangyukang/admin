@@ -205,13 +205,13 @@
     u.user_status,
     u.create_time,
     u.update_time,
-    u.dept_code,
+    u.dept_id,
     d.dept_name,
     ur.role_id
     FROM
     auth_user_role ur
     INNER JOIN auth_user u ON ur.user_id = u.user_id
-    LEFT JOIN auth_dept d ON u.dept_code = d.dept_code
+    LEFT JOIN auth_dept d ON u.dept_id = d.dept_id
     WHERE
     ur.role_id IN
     <foreach collection="roleIdList" item="item" separator="," open="(" close=")">

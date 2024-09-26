@@ -19,6 +19,7 @@ import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.utils.AuthUtil;
 import com.coderman.admin.utils.PasswordUtils;
+import com.coderman.admin.utils.ValidationUtil;
 import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.resc.RescVO;
@@ -189,7 +190,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         vo.setUserId(userVO.getUserId());
         vo.setUsername(userVO.getUsername());
         vo.setRealName(userVO.getRealName());
-        vo.setDeptCode(userVO.getDeptCode());
+        vo.setDeptId(userVO.getDeptId());
         vo.setDeptName(userVO.getDeptName());
         vo.setRoleList(userVO.getRoleList());
         vo.setCreateTime(userVO.getCreateTime());
@@ -306,7 +307,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         authUserVO.setRefreshToken(refreshToken);
         authUserVO.setUserId(user.getUserId());
         authUserVO.setUsername(user.getUsername());
-        authUserVO.setDeptCode(user.getDeptCode());
+        authUserVO.setDeptId(user.getDeptId());
         authUserVO.setRealName(user.getRealName());
         authUserVO.setDeptName(user.getDeptName());
         authUserVO.setRescIdList(rescIdList);
@@ -350,7 +351,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (Objects.nonNull(queryVO.getUserStatus())) {
             conditionMap.put("userStatus", queryVO.getUserStatus());
         }
-
         if (StringUtils.isNotBlank(queryVO.getDeptCode())) {
             conditionMap.put("deptCode", queryVO.getDeptCode());
         }
@@ -401,42 +401,38 @@ public class UserServiceImpl extends BaseService implements UserService {
         String realName = userSaveDTO.getRealName();
         String password = userSaveDTO.getPassword();
         Integer userStatus = userSaveDTO.getUserStatus();
-        String deptCode = userSaveDTO.getDeptCode();
+        Integer deptId = userSaveDTO.getDeptId();
         Date currentDate = new Date();
+        String phone = userSaveDTO.getPhone();
 
         Assert.notNull(current, "current is null!");
 
         if (StringUtils.isBlank(username)) {
-
             return ResultUtil.getWarn("用户账号不能为空");
         }
         if (StringUtils.length(username) < 4 || StringUtils.length(username) > 15) {
-
             return ResultUtil.getWarn("用户账号4-15个字符!");
         }
         if (StringUtils.isBlank(realName)) {
-
             return ResultUtil.getWarn("真实姓名不能为空！");
         }
         if (StringUtils.length(realName) < 2 || StringUtils.length(realName) > 10) {
-
             return ResultUtil.getWarn("真实姓名2-10个字符！");
         }
         if (StringUtils.isBlank(password)) {
-
             return ResultUtil.getWarn("登录密码不能为空！");
         }
         if (StringUtils.length(password) < 5 || StringUtils.length(password) > 15) {
-
             return ResultUtil.getWarn("登录密码5-15个字符！");
         }
-        if (StringUtils.isBlank(deptCode)) {
-
+        if (Objects.isNull(deptId)) {
             return ResultUtil.getWarn("所属部门不能为空！");
         }
         if (Objects.isNull(userStatus)) {
-
             return ResultUtil.getWarn("用户状态不能为空！");
+        }
+        if(!ValidationUtil.isValidPhone(phone)){
+            return ResultUtil.getWarn("手机号填写不合法");
         }
 
         // 校验是否存在账号
@@ -454,7 +450,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         insertModel.setCreateTime(currentDate);
         insertModel.setUpdateTime(currentDate);
         insertModel.setUserStatus(userStatus);
-        insertModel.setDeptCode(deptCode);
+        insertModel.setDeptId(deptId);
 
         // 新增用户
         this.userDAO.insertReturnKey(insertModel);
@@ -519,8 +515,9 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         Integer userId = userUpdateDTO.getUserId();
         String realName = userUpdateDTO.getRealName();
-        String deptCode = userUpdateDTO.getDeptCode();
+        Integer deptId = userUpdateDTO.getDeptId();
         Integer userStatus = userUpdateDTO.getUserStatus();
+        String phone = userUpdateDTO.getPhone();
 
         if (Objects.isNull(userId)) {
             return ResultUtil.getWarn("用户id不能为空！");
@@ -529,7 +526,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (null == userModel) {
             return ResultUtil.getWarn("用户不存在！");
         }
-        if (StringUtils.isBlank(deptCode)) {
+        if (Objects.isNull(deptId)) {
 
             return ResultUtil.getWarn("所属部门不能为空！");
         }
@@ -545,13 +542,17 @@ public class UserServiceImpl extends BaseService implements UserService {
 
             return ResultUtil.getWarn("真实姓名2-10个字符！");
         }
+        if(!ValidationUtil.isValidPhone(phone)){
+            return ResultUtil.getWarn("手机号填写不合法");
+        }
+
 
         UserModel updateModel = new UserModel();
         updateModel.setUserId(userId);
         updateModel.setUpdateTime(new Date());
         updateModel.setRealName(realName);
         updateModel.setUserStatus(userStatus);
-        updateModel.setDeptCode(deptCode);
+        updateModel.setDeptId(deptId);
 
         // 更新用户
         this.userDAO.updateByPrimaryKeySelective(updateModel);

@@ -1,5 +1,6 @@
 package com.coderman.admin.service.resc.impl;
 
+import com.coderman.admin.utils.ValidationUtil;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -120,6 +121,10 @@ public class RescServiceImpl implements RescService {
             return ResultUtil.getWarn("资源url不能为空,且在50个字符以内！");
         }
 
+        if(!ValidationUtil.isValidUrl(rescUrl)){
+            return ResultUtil.getWarn("请输入合法的url资源地址！ ");
+        }
+
         if (StringUtils.isBlank(rescDomain)) {
 
             return ResultUtil.getWarn("所属项目不能为空！");
@@ -185,6 +190,10 @@ public class RescServiceImpl implements RescService {
         if (StringUtils.isBlank(rescUrl) || StringUtils.length(rescUrl) > 50) {
 
             return ResultUtil.getWarn("资源url不能为空,且在50个字符以内！");
+        }
+
+        if(!ValidationUtil.isValidUrl(rescUrl)){
+            return ResultUtil.getWarn("请输入合法的url资源地址！");
         }
 
         if (StringUtils.isBlank(methodType)) {

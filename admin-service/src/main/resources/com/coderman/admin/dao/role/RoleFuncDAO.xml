@@ -184,14 +184,14 @@
       u.user_id,
       u.username,
       u.user_status,
-      u.dept_code,
+      u.dept_id,
       u.real_name,
       d.dept_name
     FROM
       auth_role_func rf
         INNER JOIN auth_user_role ur ON rf.role_id = ur.role_id
         INNER JOIN auth_user u ON ur.user_id = u.user_id
-        INNER JOIN auth_dept d ON u.dept_code = d.dept_code
+        INNER JOIN auth_dept d ON u.dept_id = d.dept_id
     WHERE
       rf.func_id = #{funcId}
   </select>

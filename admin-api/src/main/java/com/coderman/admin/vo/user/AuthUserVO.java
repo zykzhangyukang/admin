@@ -25,7 +25,7 @@ public class AuthUserVO extends BaseModel {
     private String deptName;
 
     @ApiModelProperty(value = "部门编号")
-    private String deptCode;
+    private Integer deptId;
 
     @ApiModelProperty(value = "真实名称")
     private String realName;

@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.Date;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.FieldNameConstants;
 
 /**
  * This is the base record class for table: auth_user
@@ -28,14 +27,17 @@ public class UserModel extends BaseModel {
     @ApiModelProperty(value = "真实名称")
     private String realName;
 
+    @ApiModelProperty(value = "联系方式")
+    private String phone;
+
     @ApiModelProperty(value = "密码")
     private String password;
 
-    @ApiModelProperty(value = "部门编号")
-    private String deptCode;
-
     @ApiModelProperty(value = "状态")
     private Integer userStatus;
+
+    @ApiModelProperty(value = "部门id")
+    private Integer deptId;
 
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
