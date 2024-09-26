@@ -2,7 +2,6 @@ package com.coderman.admin.service.user;
 
 
 import com.coderman.admin.dto.user.*;
-import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.user.AuthUserVO;
 import com.coderman.admin.vo.user.TokenResultVO;
 import com.coderman.admin.vo.user.UserRoleInitVO;
@@ -11,6 +10,7 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author coderman
@@ -166,6 +166,13 @@ public interface UserService {
      *
      * @return
      */
-    ResultVO<PermissionVO> getPermission();
+    ResultVO<Map<String,Object>> getPermissionInfo();
 
+    /**
+     * 用户分配功能
+     *
+     * @param userFuncUpdateDTO
+     * @return
+     */
+    ResultVO<Void> updateUserFunc(UserFuncUpdateDTO userFuncUpdateDTO);
 }

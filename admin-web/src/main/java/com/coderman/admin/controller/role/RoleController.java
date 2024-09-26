@@ -70,7 +70,7 @@ public class RoleController {
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "角色分配功能初始化")
-    @GetMapping(value = "/func/init")
+    @GetMapping(value = "/func/update/init")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_INT, value = "角色id", required = true),
     })

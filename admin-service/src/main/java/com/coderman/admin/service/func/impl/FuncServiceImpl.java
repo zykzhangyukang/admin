@@ -68,10 +68,9 @@ public class FuncServiceImpl implements FuncService {
 
     @Override
     @LogError(value = "获取功能树")
-    public ResultVO<List<FuncTreeVO>> listTree() {
+    public List<FuncTreeVO> selectAllFuncTree() {
         List<FuncTreeVO> funcTreeVos = this.funcDAO.selectAllFuncTreeVO();
-        List<FuncTreeVO> treeVos = TreeUtils.buildFuncTreeByList(funcTreeVos);
-        return ResultUtil.getSuccessList(FuncTreeVO.class, treeVos);
+        return TreeUtils.buildFuncTreeByList(funcTreeVos);
     }
 
     @Override

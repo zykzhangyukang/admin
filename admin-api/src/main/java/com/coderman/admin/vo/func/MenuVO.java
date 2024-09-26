@@ -22,9 +22,6 @@ public class MenuVO extends BaseModel {
     @ApiModelProperty(value = "菜单key (唯一标识)")
     private String key;
 
-    @ApiModelProperty(value = "菜单图标")
-    private String icon;
-
     @ApiModelProperty(value = "父菜单id")
     private Integer parentId;
 

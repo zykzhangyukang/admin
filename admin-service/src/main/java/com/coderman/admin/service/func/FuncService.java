@@ -28,7 +28,7 @@ public interface FuncService {
      *
      * @return
      */
-    ResultVO<List<FuncTreeVO>> listTree();
+    List<FuncTreeVO> selectAllFuncTree();
 
 
 

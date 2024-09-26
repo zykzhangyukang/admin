@@ -214,13 +214,6 @@
   </resultMap>
 
 
-  <select id="selectUserByRoleId" resultType="java.lang.String">
-       select distinct u.username
-       from auth_user_role ur
-       inner join auth_user u on ur.user_id = u.user_id
-       where ur.role_id = #{roleId}
-  </select>
-
   <select id="selectByRoleName" resultMap="BaseResultMap">
      select
      <include refid="Base_Column_List"></include>

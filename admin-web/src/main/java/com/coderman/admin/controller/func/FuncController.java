@@ -7,6 +7,7 @@ import com.coderman.admin.dto.func.FuncUpdateDTO;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.FuncVO;
+import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -44,7 +45,7 @@ public class FuncController {
             @ApiReturnParam(name = "FuncTreeVO", value = {"funcName", "funcKey", "createTime", "updateTime", "children", "funcId", "parentId", "funcSort", "funcType"})
     })
     public ResultVO<List<FuncTreeVO>> listTree() {
-        return funcService.listTree();
+        return ResultUtil.getSuccessList(FuncTreeVO.class, funcService.selectAllFuncTree());
     }
 
     @ApiOperation(value = "功能解绑用户", httpMethod = SwaggerConstant.METHOD_DELETE)

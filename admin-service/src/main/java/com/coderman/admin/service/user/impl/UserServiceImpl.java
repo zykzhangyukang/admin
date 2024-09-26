@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.AuthConstant;
 import com.coderman.admin.dao.role.RoleDAO;
 import com.coderman.admin.dao.user.UserDAO;
+import com.coderman.admin.dao.user.UserFuncDAO;
 import com.coderman.admin.dao.user.UserRoleDAO;
 import com.coderman.admin.dto.user.*;
 import com.coderman.admin.model.resc.RescModel;
@@ -22,9 +23,7 @@ import com.coderman.admin.utils.MaskUtil;
 import com.coderman.admin.utils.PasswordUtils;
 import com.coderman.admin.utils.ValidationUtil;
 import com.coderman.admin.vo.func.MenuVO;
-import com.coderman.admin.vo.func.PermissionVO;
 import com.coderman.admin.vo.resc.RescVO;
-import com.coderman.admin.vo.role.RoleVO;
 import com.coderman.admin.vo.user.*;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.exception.BusinessException;
@@ -72,6 +71,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     private RoleDAO roleDAO;
     @Resource
     private UserRoleDAO userRoleDAO;
+    @Resource
+    private UserFuncDAO userFuncDAO;
     @Resource
     private RedisService redisService;
     @Resource
@@ -376,7 +377,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 批量查询用户对应的角色
         if(CollectionUtils.isNotEmpty(userVOList)){
             List<Integer> userIdList = userVOList.stream().map(UserModel::getUserId).distinct().collect(Collectors.toList());
-            Map<Integer, List<UserRoleVO>> userRoleMap = this.userRoleDAO.selectUserRoleListBatch(userIdList).stream()
+            Map<Integer, List<UserRoleVO>> userRoleMap = this.userRoleDAO.selectRoleListByUserIds(userIdList).stream()
                     .collect(Collectors.groupingBy(UserRoleVO::getUserId));
             for (UserVO userVO : userVOList) {
                 List<UserRoleVO> roleList = userRoleMap.getOrDefault(userVO.getUserId(), new ArrayList<>());
@@ -385,6 +386,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                 // 隐藏敏感信息
                 userVO.setPhone(MaskUtil.maskPhone(userVO.getPhone()));
                 userVO.setEmail(MaskUtil.maskPhone(userVO.getEmail()));
+                userVO.setPassword(StringUtils.EMPTY);
             }
         }
 
@@ -742,23 +744,41 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
-
         if (userModel == null) {
-
             return ResultUtil.getWarn("用户不存在！");
         }
 
-        // 清空之前的权限
+        // 清空之前的角色
         this.userRoleDAO.deleteByUserId(userId);
-
         // 批量新增
         if (!CollectionUtils.isEmpty(roleIdList)) {
-
             this.userRoleDAO.insertBatchByUserId(userId, roleIdList);
         }
 
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_IMPORTANT, "用户分配角色");
+
+        return ResultUtil.getSuccess();
+    }
+
+
+    @Override
+    @LogError(value = "用户分配功能")
+    public ResultVO<Void> updateUserFunc(UserFuncUpdateDTO dto) {
+
+        Integer userId = dto.getUserId();
+        Assert.notNull(userId, "用户id不能为空");
+
+        // 清空之前的功能
+        this.userFuncDAO.deleteByUserId(userId);
+        // 批量新增
+        List<Integer> funcIdList = dto.getFuncIdList();
+        if (!CollectionUtils.isEmpty(funcIdList)) {
+            this.userFuncDAO.insertBatchByUserId(userId, funcIdList);
+        }
+
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_IMPORTANT, "用户分配功能");
 
         return ResultUtil.getSuccess();
     }
@@ -811,19 +831,19 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 
     @Override
-    public ResultVO<PermissionVO> getPermission() {
+    public ResultVO<Map<String,Object>> getPermissionInfo() {
         AuthUserVO currentUser = AuthUtil.getCurrent();
         Assert.notNull(currentUser, "当前用户未登录!");
 
-        PermissionVO permissionVO = new PermissionVO();
-
+        // 菜单权限
         List<MenuVO> userMenus = this.funcService.selectUserMenus(currentUser.getUserId());
-        permissionVO.setMenus(userMenus);
-
+        // 按钮权限
         List<String> userButtons = this.funcService.selectUserButtons(currentUser.getUserId());
-        permissionVO.setButtons(userButtons);
 
-        return ResultUtil.getSuccess(PermissionVO.class, permissionVO);
+        Map<String, Object> map = new HashMap<>();
+        map.put("menus", userMenus);
+        map.put("buttons", userButtons);
+        return ResultUtil.getSuccessMap(Map.class, map);
     }
 
 

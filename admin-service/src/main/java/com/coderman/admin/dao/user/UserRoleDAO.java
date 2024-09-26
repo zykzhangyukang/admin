@@ -41,12 +41,12 @@ public interface UserRoleDAO extends BaseDAO<UserRoleModel, UserRoleExample> {
      * @param userIdList
      * @return
      */
-    List<UserRoleVO> selectUserRoleListBatch(@Param(value = "userIdList") List<Integer> userIdList);
+    List<UserRoleVO> selectRoleListByUserIds(@Param(value = "userIdList") List<Integer> userIdList);
 
     /**
      * 查询角色对应的用户
      * @param roleIdList
      * @return
      */
-    List<RoleUserVO> selectRoleUserListBatch(@Param(value = "roleIdList") List<Integer> roleIdList);
+    List<RoleUserVO> selectUserListByRoleIds(@Param(value = "roleIdList") List<Integer> roleIdList);
 }

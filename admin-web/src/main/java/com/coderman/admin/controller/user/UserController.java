@@ -2,8 +2,9 @@ package com.coderman.admin.controller.user;
 
 import com.coderman.admin.dto.user.*;
 import com.coderman.admin.service.user.UserService;
-import com.coderman.admin.vo.func.PermissionVO;
-import com.coderman.admin.vo.user.*;
+import com.coderman.admin.vo.user.TokenResultVO;
+import com.coderman.admin.vo.user.UserRoleInitVO;
+import com.coderman.admin.vo.user.UserVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author coderman
@@ -35,10 +37,9 @@ public class UserController {
     @GetMapping(value = "/permission")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "PermissionVO", value = {"menus", "buttons"})
     })
-    public ResultVO<PermissionVO> getPermission() {
-        return userService.getPermission();
+    public ResultVO<Map<String,Object>> getPermissionInfo() {
+        return userService.getPermissionInfo();
     }
 
 
@@ -98,7 +99,7 @@ public class UserController {
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "分配角色初始化")
-    @GetMapping(value = "/role/init")
+    @GetMapping(value = "/role/update/init")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", paramType = SwaggerConstant.PARAM_FORM, dataType = SwaggerConstant.DATA_INT, value = "用户id", required = true)
     })
@@ -119,6 +120,16 @@ public class UserController {
         return userService.updateUserRole(userRoleUpdateDTO);
     }
 
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_PUT, value = "用户分配功能")
+    @PutMapping(value = "/func/update")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
+    })
+    public ResultVO<Void> updateUserFunc(@RequestBody UserFuncUpdateDTO userFuncUpdateDTO) {
+        return userService.updateUserFunc(userFuncUpdateDTO);
+    }
+
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "用户详情")
     @GetMapping(value = "/detail")
     @ApiImplicitParams({
@@ -126,7 +137,7 @@ public class UserController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserVO", value = {"createTime", "updateTime", "username", "realName", "userStatus", "deptCode", "userId"})
+            @ApiReturnParam(name = "UserVO", value = {"createTime", "updateTime", "username", "realName", "userStatus", "deptCode", "userId","deptId","phone","email"})
     })
     public ResultVO<UserVO> selectUserById(@RequestParam(value = "userId") Integer userId) {
         return userService.selectUserById(userId);

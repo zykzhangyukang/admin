@@ -1,6 +1,7 @@
 package com.coderman.admin.utils;
 
 import com.coderman.admin.vo.func.FuncTreeVO;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -66,7 +67,7 @@ public class TreeUtils {
         List<FuncTreeVO> rootFuncTreeNode = new ArrayList<>();
 
         if (CollectionUtils.isEmpty(funcTreeVoList)) {
-            return Collections.emptyList();
+            return Lists.newArrayList();
         }
 
         Map<Integer, FuncTreeVO> funcTreeVoMap = funcTreeVoList.stream().collect(Collectors.toMap(FuncTreeVO::getFuncId, e -> e, (k1, k2) -> k2));

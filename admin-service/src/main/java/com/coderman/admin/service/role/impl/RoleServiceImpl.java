@@ -1,7 +1,6 @@
 package com.coderman.admin.service.role.impl;
 
 import com.coderman.admin.vo.role.*;
-import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -18,15 +17,12 @@ import com.coderman.admin.dto.role.RoleSaveDTO;
 import com.coderman.admin.dto.role.RoleUpdateDTO;
 import com.coderman.admin.model.func.FuncModel;
 import com.coderman.admin.model.role.RoleFuncExample;
-import com.coderman.admin.model.role.RoleFuncModel;
 import com.coderman.admin.model.role.RoleModel;
 import com.coderman.admin.model.user.UserModel;
 import com.coderman.admin.model.user.UserRoleExample;
-import com.coderman.admin.model.user.UserRoleModel;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.role.RoleService;
-import com.coderman.admin.utils.TreeUtils;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
@@ -52,19 +48,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Resource
     private RoleDAO roleDAO;
-
     @Resource
     private LogService logService;
-
     @Resource
     private UserRoleDAO userRoleDAO;
-
     @Resource
     private UserDAO userDAO;
-
     @Resource
     private FuncService funcService;
-
     @Resource
     private RoleFuncDAO roleFuncDAO;
 
@@ -105,7 +96,7 @@ public class RoleServiceImpl implements RoleService {
         // 查询角色对应的用户列表
         if(CollectionUtils.isNotEmpty(roleVOS)){
             List<Integer> roleIdList = roleVOS.stream().map(RoleModel::getRoleId).distinct().collect(Collectors.toList());
-            Map<Integer, List<RoleUserVO>> roleUsersMap = this.userRoleDAO.selectRoleUserListBatch(roleIdList).stream()
+            Map<Integer, List<RoleUserVO>> roleUsersMap = this.userRoleDAO.selectUserListByRoleIds(roleIdList).stream()
                     .collect(Collectors.groupingBy(RoleUserVO::getRoleId));
 
             for (RoleVO roleVO : roleVOS) {
@@ -305,10 +296,8 @@ public class RoleServiceImpl implements RoleService {
         roleUserInitVO.setUserList(userModelList);
 
         // 查询角色已有的用户
-        UserRoleExample example = new UserRoleExample();
-        example.createCriteria().andRoleIdEqualTo(roleId);
-        List<UserRoleModel> userRoleModels = this.userRoleDAO.selectByExample(example);
-        List<Integer> roleUserIds = userRoleModels.stream().map(UserRoleModel::getUserId).collect(Collectors.toList());
+        List<RoleUserVO> userList = this.userRoleDAO.selectUserListByRoleIds(Collections.singletonList(roleId));
+        List<Integer> roleUserIds = userList.stream().map(RoleUserVO::getUserId).collect(Collectors.toList());
         roleUserInitVO.setUserIdList(roleUserIds);
 
         return ResultUtil.getSuccess(RoleUserInitVO.class, roleUserInitVO);
@@ -352,59 +341,23 @@ public class RoleServiceImpl implements RoleService {
         }
 
         RoleFuncInitVO roleFuncInitVO = new RoleFuncInitVO();
-        Map<Integer, Collection<Integer>> halfCheckedMap = new HashMap<>();
-        Map<Integer, Collection<Integer>> allCheckedMap = new HashMap<>();
 
         // 功能树查询
-        ResultVO<List<FuncTreeVO>> listResultVO = this.funcService.listTree();
-        if (!ResultConstant.RESULT_CODE_200.equals(listResultVO.getCode())) {
-
-            return ResultUtil.getWarn(listResultVO.getMsg());
-        }
-
-        List<FuncTreeVO> treeVoList = listResultVO.getResult();
+        List<FuncTreeVO> treeVoList = this.funcService.selectAllFuncTree();
         if (CollectionUtils.isEmpty(treeVoList)) {
-
             return ResultUtil.getWarn("暂无可分配的功能！");
         }
 
-        // 查询该角色拥有的功能
-        List<Integer> ownerFuncIdList = this.roleFuncDAO.selectAllByRoleId(roleId).stream().map(RoleFuncModel::getFuncId).distinct().collect(Collectors.toList());
-
-        if (CollectionUtils.isNotEmpty(ownerFuncIdList)) {
-            for (FuncTreeVO funcTreeVO : treeVoList) {
-
-                List<Integer> tempList = new ArrayList<>();
-                List<Integer> tempList2 = new ArrayList<>();
-
-                // 半选
-                TreeUtils.getDeepFuncIdList(tempList, funcTreeVO);
-                if (CollectionUtils.isNotEmpty(tempList)) {
-                    Collection<Integer> checkedIdList = CollectionUtils.intersection(tempList, ownerFuncIdList);
-                    halfCheckedMap.putIfAbsent(funcTreeVO.getFuncId(), checkedIdList);
-                }
-
-                // 全选
-                TreeUtils.getAllFuncIdList(tempList2, funcTreeVO);
-                if (CollectionUtils.isNotEmpty(tempList2)) {
-                    Collection<Integer> checkedIdList = CollectionUtils.intersection(tempList2, ownerFuncIdList);
-                    allCheckedMap.putIfAbsent(funcTreeVO.getFuncId(), checkedIdList);
-                }
-            }
-        }
-
         // 查询拥有该角色的用户
-        List<String> nameList = this.roleDAO.selectUserByRoleId(roleId);
+        List<RoleUserVO> userList = this.userRoleDAO.selectUserListByRoleIds(Collections.singletonList(roleId));
 
-        roleFuncInitVO.setUsernameList(nameList);
+        roleFuncInitVO.setUserList(userList);
         roleFuncInitVO.setRoleId(roleModel.getRoleId());
         roleFuncInitVO.setRoleName(roleModel.getRoleName());
         roleFuncInitVO.setRoleDesc(roleModel.getRoleDesc());
         roleFuncInitVO.setCreateTime(roleModel.getCreateTime());
         roleFuncInitVO.setUpdateTime(roleModel.getUpdateTime());
         roleFuncInitVO.setAllTreeList(treeVoList);
-        roleFuncInitVO.setHalfCheckedMap(halfCheckedMap);
-        roleFuncInitVO.setAllCheckedMap(allCheckedMap);
         return ResultUtil.getSuccess(RoleFuncInitVO.class, roleFuncInitVO);
     }
 

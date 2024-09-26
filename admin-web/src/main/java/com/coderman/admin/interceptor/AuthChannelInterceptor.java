@@ -1,11 +1,12 @@
 package com.coderman.admin.interceptor;
 
-import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.dto.websocket.MyPrincipal;
+import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -14,7 +15,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.security.Principal;
 
 /**
@@ -32,7 +32,7 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 
 
     @Override
-    public void afterSendCompletion(@NotNull Message<?> message, @NotNull MessageChannel channel, boolean sent, Exception ex) {
+    public void afterSendCompletion(@NonNull Message<?> message, @NonNull MessageChannel channel, boolean sent, Exception ex) {
 
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         String sessionId = accessor.getSessionId();
