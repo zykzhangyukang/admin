@@ -274,15 +274,6 @@
     where func_id = #{funcId,jdbcType=INTEGER}
   </update>
 
-  <resultMap id="funcInfoResultMap" type="com.coderman.admin.vo.func.FuncVO">
-    <id column="func_id" property="funcId" />
-    <result column="func_name" property="funcName" />
-    <result column="func_key" property="funcKey" />
-    <result column="func_type" property="funcType" />
-    <result column="func_sort" property="funcSort" />
-    <collection column="func_id" ofType="com.coderman.admin.vo.user.UserVO" property="userVOList" select="com.coderman.admin.dao.func.FuncDAO.selectUserListByFuncId" />
-  </resultMap>
-
 
   <select id="page" resultType="com.coderman.admin.vo.func.FuncVO">
     SELECT

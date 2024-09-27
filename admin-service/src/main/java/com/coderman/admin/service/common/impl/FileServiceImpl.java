@@ -41,8 +41,7 @@ public class FileServiceImpl implements FileService {
         Integer chunkNumber = dto.getChunkNumber();
         MultipartFile filePart = dto.getFilePart();
 
-
-        return null;
+        return ResultUtil.getSuccess();
     }
 
     @Override
