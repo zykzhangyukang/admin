@@ -258,16 +258,6 @@
     </where>
   </sql>
 
-  <select id="selectUserRoleList" resultMap="BaseResultMap">
-    select role_id,role_name,role_desc,create_time,update_time
-    from auth_role
-    where role_id in (
-       select role_id
-       from auth_user_role where user_id = #{userId}
-    )
-  </select>
-
-
   <insert id="insertReturnKey" useGeneratedKeys="true" keyProperty="roleId">
     insert into auth_role (role_id, role_name, role_desc,
       create_time, update_time)

@@ -296,6 +296,7 @@
         OR resc_url LIKE concat('%',#{keyword},'%') )
       </if>
     </where>
+    LIMIT 100
   </select>
 
 

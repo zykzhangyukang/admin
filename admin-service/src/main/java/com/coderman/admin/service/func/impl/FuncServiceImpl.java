@@ -123,8 +123,9 @@ public class FuncServiceImpl implements FuncService {
             funcVOList = this.funcDAO.page(conditionMap);
         }
 
-        // 设置资源列表
         if(CollectionUtils.isNotEmpty(funcVOList)){
+
+            // 设置资源列表
             List<Integer> funcIdList = funcVOList.stream().map(FuncModel::getFuncId).distinct().collect(Collectors.toList());
             Map<Integer, List<FuncRescVO>> funcRescVoMap = this.funcRescDAO.selectResListByFuncId(funcIdList).stream()
                     .collect(Collectors.groupingBy(FuncRescVO::getFuncId));

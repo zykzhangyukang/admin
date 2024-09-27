@@ -111,6 +111,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.redisService.del(AuthConstant.AUTH_ACCESS_TOKEN_NAME + current.getAccessToken(), RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + current.getRefreshToken(), RedisDbConstant.REDIS_DB_AUTH);
 
+        // 记录日志
+        this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "切换用户登录");
+
         TokenResultVO response = TokenResultVO.builder()
                 .accessToken(authUserVO.getAccessToken())
                 .refreshToken(authUserVO.getRefreshToken())
@@ -368,29 +371,19 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         // 总条数
         Long count = this.userDAO.countPage(conditionMap);
-
-        List<UserVO> userVOList = new ArrayList<>();
+        List<UserVO> list = new ArrayList<>();
         if (count > 0) {
-            userVOList = this.userDAO.selectPage(conditionMap);
-        }
 
-        // 批量查询用户对应的角色
-        if(CollectionUtils.isNotEmpty(userVOList)){
-            List<Integer> userIdList = userVOList.stream().map(UserModel::getUserId).distinct().collect(Collectors.toList());
-            Map<Integer, List<UserRoleVO>> userRoleMap = this.userRoleDAO.selectRoleListByUserIds(userIdList).stream()
-                    .collect(Collectors.groupingBy(UserRoleVO::getUserId));
-            for (UserVO userVO : userVOList) {
-                List<UserRoleVO> roleList = userRoleMap.getOrDefault(userVO.getUserId(), new ArrayList<>());
-                userVO.setRoleList(roleList);
-
-                // 隐藏敏感信息
+            list = this.userDAO.selectPage(conditionMap);
+            // 隐藏敏感信息
+            for (UserVO userVO : list) {
                 userVO.setPhone(MaskUtil.maskPhone(userVO.getPhone()));
                 userVO.setEmail(MaskUtil.maskPhone(userVO.getEmail()));
-                userVO.setPassword(StringUtils.EMPTY);
             }
         }
 
-        return ResultUtil.getSuccessPage(UserVO.class, PageUtil.getPageVO(count, userVOList, currentPage, pageSize));
+
+        return ResultUtil.getSuccessPage(UserVO.class, PageUtil.getPageVO(count, list, currentPage, pageSize));
     }
 
     /**
@@ -615,14 +608,8 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         // 查询用户角色
-        List<UserRoleVO> roles = this.roleDAO.selectUserRoleList(userVO.getUserId()).stream()
-                .map(e -> {
-                    UserRoleVO roleVO = new UserRoleVO();
-                    BeanUtils.copyProperties(e, roleVO);
-                    return roleVO;
-                })
-                .collect(Collectors.toList());
-        userVO.setRoleList(roles);
+        List<UserRoleVO> roleList = this.userRoleDAO.selectRoleListByUserIds(Collections.singletonList(userVO.getUserId()));
+        userVO.setRoleList(roleList);
         return userVO;
     }
 
@@ -715,19 +702,14 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getFail("用户不存在！");
         }
 
-        userRoleInitVO.setUserId(userId);
-
         // 查询全部角色信息
         List<RoleModel> roleModels = this.roleDAO.selectByExample(null);
         userRoleInitVO.setRoleList(roleModels);
 
         // 查询用户已有的角色
-        UserRoleExample example = new UserRoleExample();
-        example.createCriteria().andUserIdEqualTo(userId);
-        List<UserRoleModel> userRoleModels = this.userRoleDAO.selectByExample(example);
-        List<Integer> userRoleIds = userRoleModels.stream().map(UserRoleModel::getRoleId).collect(Collectors.toList());
-
-        userRoleInitVO.setAssignedIdList(userRoleIds);
+        List<UserRoleVO> roleList = this.userRoleDAO.selectRoleListByUserIds(Collections.singletonList(userId));
+        List<Integer> roleIds = roleList.stream().map(UserRoleVO::getRoleId).collect(Collectors.toList());
+        userRoleInitVO.setRoleIdList(roleIds);
 
         return ResultUtil.getSuccess(UserRoleInitVO.class, userRoleInitVO);
     }

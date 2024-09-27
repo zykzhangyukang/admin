@@ -67,7 +67,7 @@ public class UserController {
     @PostMapping(value = "/switch/login")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserLoginRespVO", value = {"realName", "deptCode", "username", "token", "deptName"})
+            @ApiReturnParam(name = "TokenResultVO", value = {"expiresIn", "accessToken", "refreshToken"}),
     })
     public ResultVO<TokenResultVO> switchLogin(@RequestBody UserSwitchLoginDTO userSwitchLoginDTO) {
         return userService.switchLogin(userSwitchLoginDTO);
@@ -105,7 +105,7 @@ public class UserController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserRoleInitVO", value = {"assignedIdList", "roleList", "userId"})
+            @ApiReturnParam(name = "UserRoleInitVO", value = {"roleIdList", "roleList"})
     })
     public ResultVO<UserRoleInitVO> selectUserRoleInit(@RequestParam(value = "userId") Integer userId) {
         return userService.selectUserRoleInit(userId);
@@ -113,6 +113,10 @@ public class UserController {
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_PUT, value = "分配角色")
     @PutMapping(value = "/role/update")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_INT, value = "用户id"),
+            @ApiImplicitParam(name = "roleIdList", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_OBJECT, value = "分配的角色id集合"),
+    })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
     })

@@ -34,11 +34,11 @@ public class RoleController {
     @Resource
     private RoleService roleService;
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "角色分配用户")
-    @PostMapping(value = "/user/update")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_PUT, value = "角色分配用户")
+    @PutMapping(value = "/user/update")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "roleId", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_INT, value = "角色id"),
-            @ApiImplicitParam(name = "assignedIdList", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_OBJECT, value = "分配的用户id集合"),
+            @ApiImplicitParam(name = "userIdList", paramType = SwaggerConstant.PARAM_BODY, dataType = SwaggerConstant.DATA_OBJECT, value = "分配的用户id集合"),
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})

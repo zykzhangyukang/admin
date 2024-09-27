@@ -40,14 +40,6 @@ public interface RoleDAO extends BaseDAO<RoleModel, RoleExample> {
     RoleModel selectByRoleName(@Param(value = "roleName") String roleName);
 
     /**
-     * 查看用户拥有的角色
-     *
-     * @param userId
-     * @return
-     */
-    List<RoleModel> selectUserRoleList(@Param(value = "userId") Integer userId);
-
-    /**
      * 新增并返回主键
      *
      * @param roleModel 角色
