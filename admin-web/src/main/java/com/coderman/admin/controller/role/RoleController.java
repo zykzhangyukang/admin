@@ -76,7 +76,7 @@ public class RoleController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "RoleFuncInitVO", value = {"allTreeList", "roleId", "roleName", "roleDesc", "createTime", "updateTime", "funcIdList", "halfCheckedMap", "usernameList", "allCheckedMap"})
+            @ApiReturnParam(name = "RoleFuncInitVO", value = {"allTreeList", "roleId", "roleName", "roleDesc", "createTime", "updateTime", "funcIdList","userList"})
     })
     public ResultVO<RoleFuncInitVO> selectRoleFuncInit(Integer roleId) {
         return this.roleService.selectRoleFuncInit(roleId);

@@ -23,7 +23,7 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: docker-cluster
-    hosts: 47.115.42.112:9200
+    hosts: 127.0.0.1:9200
     scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
