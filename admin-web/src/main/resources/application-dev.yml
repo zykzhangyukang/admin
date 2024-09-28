@@ -23,7 +23,7 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: docker-cluster
-    hosts: 47.115.42.112:9200
+    hosts: 127.0.0.1:9200
     scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
@@ -33,7 +33,7 @@ sync:
     username: elastic
     password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
-  mq: rocketmq
+  mq: activemq
   rocketmq:
     instantName: SYNC_INSTANT
     namesrvAddr: 47.115.42.112:9876
