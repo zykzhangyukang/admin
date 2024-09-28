@@ -34,4 +34,7 @@ public class RoleFuncInitVO extends BaseModel {
     @ApiModelProperty(value = "用户列表")
     private List<RoleUserVO> userList;
 
+    @ApiModelProperty(value = "已分配的功能id")
+    private List<Integer> funcIdList;
+
 }

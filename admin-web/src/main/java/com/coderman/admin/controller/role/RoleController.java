@@ -76,14 +76,14 @@ public class RoleController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "RoleFuncInitVO", value = {"allTreeList", "roleId", "roleName", "roleDesc", "createTime", "updateTime", "funcIdList","userList"})
+            @ApiReturnParam(name = "RoleFuncInitVO", value = {"allTreeList", "roleId", "roleName", "roleDesc", "createTime", "updateTime", "funcIdList","userList","funcIdList"})
     })
     public ResultVO<RoleFuncInitVO> selectRoleFuncInit(Integer roleId) {
         return this.roleService.selectRoleFuncInit(roleId);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "角色绑定功能预先检查")
-    @PostMapping(value = "/func/check")
+    @PostMapping(value = "/func/update/check")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "RoleFuncCheckVO", value = {"insertList", "delList"})

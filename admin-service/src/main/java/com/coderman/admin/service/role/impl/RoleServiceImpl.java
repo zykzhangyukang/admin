@@ -1,5 +1,6 @@
 package com.coderman.admin.service.role.impl;
 
+import com.coderman.admin.model.role.RoleFuncModel;
 import com.coderman.admin.vo.role.*;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
@@ -351,6 +352,10 @@ public class RoleServiceImpl implements RoleService {
         // 查询拥有该角色的用户
         List<RoleUserVO> userList = this.userRoleDAO.selectUserListByRoleIds(Collections.singletonList(roleId));
 
+        // 查询角色拥有的功能
+        List<RoleFuncModel> roleFuncModels = this.roleFuncDAO.selectAllByRoleId(roleId);
+        List<Integer> funcIdList = roleFuncModels.stream().map(RoleFuncModel::getFuncId).distinct().collect(Collectors.toList());
+
         roleFuncInitVO.setUserList(userList);
         roleFuncInitVO.setRoleId(roleModel.getRoleId());
         roleFuncInitVO.setRoleName(roleModel.getRoleName());
@@ -358,6 +363,7 @@ public class RoleServiceImpl implements RoleService {
         roleFuncInitVO.setCreateTime(roleModel.getCreateTime());
         roleFuncInitVO.setUpdateTime(roleModel.getUpdateTime());
         roleFuncInitVO.setAllTreeList(treeVoList);
+        roleFuncInitVO.setFuncIdList(funcIdList);
         return ResultUtil.getSuccess(RoleFuncInitVO.class, roleFuncInitVO);
     }
 
