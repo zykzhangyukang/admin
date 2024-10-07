@@ -451,6 +451,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         insertModel.setUserStatus(userStatus);
         insertModel.setDeptId(deptId);
         insertModel.setEmail(email);
+        insertModel.setPhone(phone);
 
         // 新增用户
         this.userDAO.insertReturnKey(insertModel);

@@ -17,7 +17,6 @@ import com.coderman.admin.sync.plan.meta.PlanMeta;
 import com.coderman.admin.sync.plan.parser.MetaParser;
 import com.coderman.admin.sync.service.PlanService;
 import com.coderman.admin.sync.vo.PlanVO;
-import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -346,7 +345,7 @@ public class PlanServiceImpl implements PlanService {
         String planCode = planPageDTO.getPlanCode();
         String status = planPageDTO.getStatus();
         String srcDb = planPageDTO.getSrcDb();
-        String descDb = planPageDTO.getDescDb();
+        String destDb = planPageDTO.getDestDb();
         String sortField = planPageDTO.getSortField();
         String sortType = planPageDTO.getSortType();
         String srcProject = planPageDTO.getSrcProject();
@@ -394,10 +393,10 @@ public class PlanServiceImpl implements PlanService {
             params.add(srcDb);
         }
 
-        if (StringUtils.isNotBlank(descDb)) {
+        if (StringUtils.isNotBlank(destDb)) {
 
             sql.append(" and dest_db=?");
-            params.add(descDb);
+            params.add(destDb);
         }
 
         if (StringUtils.isNotBlank(srcProject)) {
@@ -422,6 +421,8 @@ public class PlanServiceImpl implements PlanService {
             realSql.append(sql);
             if(StringUtils.isNotBlank(sortField) && StringUtils.isNotBlank(sortType)){
                 realSql.append(" order by").append(" ").append(sortField).append(" ").append(sortType);
+            }else {
+                realSql.append(" order by create_time desc");
             }
             realSql.append(" limit ?,? ");
             params.add((currentPage - 1) * pageSize);

@@ -31,7 +31,7 @@ public class PlanPageDTO extends BaseModel {
     private String srcDb;
 
     @ApiModelProperty(value = "目标数据库")
-    private String descDb;
+    private String destDb;
 
     @ApiModelProperty(value = "源系统")
     private String srcProject;

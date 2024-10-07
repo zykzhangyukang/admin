@@ -14,11 +14,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,7 +41,7 @@ public class ResultController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
             @ApiReturnParam(name = "ResultModel", value = {"syncToEs", "msgSrc", "syncTime", "errorMsg", "uuid", "planCode", "msgId", "planName", "mqId", "planUuid", "status", "repeatCount", "msgCreateTime",
-                    "msgContent", "destProject", "srcProject", "syncContent", "remark","hlsMsgContent"})
+                    "msgContent", "destProject", "srcProject", "syncContent", "remark","hlsMsgContent","hlsSyncContent"})
     })
     public com.coderman.api.vo.ResultVO<PageVO<List<ResultModel>>> page(@RequestBody ResultPageDTO resultPageDTO) throws Exception {
         return this.resultService.page(resultPageDTO);
@@ -67,8 +69,8 @@ public class ResultController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
     public com.coderman.api.vo.ResultVO<Void> signSuccess(String uuid) throws IOException {
-
-        return this.resultService.signSuccess(uuid, Objects.requireNonNull(AuthUtil.getCurrent()).getRealName() + "手动标记成功");
+        String msg = String.format("%s于%s,手动标记成功", Objects.requireNonNull(AuthUtil.getCurrent()).getRealName() , DateFormatUtils.format(new Date(),"yyyy年MM月dd日HH时mm分ss秒"));
+        return this.resultService.signSuccess(uuid, msg);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "校验同步结果")
