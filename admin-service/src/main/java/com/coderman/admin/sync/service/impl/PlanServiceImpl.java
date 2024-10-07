@@ -348,7 +348,7 @@ public class PlanServiceImpl implements PlanService {
         String srcDb = planPageDTO.getSrcDb();
         String descDb = planPageDTO.getDescDb();
         String sortField = planPageDTO.getSortField();
-        String sortOrder = planPageDTO.getSortOrder();
+        String sortType = planPageDTO.getSortType();
         String srcProject = planPageDTO.getSrcProject();
         String destProject = planPageDTO.getDestProject();
         String description = planPageDTO.getDescription();
@@ -419,28 +419,10 @@ public class PlanServiceImpl implements PlanService {
         List<PlanVO> list = new ArrayList<>();
 
         if (Objects.nonNull(count) && count > 0) {
-
-            // 驼峰转下划线
             realSql.append(sql);
-            String dbField = StringUtils.EMPTY;
-
-            if (StringUtils.isNotBlank(sortField)) {
-
-                dbField = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, sortField);
+            if(StringUtils.isNotBlank(sortField) && StringUtils.isNotBlank(sortType)){
+                realSql.append(" order by").append(" ").append(sortField).append(" ").append(sortType);
             }
-
-            if (StringUtils.equals(dbField, "create_time")) {
-
-                realSql.append(" order by create_time ").append(sortOrder);
-
-            } else if (StringUtils.equals(dbField, "update_time")) {
-
-                realSql.append(" order by update_time ").append(sortOrder);
-
-            } else {
-                realSql.append(" order by create_time ").append("desc");
-            }
-
             realSql.append(" limit ?,? ");
             params.add((currentPage - 1) * pageSize);
             params.add(pageSize);

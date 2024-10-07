@@ -43,6 +43,6 @@ public class PlanPageDTO extends BaseModel {
     private String sortField;
 
     @ApiModelProperty(value = "排序规则")
-    private String sortOrder;
+    private String sortType;
 
 }

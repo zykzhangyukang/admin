@@ -425,7 +425,7 @@ public class FuncServiceImpl implements FuncService {
 
     @Override
     @LogError(value = "功能解绑资源")
-    public ResultVO<Void> deleteResourceBind(@LogErrorParam Integer funcId) {
+    public ResultVO<Void> funcRescRemove(@LogErrorParam Integer funcId) {
 
         if (Objects.isNull(funcId)) {
 

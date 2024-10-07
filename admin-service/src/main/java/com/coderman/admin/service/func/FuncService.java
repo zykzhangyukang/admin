@@ -85,7 +85,7 @@ public interface FuncService {
      * @param funcId
      * @return
      */
-    ResultVO<Void> deleteResourceBind(Integer funcId);
+    ResultVO<Void> funcRescRemove(Integer funcId);
 
     /**
      * 功能绑定资源

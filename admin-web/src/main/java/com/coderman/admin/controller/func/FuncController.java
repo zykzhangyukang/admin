@@ -68,8 +68,8 @@ public class FuncController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"})
     })
-    public ResultVO<Void> deleteResourceBind(@RequestParam Integer funcId) {
-        return funcService.deleteResourceBind(funcId);
+    public ResultVO<Void> funcRescRemove(@RequestParam Integer funcId) {
+        return funcService.funcRescRemove(funcId);
     }
 
     @ApiOperation(value = "功能绑定资源", httpMethod = SwaggerConstant.METHOD_PUT)
