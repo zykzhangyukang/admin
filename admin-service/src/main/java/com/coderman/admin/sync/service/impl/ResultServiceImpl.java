@@ -22,6 +22,7 @@ import com.coderman.admin.sync.task.SyncConvert;
 import com.coderman.admin.sync.task.support.WriteBackTask;
 import com.coderman.admin.sync.util.SqlUtil;
 import com.coderman.admin.sync.vo.CompareVO;
+import com.google.common.base.CaseFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -136,19 +137,10 @@ public class ResultServiceImpl implements ResultService {
                 .size(pageSize);
 
         // 自定义排序方式
-        if (StringUtils.isNotBlank(resultPageDTO.getSortField()) && StringUtils.isNotBlank(resultPageDTO.getSortOrder())) {
-            if (StringUtils.equals("msgCreateTime", resultPageDTO.getSortField()) && StringUtils.equals("ascend", resultPageDTO.getSortOrder())) {
-                searchSourceBuilder.sort("msgCreateTime", SortOrder.ASC);
-            } else if (StringUtils.equals("msgCreateTime", resultPageDTO.getSortField()) && StringUtils.equals("descend", resultPageDTO.getSortOrder())) {
-                searchSourceBuilder.sort("msgCreateTime", SortOrder.DESC);
-            }
+        if (StringUtils.isNotBlank(resultPageDTO.getSortField()) && StringUtils.isNotBlank(resultPageDTO.getSortType())) {
 
-            if (StringUtils.equals("syncTime", resultPageDTO.getSortField()) && StringUtils.equals("ascend", resultPageDTO.getSortOrder())) {
-                searchSourceBuilder.sort("syncTime", SortOrder.ASC);
-            } else if (StringUtils.equals("syncTime", resultPageDTO.getSortField()) && StringUtils.equals("descend", resultPageDTO.getSortOrder())) {
-                searchSourceBuilder.sort("syncTime", SortOrder.DESC);
-            }
-
+            String st = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, resultPageDTO.getSortField());
+            searchSourceBuilder.sort(st,SortOrder.fromString(resultPageDTO.getSortType()));
         } else {
 
             // 默认排序方式
@@ -161,8 +153,8 @@ public class ResultServiceImpl implements ResultService {
         HighlightBuilder highlightBuilder = new HighlightBuilder()
                 .field(new HighlightBuilder.Field("msgContent").highlighterType("unified"))
                 .field(new HighlightBuilder.Field("syncContent").highlighterType("unified"))
-                .preTags("<font color='#f60'>")
-                .postTags("</font>")
+                .preTags("<span  style='background-color: yellow;'>")
+                .postTags("</span>")
                 .fragmentSize(10)
                 .numOfFragments(1);
         searchSourceBuilder.highlighter(highlightBuilder);

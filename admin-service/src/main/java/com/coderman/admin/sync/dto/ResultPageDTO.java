@@ -51,7 +51,7 @@ public class ResultPageDTO extends BaseModel {
     private String sortField;
 
     @ApiModelProperty(value = "排序方式")
-    private String sortOrder;
+    private String sortType;
 
 
 

@@ -38,17 +38,17 @@ public interface SyncConstant {
     /**
      * 消息重试次数
      */
-    @ConstList(group = "repeat_times",name = ">=1")
+    @ConstList(group = "repeat_times",name = ">=1 次")
     public static final Integer REPEAT_TIMES_1 = 1;
-    @ConstList(group = "repeat_times",name = ">=2")
+    @ConstList(group = "repeat_times",name = ">=2 次")
     public static final Integer REPEAT_TIMES_2 = 2;
-    @ConstList(group = "repeat_times",name = ">=3")
+    @ConstList(group = "repeat_times",name = ">=3 次")
     public static final Integer REPEAT_TIMES_3 = 3;
-    @ConstList(group = "repeat_times",name = ">=4")
+    @ConstList(group = "repeat_times",name = ">=4 次")
     public static final Integer REPEAT_TIMES_4 = 4;
-    @ConstList(group = "repeat_times",name = ">=5")
+    @ConstList(group = "repeat_times",name = ">=5 次")
     public static final Integer REPEAT_TIMES_5 = 5;
-    @ConstList(group = "repeat_times",name = ">=6")
+    @ConstList(group = "repeat_times",name = ">=6 次")
     public static final Integer REPEAT_TIMES_6= 6;
 
 
