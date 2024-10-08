@@ -1,4 +1,4 @@
-package com.coderman.admin.dto.websocket;
+package com.coderman.admin.dto.common;
 
 import lombok.Data;
 
@@ -9,11 +9,11 @@ import java.security.Principal;
  * @date ：2023/10/19 14:45
  */
 @Data
-public class MyPrincipal implements Principal {
+public class AuthPrincipal implements Principal {
 
     private final Integer userId;
 
-    public MyPrincipal(Integer userId) {
+    public AuthPrincipal(Integer userId) {
         this.userId = userId;
     }
 

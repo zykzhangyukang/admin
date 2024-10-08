@@ -38,7 +38,8 @@ public class AuthUtil {
         } else {
 
             // 如果用户的token存在，则尝试从redis中获取
-            String token = httpServletRequest.getHeader(CommonConstant.USER_TOKEN_NAME);
+            String token = getAccessToken();
+
             if (StringUtils.isNotBlank(token)) {
 
                 AuthUserVO authUserVO = null;

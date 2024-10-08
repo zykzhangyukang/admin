@@ -1,12 +1,8 @@
 package com.coderman.admin.interceptor;
 
-import com.alibaba.fastjson.JSON;
-import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.constant.RedisDbConstant;
-import com.coderman.api.constant.ResultConstant;
-import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.constant.RedisConstant;
-import com.coderman.admin.dto.websocket.MyPrincipal;
+import com.coderman.admin.dto.common.AuthPrincipal;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.vo.user.AuthUserVO;
 import com.coderman.redis.service.RedisService;
@@ -15,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -53,7 +50,7 @@ public class AuthHandshakeInterceptor implements ChannelInterceptor {
             return message;
         }
 
-        List<String> nativeHeader = accessor.getNativeHeader(CommonConstant.USER_TOKEN_NAME);
+        List<String> nativeHeader = accessor.getNativeHeader(HttpHeaders.AUTHORIZATION);
         String sessionId = accessor.getSessionId();
         if (CollectionUtils.isEmpty(nativeHeader)) {
 
@@ -71,7 +68,7 @@ public class AuthHandshakeInterceptor implements ChannelInterceptor {
         Integer userId = authUserVO.getUserId();
 
         // 单节点会话
-        accessor.setUser(new MyPrincipal(userId));
+        accessor.setUser(new AuthPrincipal(userId));
         if (this.redisService.isSetMember(RedisConstant.WEBSOCKET_USER_SET, String.valueOf(userId), RedisDbConstant.REDIS_DB_DEFAULT)) {
 
             log.warn("同一个用户:{} 不准建立多个连接WebSocket. sessionId:{}", userId, sessionId);

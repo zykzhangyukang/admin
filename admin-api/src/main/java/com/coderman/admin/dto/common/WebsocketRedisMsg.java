@@ -1,4 +1,4 @@
-package com.coderman.admin.dto.websocket;
+package com.coderman.admin.dto.common;
 
 import com.coderman.admin.constant.WebSocketChannelEnum;
 

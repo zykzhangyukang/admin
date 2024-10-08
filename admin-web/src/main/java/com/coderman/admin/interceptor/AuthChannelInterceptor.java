@@ -1,7 +1,7 @@
 package com.coderman.admin.interceptor;
 
 import com.coderman.admin.constant.RedisConstant;
-import com.coderman.admin.dto.websocket.MyPrincipal;
+import com.coderman.admin.dto.common.AuthPrincipal;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,11 +43,11 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 
             String user;
             Principal principal = accessor.getUser();
-            if (principal instanceof MyPrincipal) {
+            if (principal instanceof AuthPrincipal) {
 
                 // 将会话信息从redis中移除
-                MyPrincipal myPrincipal = (MyPrincipal) principal;
-                user = String.valueOf(myPrincipal.getUserId());
+                AuthPrincipal authPrincipal = (AuthPrincipal) principal;
+                user = String.valueOf(authPrincipal.getUserId());
                 redisService.removeFromSet(RedisConstant.WEBSOCKET_USER_SET, user, RedisDbConstant.REDIS_DB_DEFAULT);
 
             } else {
