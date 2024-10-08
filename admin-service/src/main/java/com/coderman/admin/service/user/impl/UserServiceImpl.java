@@ -11,8 +11,6 @@ import com.coderman.admin.dto.user.*;
 import com.coderman.admin.model.resc.RescModel;
 import com.coderman.admin.model.role.RoleModel;
 import com.coderman.admin.model.user.UserModel;
-import com.coderman.admin.model.user.UserRoleExample;
-import com.coderman.admin.model.user.UserRoleModel;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.notification.NotificationService;
@@ -165,7 +163,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             data.put("message","欢迎您登录系统, 当前时间:"+ DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             data.put("url","/home");
             data.put("title","欢迎您登录系统!");
-            this.notificationService.notify(authUserVO.getUserId(), data,  "登录欢迎");
+            this.notificationService.saveNotifyToUser(authUserVO.getUserId(), data,  "登录欢迎");
 
             TokenResultVO response = TokenResultVO.builder()
                     .accessToken(authUserVO.getAccessToken())
@@ -341,6 +339,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     @LogError(value = "查询用户列表")
     public ResultVO<PageVO<List<UserVO>>> page(@LogErrorParam UserPageDTO queryVO) {
+
+        this.notificationService.sendToTopic(100, new JSONObject());
 
         Map<String, Object> conditionMap = new HashMap<>(4);
 

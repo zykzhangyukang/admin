@@ -39,7 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
     private RedisService redisService;
 
     @Override
-    public void notify(Integer userId, JSONObject data, String type) {
+    public void saveNotifyToUser(Integer userId, JSONObject data, String type) {
 
         // 保存消息
         NotificationModel notificationModel = new NotificationModel();
@@ -62,6 +62,7 @@ public class NotificationServiceImpl implements NotificationService {
      * @param payload    消息内容
      * @return void
      */
+    @Override
     public void sendToUser(Integer receiverId, Object payload) {
 
         String receiver = String.valueOf(receiverId);
@@ -81,7 +82,7 @@ public class NotificationServiceImpl implements NotificationService {
             redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
         }
         else {
-            log.info("用户离线不提示信息:{}", JSON.toJSONString(payload));
+            log.info("用户:{} 离线不提示信息:{}", receiver, JSON.toJSONString(payload));
         }
     }
 
@@ -91,10 +92,11 @@ public class NotificationServiceImpl implements NotificationService {
      * @param senderId 发送人id
      * @param payload  消息内容
      */
+    @Override
     public void sendToTopic(Integer senderId, Object payload) {
 
         String destination = WebSocketChannelEnum.TOPIC_SYS_MSG.getSubscribeUrl();
-        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(null, destination, payload);
+        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(StringUtils.EMPTY, destination, payload);
         // 广播消息
         redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
     }
