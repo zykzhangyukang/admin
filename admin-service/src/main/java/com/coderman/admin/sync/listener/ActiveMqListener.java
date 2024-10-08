@@ -31,7 +31,7 @@ public class ActiveMqListener implements SessionAwareMessageListener<TextMessage
         try {
 
             int retryTimeLimit = 6;
-            int deliveryCount = message.getIntProperty("JMSXDeliveryCount");
+            int deliveryCount = message.getIntProperty("JMSXDeliveryCount") - 1;
             String messageId = message.getJMSMessageID();
 
 

@@ -23,7 +23,7 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: docker-cluster
-    hosts: 47.115.42.112:9200
+    hosts: 127.0.0.1:9200
     scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
@@ -33,7 +33,7 @@ sync:
     username: elastic
     password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
-  mq: rocketmq
+  mq: activemq
   rocketmq:
     instantName: SYNC_INSTANT
     namesrvAddr: 47.115.42.112:9876
@@ -106,13 +106,6 @@ job:
   log-retention-days: 30
   log-path: D:\java\logs\xxl-job
 
-# log
-logging:
-  level:
-    root: info
-    com.coderman: info
-    com.coderman.admin.dao: debug
-
 # oss
 aliyun:
   oss:
@@ -121,17 +114,9 @@ aliyun:
     end-point: oss-cn-shenzhen.aliyuncs.com
     bucket-name: ioss-bucket
 
-# swagger
-swagger:
-  title: 通用后台管理系统
-  description: 帮助用户快速搭建稳定、高效的后台系统。
-  version: 2.0.0
-  contact:
-    name: coderman
-    email: 3053161401@qq.com
-    url: https://github.com/zykzhangyukang
-  exclude-auth:
-    - /auth/user/token
-    - /auth/user/refresh/token
-    - /auth/user/logout
-    - /auth/const/all
+# log
+logging:
+  level:
+    root: info
+    com.coderman: info
+    com.coderman.admin.dao: debug

@@ -1,12 +1,12 @@
 package com.coderman.admin.aop;
 
+import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
-import com.coderman.api.constant.AopConstant;
-import com.coderman.api.constant.ResultConstant;
-import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.utils.AuthUtil;
 import com.coderman.admin.vo.user.AuthUserVO;
+import com.coderman.api.constant.AopConstant;
+import com.coderman.api.constant.ResultConstant;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.service.util.HttpContextUtil;
 import com.google.common.cache.Cache;

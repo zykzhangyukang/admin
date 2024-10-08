@@ -340,8 +340,6 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "查询用户列表")
     public ResultVO<PageVO<List<UserVO>>> page(@LogErrorParam UserPageDTO queryVO) {
 
-        this.notificationService.sendToTopic(100, new JSONObject());
-
         Map<String, Object> conditionMap = new HashMap<>(4);
 
         Integer pageSize = queryVO.getPageSize();
