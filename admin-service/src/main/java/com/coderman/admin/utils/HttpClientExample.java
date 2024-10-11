@@ -71,6 +71,8 @@ public class HttpClientExample {
                             if (costPriceDec.compareTo(BigDecimal.ZERO) <= 0) {
                                 bean.setIncomePercent("0");
                             } else {
+
+                                //  计算收益率 =
                                 BigDecimal incomePercentDec = incomeDiff.divide(costPriceDec, 8, RoundingMode.HALF_UP)
                                         .multiply(BigDecimal.TEN)
                                         .multiply(BigDecimal.TEN)
@@ -87,7 +89,7 @@ public class HttpClientExample {
                             }
                         }
 
-                        log.info(JSON.toJSONString(bean));
+                        logFundTable(Collections.singletonList(bean));
 
                     } else {
                         log.error("Fund编码:[" + code + "]无法获取数据");
@@ -96,6 +98,26 @@ public class HttpClientExample {
                     e.printStackTrace();
                 }
             }).start();
+        }
+    }
+
+    public static void logFundTable(List<FundBean> funds) {
+        // 表头
+        String header = String.format("%-10s | %-20s | %-10s | %-10s | %-10s | %-10s", "编码", "基金名称", "估算净值", "估算涨跌", "更新时间", "收益");
+        log.info(header);
+        log.info(StringUtils.repeat("=", 100));
+
+        // 表格内容
+        for (FundBean fund : funds) {
+            String row = String.format("%-10s | %-20s | %-10s | %-10s | %-10s | %-10s",
+                    fund.getFundCode(),
+                    fund.getFundName(),
+                    fund.getGsz(),
+                    fund.getGszzl() != null ? (fund.getGszzl().startsWith("-") ? fund.getGszzl() : "+" + fund.getGszzl()) + "%" : "--",
+                    fund.getGztime() != null ? fund.getGztime() : "--",
+                    fund.getIncome() != null ? fund.getIncome() : "--"
+            );
+            log.info(row);
         }
     }
 }
