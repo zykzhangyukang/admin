@@ -33,7 +33,7 @@ sync:
     username: elastic
     password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
-  mq: activemq
+  mq: rocketmq
   rocketmq:
     instantName: SYNC_INSTANT
     namesrvAddr: 47.115.42.112:9876
