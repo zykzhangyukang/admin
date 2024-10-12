@@ -3,6 +3,8 @@ package com.coderman.admin.controller.common;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.limiter.annotation.RateLimit;
+import com.coderman.limiter.resolver.IpKeyResolver;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.dict.ConstItems;
 import com.coderman.swagger.constant.SwaggerConstant;
@@ -43,6 +45,7 @@ public class DictController {
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "常量列表")
     @GetMapping(value = "/auth/const/all")
     @SuppressWarnings("all")
+    @RateLimit(keyResolver = IpKeyResolver.class)
     public ResultVO<Map<String, List<ConstItems>>> constAll() {
 
         Map<String, List<ConstItems>> resultMap = new HashMap<String, List<ConstItems>>();

@@ -2,23 +2,17 @@ package com.coderman.admin.controller.common;
 
 import com.coderman.admin.dto.common.FileChunkDTO;
 import com.coderman.admin.service.common.FileService;
-import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.oss.enums.FileModuleEnum;
-import com.coderman.oss.util.AliYunOssUtil;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author ：zhangyukang
