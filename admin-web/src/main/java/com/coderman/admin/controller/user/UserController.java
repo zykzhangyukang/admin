@@ -7,8 +7,6 @@ import com.coderman.admin.vo.user.UserRoleInitVO;
 import com.coderman.admin.vo.user.UserVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.limiter.annotation.RateLimit;
-import com.coderman.limiter.resolver.IpKeyResolver;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
@@ -61,7 +59,6 @@ public class UserController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "TokenResultVO", value = {"accessToken","refreshToken","expiresIn"})
     })
-    @RateLimit(keyResolver = IpKeyResolver.class)
     public ResultVO<TokenResultVO> token(@RequestBody UserLoginDTO userLoginDTO) {
         return userService.token(userLoginDTO);
     }
@@ -85,7 +82,6 @@ public class UserController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "TokenResultVO", value = {"expiresIn", "accessToken", "refreshToken"}),
     })
-    @RateLimit(keyResolver = IpKeyResolver.class)
     public ResultVO<TokenResultVO> refreshToken(String refreshToken) {
         return userService.refreshToken(refreshToken);
     }
@@ -98,7 +94,6 @@ public class UserController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
-    @RateLimit(keyResolver = IpKeyResolver.class)
     public ResultVO<Void> logout(String accessToken) {
         return userService.logout(accessToken);
     }
