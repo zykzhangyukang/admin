@@ -1,12 +1,5 @@
 package com.coderman.admin.service.role.impl;
 
-import com.coderman.admin.model.role.RoleFuncModel;
-import com.coderman.admin.vo.role.*;
-import com.coderman.api.exception.BusinessException;
-import com.coderman.api.util.PageUtil;
-import com.coderman.api.util.ResultUtil;
-import com.coderman.api.vo.PageVO;
-import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.constant.AuthConstant;
 import com.coderman.admin.dao.role.RoleDAO;
 import com.coderman.admin.dao.role.RoleFuncDAO;
@@ -18,6 +11,7 @@ import com.coderman.admin.dto.role.RoleSaveDTO;
 import com.coderman.admin.dto.role.RoleUpdateDTO;
 import com.coderman.admin.model.func.FuncModel;
 import com.coderman.admin.model.role.RoleFuncExample;
+import com.coderman.admin.model.role.RoleFuncModel;
 import com.coderman.admin.model.role.RoleModel;
 import com.coderman.admin.model.user.UserModel;
 import com.coderman.admin.model.user.UserRoleExample;
@@ -25,6 +19,12 @@ import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.role.RoleService;
 import com.coderman.admin.vo.func.FuncTreeVO;
+import com.coderman.admin.vo.role.*;
+import com.coderman.api.exception.BusinessException;
+import com.coderman.api.util.PageUtil;
+import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.PageVO;
+import com.coderman.api.vo.ResultVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.sync.util.MsgBuilder;
@@ -251,7 +251,7 @@ public class RoleServiceImpl implements RoleService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_ROLE, AuthConstant.LOG_MODULE_MIDDLE, "更新角色信息");
 
-        PlanMsg build = MsgBuilder.createOrderlyMsg("update_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC, String.valueOf(roleId))
+        PlanMsg build = MsgBuilder.create("update_admin_sync_role", ProjectEnum.ADMIN, ProjectEnum.SYNC)
                 .addIntList("update_admin_sync_role", Collections.singletonList(roleId))
                 .build();
         SyncUtil.sync(build);
