@@ -263,7 +263,7 @@ public class CallbackServiceImpl implements CallbackService {
 
         if (count > 0) {
 
-            sql = this.buildMsgSelectSql(pageSize, dbType, pageSize * currentPage) + stringBuilder.toString();
+            sql = this.buildMsgSelectSql(pageSize, dbType, pageSize * currentPage) + stringBuilder;
 
             if (StringUtils.equals(SyncConstant.DB_TYPE_MSSQL, dbType)) {
 
@@ -296,6 +296,7 @@ public class CallbackServiceImpl implements CallbackService {
                 model.setAckTime(resultMap.get("ack_time") == null ? null : this.formatTime(resultMap.get("ack_time").toString()));
                 model.setStatus(resultMap.get("status").toString());
                 model.setRemark(resultMap.get("remark").toString());
+                model.setErrorMsg(resultMap.get("error_msg").toString());
                 model.setRepeatCount(Integer.parseInt(resultMap.get("repeat_count").toString()));
 
                 list.add(model);
@@ -325,17 +326,17 @@ public class CallbackServiceImpl implements CallbackService {
 
             builder.append(" top ").append(count).append(" = ");
             builder.append(" from ( select row_number() over(order by callback_id desc)");
-            builder.append(" as rownumber, uuid,msg_id, src_project,dest_project,msg_content,create_time,send_time,ack_time,repeat_count,status,remark ");
+            builder.append(" as rownumber, uuid,msg_id, src_project,dest_project,msg_content,create_time,send_time,ack_time,repeat_count,status,remark,error_msg ");
             builder.append(" from pub_callback with(nolock) ");
 
         } else if (StringUtils.equals(dbType, SyncConstant.DB_TYPE_ORACLE)) {
 
             builder.append(" a1.* ");
-            builder.append(" from (select uuid,msg_id,src_project ,dest_project ,msg_content ,create_time ,send_time ,ack_time, repeat_count, status, remark, rownum as rn from pub_callback");
+            builder.append(" from (select uuid,msg_id,src_project ,dest_project ,msg_content ,create_time ,send_time ,ack_time, repeat_count, status, remark,error_msg, rownum as rn from pub_callback");
 
         } else {
 
-            builder.append(" uuid ,msg_id, src_project, dest_project,msg_content,create_time,send_time,ack_time,repeat_count,status,remark ");
+            builder.append(" uuid ,msg_id, src_project, dest_project,msg_content,create_time,send_time,ack_time,repeat_count,status,remark,error_msg ");
             builder.append(" from pub_callback ");
         }
         return builder.toString();

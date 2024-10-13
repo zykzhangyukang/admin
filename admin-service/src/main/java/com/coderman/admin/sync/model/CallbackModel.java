@@ -47,6 +47,9 @@ public class CallbackModel extends BaseModel {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "回调错误信息")
+    private String errorMsg;
+
     @ApiModelProperty(value = "重试次数")
     private Integer repeatCount;
 }
