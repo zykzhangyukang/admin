@@ -295,8 +295,8 @@ public class CallbackServiceImpl implements CallbackService {
                 model.setCreateTime(resultMap.get("create_time") == null ? null : this.formatTime(resultMap.get("create_time").toString()));
                 model.setAckTime(resultMap.get("ack_time") == null ? null : this.formatTime(resultMap.get("ack_time").toString()));
                 model.setStatus(resultMap.get("status").toString());
-                model.setRemark(resultMap.get("remark").toString());
-                model.setErrorMsg(resultMap.get("error_msg").toString());
+                model.setRemark(resultMap.get("remark") == null ? null : resultMap.get("remark").toString());
+                model.setErrorMsg(resultMap.get("error_msg") == null ? null : resultMap.get("error_msg").toString());
                 model.setRepeatCount(Integer.parseInt(resultMap.get("repeat_count").toString()));
 
                 list.add(model);

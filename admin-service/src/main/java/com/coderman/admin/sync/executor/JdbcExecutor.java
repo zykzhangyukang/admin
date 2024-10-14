@@ -11,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -97,7 +98,7 @@ public class JdbcExecutor extends AbstractExecutor {
 
             transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
-                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                protected void doInTransactionWithoutResult(@NonNull TransactionStatus transactionStatus) {
 
 
                     for (SqlMeta meta : noSelectList) {
