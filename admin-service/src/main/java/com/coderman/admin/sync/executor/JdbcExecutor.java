@@ -6,9 +6,9 @@ import com.coderman.admin.sync.exception.ErrorCodeEnum;
 import com.coderman.admin.sync.exception.SyncException;
 import com.coderman.admin.sync.plan.meta.MsgTableMeta;
 import com.coderman.admin.sync.sql.meta.SqlMeta;
+import com.coderman.admin.sync.util.SqlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.NonNull;
@@ -17,7 +17,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author zhangyukang
@@ -54,7 +53,7 @@ public class JdbcExecutor extends AbstractExecutor {
                 try {
 
                     // 打印sql日志
-                    this.printLog(sqlMeta.getSql(), sqlMeta.getParamList());
+                    SqlUtil.printSQL(sqlMeta.getSql(), sqlMeta.getParamList());
 
                     // 查询数据
                     List<Map<String, Object>> resultList = jdbcTemplate.queryForList(sqlMeta.getSql(), sqlMeta.getParamList().get(0));
@@ -108,7 +107,7 @@ public class JdbcExecutor extends AbstractExecutor {
                         try {
 
                             // 打印sql日志
-                            printLog(meta.getSql(), meta.getParamList());
+                            SqlUtil.printSQL(meta.getSql(), meta.getParamList());
 
                             affects = jdbcTemplate.batchUpdate(meta.getSql(), meta.getParamList(), meta.getArgTypes());
 
@@ -154,46 +153,5 @@ public class JdbcExecutor extends AbstractExecutor {
 
 
         return super.getSqlList();
-    }
-
-
-    private void printLog(String sql, List<Object[]> paramList) {
-        // 使用 StringBuilder 构建日志信息
-        StringBuilder stringBuilder = new StringBuilder();
-
-        // 添加 SQL 语句
-        stringBuilder.append("执行 SQL 语句: ")
-                .append(sql);
-
-        // 遍历参数列表并格式化
-        if (paramList != null && !paramList.isEmpty()) {
-            stringBuilder.append("，参数列表: ");
-
-            for (Object[] params : paramList) {
-                stringBuilder.append("[")
-                        .append(Arrays.stream(params)
-                                .map(this::formatParameter)
-                                .collect(Collectors.joining(", ")))
-                        .append("] ");
-            }
-        } else {
-            stringBuilder.append("，无参数");
-        }
-
-        // 打印日志
-        log.info(stringBuilder.toString());
-    }
-
-    /**
-     * 格式化参数，特别是处理 Date 类型
-     *
-     * @param param 参数
-     * @return 格式化后的字符串
-     */
-    private String formatParameter(Object param) {
-        if (param instanceof Date) {
-            return DateFormatUtils.format((Date) param, "yyyy-MM-dd HH:mm:ss.SSS");
-        }
-        return Objects.toString(param);
     }
 }

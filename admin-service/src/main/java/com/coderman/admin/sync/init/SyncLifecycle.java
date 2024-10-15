@@ -18,13 +18,10 @@ public class SyncLifecycle implements SmartLifecycle {
 
     private final static Logger logger = LoggerFactory.getLogger(SyncLifecycle.class);
 
-
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     @Resource
     private DataSourceInitializer dataSourceInitializer;
-
-
     @Resource
     private SyncPlanInitializer syncPlanInitializer;
 
@@ -33,9 +30,9 @@ public class SyncLifecycle implements SmartLifecycle {
 
         if (this.initialized.compareAndSet(false, true)) {
 
-            logger.info("初始化数据源开始");
+            logger.info("初始化同步数据源开始");
             this.dataSourceInitializer.init();
-            logger.info("初始化数据源结束");
+            logger.info("初始化同步数据源结束");
 
 
             logger.info("初始化同步计划开始");

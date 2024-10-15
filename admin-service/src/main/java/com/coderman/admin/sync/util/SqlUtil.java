@@ -1,18 +1,20 @@
 package com.coderman.admin.sync.util;
 
-import com.coderman.admin.sync.executor.AbstractExecutor;
 import com.coderman.admin.sync.exception.ErrorCodeEnum;
 import com.coderman.admin.sync.exception.SyncException;
+import com.coderman.admin.sync.executor.AbstractExecutor;
 import com.coderman.admin.sync.pair.SyncPair;
 import com.coderman.admin.sync.sql.meta.SqlMeta;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.bson.types.ObjectId;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 public class SqlUtil {
 
 
@@ -214,4 +216,50 @@ public class SqlUtil {
 
         return whereStrList;
     }
+
+    /**
+     * 打印sql语句
+     * @param sql
+     * @param paramList
+     */
+    public static void printSQL(String sql, List<Object[]> paramList) {
+        // 使用 StringBuilder 构建日志信息
+        StringBuilder stringBuilder = new StringBuilder();
+
+        // 添加 SQL 语句
+        stringBuilder.append("执行 SQL 语句: ")
+                .append(sql);
+
+        // 遍历参数列表并格式化
+        if (paramList != null && !paramList.isEmpty()) {
+            stringBuilder.append("，参数列表: ");
+
+            for (Object[] params : paramList) {
+                stringBuilder.append("[")
+                        .append(Arrays.stream(params)
+                                .map(SqlUtil::formatParameter)
+                                .collect(Collectors.joining(", ")))
+                        .append("] ");
+            }
+        } else {
+            stringBuilder.append("，无参数");
+        }
+
+        // 打印日志
+        log.info(stringBuilder.toString());
+    }
+
+    /**
+     * 格式化参数，特别是处理 Date 类型
+     *
+     * @param param 参数
+     * @return 格式化后的字符串
+     */
+    private static String formatParameter(Object param) {
+        if (param instanceof Date) {
+            return DateFormatUtils.format((Date) param, "yyyy-MM-dd HH:mm:ss.SSS");
+        }
+        return Objects.toString(param);
+    }
+
 }

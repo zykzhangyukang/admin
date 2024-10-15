@@ -119,4 +119,4 @@ logging:
   level:
     root: info
     com.coderman: info
-    com.coderman.admin.dao: debug
+    com.coderman.admin.dao: error
