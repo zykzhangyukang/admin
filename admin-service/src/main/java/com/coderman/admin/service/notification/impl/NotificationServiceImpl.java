@@ -8,9 +8,14 @@ import com.coderman.admin.dao.notification.NotificationDAO;
 import com.coderman.admin.dto.common.WebsocketRedisMsg;
 import com.coderman.admin.model.notification.NotificationModel;
 import com.coderman.admin.service.notification.NotificationService;
+import com.coderman.admin.utils.AuthUtil;
 import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.ResultVO;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.redis.service.RedisService;
+import com.coderman.service.anntation.LogError;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,6 +25,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author ：zhangyukang
@@ -80,10 +87,28 @@ public class NotificationServiceImpl implements NotificationService {
 
             WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(receiver, destination, payload);
             redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
-        }
-        else {
+        } else {
             log.info("用户:{} 离线不提示信息:{}", receiver, JSON.toJSONString(payload));
         }
+    }
+
+    @Override
+    @LogError(value = "获取未读消息数")
+    public ResultVO<Map<String, Long>> getNotificationCount() {
+
+        Integer userId = AuthUtil.getUserId();
+        Map<String, Long> resultMap = Maps.newHashMap();
+        Map<String, Map<String,Long>> map = this.notificationDAO.getUnreadNotificationCountByType(userId);
+
+        Long total = 0L;
+        for (Map.Entry<String, Map<String,Long>> msg : map.entrySet()) {
+            HashMap<String,Long> item =  (HashMap<String,Long>) msg.getValue();
+            Long count = item.getOrDefault("unread_count", 0L);
+            total +=count;
+        }
+
+        resultMap.put("count", total);
+        return ResultUtil.getSuccessMap(Map.class, resultMap);
     }
 
     /**

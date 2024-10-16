@@ -3,6 +3,7 @@ package com.coderman.admin.service.user.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.AuthConstant;
+import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dao.role.RoleDAO;
 import com.coderman.admin.dao.user.UserDAO;
 import com.coderman.admin.dao.user.UserFuncDAO;
@@ -163,7 +164,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             data.put("message","欢迎您登录系统, 当前时间:"+ DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             data.put("url","/home");
             data.put("title","欢迎您登录系统!");
-            this.notificationService.saveNotifyToUser(authUserVO.getUserId(), data,  "登录欢迎");
+            this.notificationService.saveNotifyToUser(authUserVO.getUserId(), data, NotificationConstant.NOTIFICATION_LOGIN_WELCOME);
 
             TokenResultVO response = TokenResultVO.builder()
                     .accessToken(authUserVO.getAccessToken())

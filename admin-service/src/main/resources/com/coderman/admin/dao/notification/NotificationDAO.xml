@@ -321,4 +321,16 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where notification_id = #{notificationId,jdbcType=INTEGER}
   </update>
+
+  <select id="getUnreadNotificationCountByType" resultType="java.util.Map">
+    SELECT
+      notification_type,
+      COUNT(1) AS unread_count
+    FROM
+      auth_notification
+    WHERE
+      user_id = #{userId} and  read_time IS NULL
+    GROUP BY
+      notification_type
+  </select>
 </mapper>
