@@ -9,11 +9,10 @@ import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,39 +41,34 @@ public class DictController {
      */
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "常量列表")
     @GetMapping(value = "/auth/const/all")
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public ResultVO<Map<String, List<ConstItems>>> constAll() {
 
-        Map<String, List<ConstItems>> resultMap = new HashMap<String, List<ConstItems>>();
+        Map<String, List<ConstItems>> constListMap = new HashMap<>();
 
-        this.redisService.getRedisTemplate().execute(new RedisCallback() {
-            @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+        this.redisService.getRedisTemplate().execute((RedisCallback) connection -> {
 
-                StringRedisSerializer s1 = new StringRedisSerializer();
-                GenericJackson2JsonRedisSerializer s2 = new GenericJackson2JsonRedisSerializer();
+            StringRedisSerializer s1 = new StringRedisSerializer();
+            GenericJackson2JsonRedisSerializer s2 = new GenericJackson2JsonRedisSerializer();
+            connection.select(RedisDbConstant.REDIS_DB_DEFAULT);
 
-                connection.select(RedisDbConstant.REDIS_DB_DEFAULT);
+            byte[] hashKey = s1.serialize("auth.const.all");
+            Assert.notNull(hashKey, "hash key is null");
 
-                byte[] hashKey = s1.serialize("auth.const.all");
+            Set<byte[]> fields = connection.hKeys(hashKey);
+            Assert.notNull(fields, "fields is null");
 
-                Set<byte[]> fields = connection.hKeys(hashKey);
-
-                for (byte[] field : fields) {
-
-                    String project = new String(field);
-                    List<ConstItems> constItems = (List<ConstItems>) s2.deserialize(connection.hGet(hashKey, field));
-
-                    resultMap.put(project, constItems);
-                }
-
-                return null;
+            for (byte[] field : fields) {
+                String project = new String(field);
+                List<ConstItems> constItems = (List<ConstItems>) s2.deserialize(connection.hGet(hashKey, field));
+                constListMap.put(project, constItems);
             }
+            return null;
         });
 
         ResultVO<Map<String, List<ConstItems>>> resultVO = new ResultVO<>();
         resultVO.setCode(ResultConstant.RESULT_CODE_200);
-        resultVO.setResult(resultMap);
+        resultVO.setResult(constListMap);
         return resultVO;
     }
 }
