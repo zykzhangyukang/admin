@@ -15,18 +15,17 @@ import com.coderman.api.vo.ResultVO;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author ：zhangyukang
@@ -98,6 +97,24 @@ public class NotificationServiceImpl implements NotificationService {
         Integer userId = AuthUtil.getUserId();
         Long unreadNotificationCount = this.notificationDAO.getUnreadNotificationCount(userId);
         return ResultUtil.getSuccess(Long.class, unreadNotificationCount);
+    }
+
+    @Override
+    @LogError(value = "标记已读")
+    public ResultVO<Void> updateNotificationRead(Integer notificationId) {
+
+        NotificationModel notificationModel = this.notificationDAO.selectByPrimaryKey(notificationId);
+        Assert.notNull(notificationModel , "数据不存在,请刷新页面重试!");
+
+        if(Objects.equals(notificationModel.getIsRead() , 0)){
+
+            NotificationModel update = new NotificationModel();
+            update.setNotificationId(notificationId);
+            update.setIsRead(1);
+            this.notificationDAO.updateByPrimaryKeySelective(update);
+        }
+
+        return ResultUtil.getSuccess();
     }
 
     /**

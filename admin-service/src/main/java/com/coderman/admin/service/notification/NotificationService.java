@@ -39,5 +39,10 @@ public interface NotificationService {
      */
     ResultVO<Long> getNotificationCount();
 
-
+    /**
+     * 标记已读
+     * @param notificationId
+     * @return
+     */
+    ResultVO<Void> updateNotificationRead(Integer notificationId);
 }

@@ -8,6 +8,7 @@ import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,12 +26,22 @@ public class NotificationController {
     @Resource
     private NotificationService notificationService;
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "获取未读消息数")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取未读消息数")
     @GetMapping(value = "/count")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
     public ResultVO<Long> getNotificationCount() {
         return this.notificationService.getNotificationCount();
+    }
+
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_PUT, value = "标记已读")
+    @PutMapping(value = "/read")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<Void> maskNotificationRead(Integer notificationId) {
+        return this.notificationService.updateNotificationRead(notificationId);
     }
 }
