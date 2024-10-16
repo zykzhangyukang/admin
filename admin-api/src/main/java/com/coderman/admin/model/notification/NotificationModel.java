@@ -30,11 +30,8 @@ public class NotificationModel extends BaseModel {
     @ApiModelProperty(value = "消息已读时间")
     private Date readTime;
 
-    @ApiModelProperty(value = "是否在处理中 0-未处理,1-已处理")
-    private Integer isProcessed;
-
-    @ApiModelProperty(value = "是否已标记 0-未标记,1-已标记")
-    private Integer isMark;
+    @ApiModelProperty(value = "是否已读 0-未读,1-已读")
+    private Integer isRead;
 
     @ApiModelProperty(value = "创建时间")
     private Date createTime;

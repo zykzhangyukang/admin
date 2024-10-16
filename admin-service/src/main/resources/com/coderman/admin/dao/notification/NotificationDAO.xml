@@ -6,8 +6,7 @@
     <result column="notification_type" jdbcType="VARCHAR" property="notificationType" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="read_time" jdbcType="TIMESTAMP" property="readTime" />
-    <result column="is_processed" jdbcType="TINYINT" property="isProcessed" />
-    <result column="is_mark" jdbcType="TINYINT" property="isMark" />
+    <result column="is_read" jdbcType="BIT" property="isRead" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
@@ -73,8 +72,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    notification_id, notification_type, user_id, read_time, is_processed, is_mark, create_time, 
-    update_time
+    notification_id, notification_type, user_id, read_time, is_read, create_time, update_time
   </sql>
   <sql id="Blob_Column_List">
     data
@@ -129,13 +127,13 @@
   </delete>
   <insert id="insert" parameterType="com.coderman.admin.model.notification.NotificationModel">
     insert into auth_notification (notification_id, notification_type, 
-      user_id, read_time, is_processed, 
-      is_mark, create_time, update_time, 
-      data)
+      user_id, read_time, is_read, 
+      create_time, update_time, data
+      )
     values (#{notificationId,jdbcType=INTEGER}, #{notificationType,jdbcType=VARCHAR}, 
-      #{userId,jdbcType=INTEGER}, #{readTime,jdbcType=TIMESTAMP}, #{isProcessed,jdbcType=TINYINT}, 
-      #{isMark,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{data,jdbcType=LONGVARCHAR})
+      #{userId,jdbcType=INTEGER}, #{readTime,jdbcType=TIMESTAMP}, #{isRead,jdbcType=BIT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{data,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.coderman.admin.model.notification.NotificationModel">
     insert into auth_notification
@@ -152,11 +150,8 @@
       <if test="readTime != null">
         read_time,
       </if>
-      <if test="isProcessed != null">
-        is_processed,
-      </if>
-      <if test="isMark != null">
-        is_mark,
+      <if test="isRead != null">
+        is_read,
       </if>
       <if test="createTime != null">
         create_time,
@@ -181,11 +176,8 @@
       <if test="readTime != null">
         #{readTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="isProcessed != null">
-        #{isProcessed,jdbcType=TINYINT},
-      </if>
-      <if test="isMark != null">
-        #{isMark,jdbcType=TINYINT},
+      <if test="isRead != null">
+        #{isRead,jdbcType=BIT},
       </if>
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
@@ -219,11 +211,8 @@
       <if test="record.readTime != null">
         read_time = #{record.readTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.isProcessed != null">
-        is_processed = #{record.isProcessed,jdbcType=TINYINT},
-      </if>
-      <if test="record.isMark != null">
-        is_mark = #{record.isMark,jdbcType=TINYINT},
+      <if test="record.isRead != null">
+        is_read = #{record.isRead,jdbcType=BIT},
       </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
@@ -245,8 +234,7 @@
       notification_type = #{record.notificationType,jdbcType=VARCHAR},
       user_id = #{record.userId,jdbcType=INTEGER},
       read_time = #{record.readTime,jdbcType=TIMESTAMP},
-      is_processed = #{record.isProcessed,jdbcType=TINYINT},
-      is_mark = #{record.isMark,jdbcType=TINYINT},
+      is_read = #{record.isRead,jdbcType=BIT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       data = #{record.data,jdbcType=LONGVARCHAR}
@@ -260,8 +248,7 @@
       notification_type = #{record.notificationType,jdbcType=VARCHAR},
       user_id = #{record.userId,jdbcType=INTEGER},
       read_time = #{record.readTime,jdbcType=TIMESTAMP},
-      is_processed = #{record.isProcessed,jdbcType=TINYINT},
-      is_mark = #{record.isMark,jdbcType=TINYINT},
+      is_read = #{record.isRead,jdbcType=BIT},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
@@ -280,11 +267,8 @@
       <if test="readTime != null">
         read_time = #{readTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="isProcessed != null">
-        is_processed = #{isProcessed,jdbcType=TINYINT},
-      </if>
-      <if test="isMark != null">
-        is_mark = #{isMark,jdbcType=TINYINT},
+      <if test="isRead != null">
+        is_read = #{isRead,jdbcType=BIT},
       </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -303,8 +287,7 @@
     set notification_type = #{notificationType,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=INTEGER},
       read_time = #{readTime,jdbcType=TIMESTAMP},
-      is_processed = #{isProcessed,jdbcType=TINYINT},
-      is_mark = #{isMark,jdbcType=TINYINT},
+      is_read = #{isRead,jdbcType=BIT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       data = #{data,jdbcType=LONGVARCHAR}
@@ -315,22 +298,18 @@
     set notification_type = #{notificationType,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=INTEGER},
       read_time = #{readTime,jdbcType=TIMESTAMP},
-      is_processed = #{isProcessed,jdbcType=TINYINT},
-      is_mark = #{isMark,jdbcType=TINYINT},
+      is_read = #{isRead,jdbcType=BIT},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where notification_id = #{notificationId,jdbcType=INTEGER}
   </update>
 
-  <select id="getUnreadNotificationCountByType" resultType="java.util.Map">
+  <select id="getUnreadNotificationCount" resultType="long">
     SELECT
-      notification_type,
       COUNT(1) AS unread_count
     FROM
       auth_notification
     WHERE
-      user_id = #{userId} and  read_time IS NULL
-    GROUP BY
-      notification_type
+      user_id = #{userId} and  is_read = 0
   </select>
 </mapper>

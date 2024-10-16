@@ -37,7 +37,7 @@ public interface NotificationService {
      *
      * @return
      */
-    ResultVO<Map<String, Long>> getNotificationCount();
+    ResultVO<Long> getNotificationCount();
 
 
 }

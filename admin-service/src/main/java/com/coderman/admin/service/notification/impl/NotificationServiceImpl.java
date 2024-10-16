@@ -51,9 +51,8 @@ public class NotificationServiceImpl implements NotificationService {
         // 保存消息
         NotificationModel notificationModel = new NotificationModel();
         notificationModel.setCreateTime(new Date());
-        notificationModel.setIsMark(0);
-        notificationModel.setIsProcessed(0);
         notificationModel.setNotificationType(type);
+        notificationModel.setIsRead(0);
         notificationModel.setData(data.toJSONString());
         notificationModel.setUserId(userId);
         this.notificationDAO.insertSelective(notificationModel);
@@ -94,21 +93,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @LogError(value = "获取未读消息数")
-    public ResultVO<Map<String, Long>> getNotificationCount() {
+    public ResultVO<Long> getNotificationCount() {
 
         Integer userId = AuthUtil.getUserId();
-        Map<String, Long> resultMap = Maps.newHashMap();
-        Map<String, Map<String,Long>> map = this.notificationDAO.getUnreadNotificationCountByType(userId);
-
-        Long total = 0L;
-        for (Map.Entry<String, Map<String,Long>> msg : map.entrySet()) {
-            HashMap<String,Long> item =  (HashMap<String,Long>) msg.getValue();
-            Long count = item.getOrDefault("unread_count", 0L);
-            total +=count;
-        }
-
-        resultMap.put("count", total);
-        return ResultUtil.getSuccessMap(Map.class, resultMap);
+        Long unreadNotificationCount = this.notificationDAO.getUnreadNotificationCount(userId);
+        return ResultUtil.getSuccess(Long.class, unreadNotificationCount);
     }
 
     /**

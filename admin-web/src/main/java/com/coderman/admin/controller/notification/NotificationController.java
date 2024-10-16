@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * @author ：zhangyukang
@@ -31,7 +30,7 @@ public class NotificationController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
-    public ResultVO<Map<String,Long>> getNotificationCount() {
+    public ResultVO<Long> getNotificationCount() {
         return this.notificationService.getNotificationCount();
     }
 }

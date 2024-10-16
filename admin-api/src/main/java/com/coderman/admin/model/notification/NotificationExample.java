@@ -355,123 +355,63 @@ public class NotificationExample {
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedIsNull() {
-            addCriterion("is_processed is null");
+        public Criteria andIsReadIsNull() {
+            addCriterion("is_read is null");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedIsNotNull() {
-            addCriterion("is_processed is not null");
+        public Criteria andIsReadIsNotNull() {
+            addCriterion("is_read is not null");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedEqualTo(Integer value) {
-            addCriterion("is_processed =", value, "isProcessed");
+        public Criteria andIsReadEqualTo(Integer value) {
+            addCriterion("is_read =", value, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedNotEqualTo(Integer value) {
-            addCriterion("is_processed <>", value, "isProcessed");
+        public Criteria andIsReadNotEqualTo(Integer value) {
+            addCriterion("is_read <>", value, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedGreaterThan(Integer value) {
-            addCriterion("is_processed >", value, "isProcessed");
+        public Criteria andIsReadGreaterThan(Integer value) {
+            addCriterion("is_read >", value, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedGreaterThanOrEqualTo(Integer value) {
-            addCriterion("is_processed >=", value, "isProcessed");
+        public Criteria andIsReadGreaterThanOrEqualTo(Integer value) {
+            addCriterion("is_read >=", value, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedLessThan(Integer value) {
-            addCriterion("is_processed <", value, "isProcessed");
+        public Criteria andIsReadLessThan(Integer value) {
+            addCriterion("is_read <", value, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedLessThanOrEqualTo(Integer value) {
-            addCriterion("is_processed <=", value, "isProcessed");
+        public Criteria andIsReadLessThanOrEqualTo(Integer value) {
+            addCriterion("is_read <=", value, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedIn(List<Integer> values) {
-            addCriterion("is_processed in", values, "isProcessed");
+        public Criteria andIsReadIn(List<Integer> values) {
+            addCriterion("is_read in", values, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedNotIn(List<Integer> values) {
-            addCriterion("is_processed not in", values, "isProcessed");
+        public Criteria andIsReadNotIn(List<Integer> values) {
+            addCriterion("is_read not in", values, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedBetween(Integer value1, Integer value2) {
-            addCriterion("is_processed between", value1, value2, "isProcessed");
+        public Criteria andIsReadBetween(Integer value1, Integer value2) {
+            addCriterion("is_read between", value1, value2, "isRead");
             return (Criteria) this;
         }
 
-        public Criteria andIsProcessedNotBetween(Integer value1, Integer value2) {
-            addCriterion("is_processed not between", value1, value2, "isProcessed");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkIsNull() {
-            addCriterion("is_mark is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkIsNotNull() {
-            addCriterion("is_mark is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkEqualTo(Integer value) {
-            addCriterion("is_mark =", value, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkNotEqualTo(Integer value) {
-            addCriterion("is_mark <>", value, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkGreaterThan(Integer value) {
-            addCriterion("is_mark >", value, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkGreaterThanOrEqualTo(Integer value) {
-            addCriterion("is_mark >=", value, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkLessThan(Integer value) {
-            addCriterion("is_mark <", value, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkLessThanOrEqualTo(Integer value) {
-            addCriterion("is_mark <=", value, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkIn(List<Integer> values) {
-            addCriterion("is_mark in", values, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkNotIn(List<Integer> values) {
-            addCriterion("is_mark not in", values, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkBetween(Integer value1, Integer value2) {
-            addCriterion("is_mark between", value1, value2, "isMark");
-            return (Criteria) this;
-        }
-
-        public Criteria andIsMarkNotBetween(Integer value1, Integer value2) {
-            addCriterion("is_mark not between", value1, value2, "isMark");
+        public Criteria andIsReadNotBetween(Integer value1, Integer value2) {
+            addCriterion("is_read not between", value1, value2, "isRead");
             return (Criteria) this;
         }
 

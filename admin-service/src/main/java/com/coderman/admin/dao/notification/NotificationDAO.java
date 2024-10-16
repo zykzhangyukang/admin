@@ -3,10 +3,7 @@ package com.coderman.admin.dao.notification;
 import com.coderman.admin.model.notification.NotificationExample;
 import com.coderman.admin.model.notification.NotificationModel;
 import com.coderman.mybatis.dao.BaseDAO;
-import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.Map;
 
 public interface NotificationDAO extends BaseDAO<NotificationModel, NotificationExample> {
 
@@ -15,6 +12,5 @@ public interface NotificationDAO extends BaseDAO<NotificationModel, Notification
      * @param userId
      * @return
      */
-    @MapKey("notification_type")
-    Map<String, Map<String,Long>>  getUnreadNotificationCountByType(@Param(value = "userId") Integer userId);
+    Long  getUnreadNotificationCount(@Param(value = "userId") Integer userId);
 }
