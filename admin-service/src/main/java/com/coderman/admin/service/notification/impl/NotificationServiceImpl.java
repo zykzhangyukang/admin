@@ -153,7 +153,7 @@ public class NotificationServiceImpl implements NotificationService {
 
             //  广播发送
             simpMessagingTemplate.convertAndSend(destination, content);
-            log.info("handWebSocketNotify-websocket推送广播消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
+            log.debug("handWebSocketNotify-websocket推送广播消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
 
         } else {
 
@@ -163,7 +163,7 @@ public class NotificationServiceImpl implements NotificationService {
 
                 //  给WebSocket客户端发送消息
                 simpMessagingTemplate.convertAndSend(destination, content);
-                log.info("handWebSocketNotify-websocket推送点对点消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
+                log.debug("handWebSocketNotify-websocket推送点对点消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
             }
         }
     }

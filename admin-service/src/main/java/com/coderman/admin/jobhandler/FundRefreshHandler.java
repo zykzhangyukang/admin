@@ -33,21 +33,18 @@ import java.util.*;
 public class FundRefreshHandler extends IJobHandler {
 
     @Resource
-    private RedisService redisService;
-
-    @Resource
     private NotificationService notificationService;
 
     public static String getRequest(String url) {
         String result = null;
+
         // 创建一个HttpClient实例
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+
             // 创建一个GET请求
             HttpGet request = new HttpGet(url);
-
             // 执行请求
             HttpResponse response = httpClient.execute(request);
-
             // 获取响应内容
             result = EntityUtils.toString(response.getEntity(), "UTF-8");
         } catch (IOException e) {
@@ -138,9 +135,8 @@ public class FundRefreshHandler extends IJobHandler {
 
 
     public static String getMessage(FundBean fund) {
-
-        StringBuilder logMessage = new StringBuilder("基金信息: ");
-        logMessage.append(String.format("[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益: %s, 今日收益: %s] ",
+        // log.info(logMessage.toString());
+        return "基金信息: " + String.format("[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益: %s, 今日收益: %s] ",
                 fund.getFundCode(),
                 fund.getFundName(),
                 fund.getGsz(),
@@ -148,9 +144,6 @@ public class FundRefreshHandler extends IJobHandler {
                 fund.getGztime() != null ? fund.getGztime() : "--",
                 fund.getIncome() != null ? fund.getIncome() : "--",
                 fund.getTodayIncome() != null ? fund.getTodayIncome() : "--"
-        ));
-        // 打印一行日志，包含所有信息
-        log.info(logMessage.toString());
-        return logMessage.toString();
+        );
     }
 }
