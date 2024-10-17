@@ -65,8 +65,11 @@ public class FundRefreshHandler extends IJobHandler {
                     FundBean bean = JSON.parseObject(json, FundBean.class);
                     FundBean.loadFund(bean, codeMap);
 
+                    // 当前基金净值估算
                     BigDecimal now = new BigDecimal(bean.getGsz());
+                    // 持仓成本价
                     String costPriceStr = bean.getCostPrise();
+
                     if (StringUtils.isNotEmpty(costPriceStr)) {
                         BigDecimal costPriceDec = new BigDecimal(costPriceStr);
                         BigDecimal incomeDiff = now.add(costPriceDec.negate());
@@ -87,10 +90,18 @@ public class FundRefreshHandler extends IJobHandler {
                             BigDecimal incomeDec = incomeDiff.multiply(bondDec)
                                     .setScale(2, RoundingMode.HALF_UP);
                             bean.setIncome(incomeDec.toString());
+
+                            // 计算当天收益  = (当前金额 - 昨天净值) * 份额
+                            if (bean.getDwjz() != null) {
+                                // 计算当天收益
+                                BigDecimal decimal = new BigDecimal(bean.getDwjz());
+                                BigDecimal currentEarnings = now.subtract(decimal).multiply(bondDec);
+                                bean.setTodayIncome(currentEarnings.setScale(2, RoundingMode.HALF_UP).toString());
+                            }
                         }
                     }
 
-                    logFundTable(Collections.singletonList(bean));
+                    printLogInfo(Collections.singletonList(bean));
 
                 } else {
                     log.error("Fund编码:[" + code + "]无法获取数据");
@@ -100,26 +111,24 @@ public class FundRefreshHandler extends IJobHandler {
             }
         }
 
-        return ReturnT.SUCCESS; // 返回成功状态
+        return ReturnT.SUCCESS;
     }
 
-    public static void logFundTable(List<FundBean> funds) {
-        // 表头
-        String header = String.format("%-10s | %-20s | %-10s | %-10s | %-10s | %-10s", "编码", "基金名称", "估算净值", "估算涨跌", "更新时间", "收益");
-        log.info(header);
-        log.info(StringUtils.repeat("=", 100));
+    public static void printLogInfo(List<FundBean> funds) {
+        StringBuilder logMessage = new StringBuilder("基金信息: ");
 
-        // 表格内容
         for (FundBean fund : funds) {
-            String row = String.format("%-10s | %-20s | %-10s | %-10s | %-10s | %-10s",
+            logMessage.append(String.format("[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益: %s, 今日收益: %s] ",
                     fund.getFundCode(),
                     fund.getFundName(),
                     fund.getGsz(),
                     fund.getGszzl() != null ? (fund.getGszzl().startsWith("-") ? fund.getGszzl() : "+" + fund.getGszzl()) + "%" : "--",
                     fund.getGztime() != null ? fund.getGztime() : "--",
-                    fund.getIncome() != null ? fund.getIncome() : "--"
-            );
-            log.info(row);
+                    fund.getIncome() != null ? fund.getIncome() : "--",
+                    fund.getTodayIncome() != null ? fund.getTodayIncome() : "--"
+            ));
         }
+        // 打印一行日志，包含所有信息
+        log.info(logMessage.toString());
     }
 }
