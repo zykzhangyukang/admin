@@ -101,7 +101,7 @@ public class FundRefreshHandler extends IJobHandler {
                                     .setScale(2, RoundingMode.HALF_UP);
                             bean.setIncome(incomeDec.toString());
 
-                            // 计算当天收益  = (当前金额 - 昨天净值) * 份额
+                            // 计算当天收益  = (当前净值 - 昨天净值) * 份额
                             if (bean.getDwjz() != null) {
                                 // 计算当天收益
                                 BigDecimal decimal = new BigDecimal(bean.getDwjz());
