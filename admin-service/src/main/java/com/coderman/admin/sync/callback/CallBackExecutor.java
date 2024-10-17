@@ -79,16 +79,17 @@ public class CallBackExecutor {
     private void init() throws Exception {
 
         this.requestConfig = RequestConfig.custom()
+                // 读取数据的超时时间
                 .setSocketTimeout(20000)
+                // 连接服务器的超时时间
                 .setConnectTimeout(5000)
+                // 从连接池中获取连接的超时时间
                 .setConnectionRequestTimeout(5000).build();
-
         SSLContextBuilder builder = new SSLContextBuilder();
 
         builder.loadTrustMaterial(null, new TrustStrategy() {
             @Override
             public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
                 return true;
             }
         });
@@ -145,7 +146,6 @@ public class CallBackExecutor {
                     if (result) {
 
                         callBackNode.addCallbackUrl(callbackUrl);
-
                     } else {
 
                         callBackNode.addNoneCallbackUrl(callbackUrl);
