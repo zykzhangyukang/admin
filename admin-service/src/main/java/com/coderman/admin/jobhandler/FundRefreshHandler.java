@@ -1,12 +1,10 @@
 package com.coderman.admin.jobhandler;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.notification.NotificationService;
 import com.coderman.admin.utils.FundBean;
-import com.coderman.redis.service.RedisService;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.JobHandler;
@@ -119,7 +117,7 @@ public class FundRefreshHandler extends IJobHandler {
                     log.error("Fund编码:[" + code + "]无法获取数据");
                 }
             } catch (Exception e) {
-                log.error("处理基金编码 [{}] 时发生异常: {}", code, e.getMessage());
+                log.error("处理基金编码 [{}] 时发生异常: {}", code, e.getMessage(), e);
             }
         }
 
