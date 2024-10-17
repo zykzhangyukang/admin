@@ -25,4 +25,6 @@ public interface NotificationConstant {
      */
     @ConstList(group = "notification_type",name = "登录欢迎")
     public static final String NOTIFICATION_LOGIN_WELCOME = "login_welcome";
+    @ConstList(group = "notification_type",name = "基金收益提醒")
+    public static final String NOTIFICATION_FUND_TIPS = "fund_tips";
 }

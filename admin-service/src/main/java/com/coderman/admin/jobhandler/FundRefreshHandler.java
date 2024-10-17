@@ -1,11 +1,16 @@
 package com.coderman.admin.jobhandler;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.coderman.admin.constant.NotificationConstant;
+import com.coderman.admin.service.notification.NotificationService;
 import com.coderman.admin.utils.FundBean;
+import com.coderman.redis.service.RedisService;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.JobHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -14,6 +19,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -23,6 +29,12 @@ import java.util.*;
 @Component
 @Slf4j
 public class FundRefreshHandler extends IJobHandler {
+
+    @Resource
+    private RedisService redisService;
+
+    @Resource
+    private NotificationService notificationService;
 
     public static String getRequest(String url) {
         String result = null;
@@ -56,6 +68,7 @@ public class FundRefreshHandler extends IJobHandler {
             codeMap.put(strArray[0], strArray);
         }
 
+        List<String> fundBeans = Lists.newArrayList();
         for (String code : codeList) {
             try {
                 String url = "http://fundgz.1234567.com.cn/js/" + code + ".js?rt=" + System.currentTimeMillis();
@@ -101,7 +114,8 @@ public class FundRefreshHandler extends IJobHandler {
                         }
                     }
 
-                    printLogInfo(Collections.singletonList(bean));
+                    String s1 = getLogInfo(Collections.singletonList(bean));
+                    fundBeans.add(s1);
 
                 } else {
                     log.error("Fund编码:[" + code + "]无法获取数据");
@@ -111,10 +125,23 @@ public class FundRefreshHandler extends IJobHandler {
             }
         }
 
+        this.sendFundTips(fundBeans);
         return ReturnT.SUCCESS;
     }
 
-    public static void printLogInfo(List<FundBean> funds) {
+    /**
+     * 发送基金收益提醒
+     * @param fundBeans 基金信息
+     */
+    private void sendFundTips(List<String> fundBeans) {
+        JSONObject data = new JSONObject();
+        data.put("message", StringUtils.join(fundBeans, ","));
+        data.put("url", "/");
+        data.put("title", "基金收益提醒!");
+        this.notificationService.saveNotifyToUser(61, data, NotificationConstant.NOTIFICATION_FUND_TIPS);
+    }
+
+    public static String getLogInfo(List<FundBean> funds) {
         StringBuilder logMessage = new StringBuilder("基金信息: ");
 
         for (FundBean fund : funds) {
@@ -130,5 +157,6 @@ public class FundRefreshHandler extends IJobHandler {
         }
         // 打印一行日志，包含所有信息
         log.info(logMessage.toString());
+        return logMessage.toString();
     }
 }

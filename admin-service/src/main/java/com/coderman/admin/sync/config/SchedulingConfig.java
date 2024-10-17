@@ -32,7 +32,7 @@ public class SchedulingConfig {
     @Resource
     private FundRefreshHandler fundRefreshHandler;
 
-    @Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(cron = "0 30 11,15 * * ?")
     public void fundRefreshHandler(){
 
         this.fundRefreshHandler.execute(StringUtils.EMPTY);
