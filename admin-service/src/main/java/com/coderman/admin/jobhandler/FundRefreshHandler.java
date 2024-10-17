@@ -127,13 +127,12 @@ public class FundRefreshHandler extends IJobHandler {
         }
 
         NotificationDTO msg = NotificationDTO.builder()
-                .userId(61)
                 .title("基金收益提醒")
-                .message(StringUtils.join(fundBeans, ","))
+                .message(StringUtils.join(fundBeans, ",") + " [刷新时间:" + DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss")+"]")
                 .url("/dashboard")
                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
                 .isPop(false).build();
-        this.notificationService.sendToUser(msg);
+        this.notificationService.sendToTopic(msg);
         return ReturnT.SUCCESS;
     }
 

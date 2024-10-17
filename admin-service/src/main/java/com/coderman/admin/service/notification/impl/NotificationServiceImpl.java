@@ -123,11 +123,10 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * 广播主题消息
      *
-     * @param senderId 发送人id
      * @param payload  消息内容
      */
     @Override
-    public void sendToTopic(Integer senderId, Object payload) {
+    public void sendToTopic(NotificationDTO payload) {
 
         String destination = WebSocketChannelEnum.TOPIC_SYS_MSG.getSubscribeUrl();
         WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(StringUtils.EMPTY, destination, payload);

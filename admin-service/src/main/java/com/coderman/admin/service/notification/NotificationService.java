@@ -9,20 +9,19 @@ public interface NotificationService {
      * 通知指定用户 (持久化)
      *
      */
-    public void saveNotifyToUser(NotificationDTO msg);
+    public void saveNotifyToUser(NotificationDTO payload);
 
     /**
      *  推送系统消息
      *
-     * @param senderId
      * @param payload
      */
-    public void sendToTopic(Integer senderId, Object payload);
+    public void sendToTopic(NotificationDTO payload);
 
     /**
      * 推送用户消息
      */
-    public void sendToUser(NotificationDTO dto);
+    public void sendToUser(NotificationDTO payload);
 
     /**
      * 获取未读消息数
