@@ -8,6 +8,7 @@ import com.coderman.admin.dao.role.RoleDAO;
 import com.coderman.admin.dao.user.UserDAO;
 import com.coderman.admin.dao.user.UserFuncDAO;
 import com.coderman.admin.dao.user.UserRoleDAO;
+import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.dto.user.*;
 import com.coderman.admin.model.resc.RescModel;
 import com.coderman.admin.model.role.RoleModel;
@@ -159,12 +160,14 @@ public class UserServiceImpl extends BaseService implements UserService {
             // 记录日志
             this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(), "用户登录系统");
 
-            // 欢迎消息
-            JSONObject data =  new JSONObject();
-            data.put("message","欢迎您登录系统, 当前时间:"+ DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
-            data.put("url","/home");
-            data.put("title","欢迎您登录系统!");
-            this.notificationService.saveNotifyToUser(authUserVO.getUserId(), data, NotificationConstant.NOTIFICATION_LOGIN_WELCOME);
+            // 发送消息
+            NotificationDTO msg = NotificationDTO.builder()
+                    .userId(authUserVO.getUserId())
+                    .title("欢迎您登录系统")
+                    .message("欢迎您登录系统, 当前时间:" + DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"))
+                    .url("/dashboard")
+                    .isPop(false).build();
+            this.notificationService.saveNotifyToUser(msg);
 
             TokenResultVO response = TokenResultVO.builder()
                     .accessToken(authUserVO.getAccessToken())

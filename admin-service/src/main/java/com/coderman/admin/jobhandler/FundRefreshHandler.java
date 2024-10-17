@@ -3,6 +3,7 @@ package com.coderman.admin.jobhandler;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.NotificationConstant;
+import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.notification.NotificationService;
 import com.coderman.admin.utils.FundBean;
 import com.coderman.redis.service.RedisService;
@@ -12,6 +13,7 @@ import com.xxl.job.core.handler.annotation.JobHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -114,8 +116,7 @@ public class FundRefreshHandler extends IJobHandler {
                         }
                     }
 
-                    String s1 = getLogInfo(Collections.singletonList(bean));
-                    fundBeans.add(s1);
+                    fundBeans.add(getMessage(bean));
 
                 } else {
                     log.error("Fund编码:[" + code + "]无法获取数据");
@@ -125,36 +126,30 @@ public class FundRefreshHandler extends IJobHandler {
             }
         }
 
-        this.sendFundTips(fundBeans);
+        NotificationDTO msg = NotificationDTO.builder()
+                .userId(61)
+                .title("基金收益提醒")
+                .message(StringUtils.join(fundBeans, ","))
+                .url("/dashboard")
+                .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
+                .isPop(false).build();
+        this.notificationService.sendToUser(msg);
         return ReturnT.SUCCESS;
     }
 
-    /**
-     * 发送基金收益提醒
-     * @param fundBeans 基金信息
-     */
-    private void sendFundTips(List<String> fundBeans) {
-        JSONObject data = new JSONObject();
-        data.put("message", StringUtils.join(fundBeans, ","));
-        data.put("url", "/");
-        data.put("title", "基金收益提醒!");
-        this.notificationService.saveNotifyToUser(61, data, NotificationConstant.NOTIFICATION_FUND_TIPS);
-    }
 
-    public static String getLogInfo(List<FundBean> funds) {
+    public static String getMessage(FundBean fund) {
+
         StringBuilder logMessage = new StringBuilder("基金信息: ");
-
-        for (FundBean fund : funds) {
-            logMessage.append(String.format("[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益: %s, 今日收益: %s] ",
-                    fund.getFundCode(),
-                    fund.getFundName(),
-                    fund.getGsz(),
-                    fund.getGszzl() != null ? (fund.getGszzl().startsWith("-") ? fund.getGszzl() : "+" + fund.getGszzl()) + "%" : "--",
-                    fund.getGztime() != null ? fund.getGztime() : "--",
-                    fund.getIncome() != null ? fund.getIncome() : "--",
-                    fund.getTodayIncome() != null ? fund.getTodayIncome() : "--"
-            ));
-        }
+        logMessage.append(String.format("[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益: %s, 今日收益: %s] ",
+                fund.getFundCode(),
+                fund.getFundName(),
+                fund.getGsz(),
+                fund.getGszzl() != null ? (fund.getGszzl().startsWith("-") ? fund.getGszzl() : "+" + fund.getGszzl()) + "%" : "--",
+                fund.getGztime() != null ? fund.getGztime() : "--",
+                fund.getIncome() != null ? fund.getIncome() : "--",
+                fund.getTodayIncome() != null ? fund.getTodayIncome() : "--"
+        ));
         // 打印一行日志，包含所有信息
         log.info(logMessage.toString());
         return logMessage.toString();

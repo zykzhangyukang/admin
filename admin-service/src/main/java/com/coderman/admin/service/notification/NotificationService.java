@@ -1,20 +1,15 @@
 package com.coderman.admin.service.notification;
 
-import com.alibaba.fastjson.JSONObject;
+import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.api.vo.ResultVO;
-
-import java.util.Map;
 
 public interface NotificationService {
 
     /**
      * 通知指定用户 (持久化)
      *
-     * @param userId 用户id
-     * @param data   消息体
-     * @param type   消息类型
      */
-    public void saveNotifyToUser(Integer userId, JSONObject data, String type);
+    public void saveNotifyToUser(NotificationDTO msg);
 
     /**
      *  推送系统消息
@@ -24,13 +19,10 @@ public interface NotificationService {
      */
     public void sendToTopic(Integer senderId, Object payload);
 
-
     /**
      * 推送用户消息
-     * @param receiverId
-     * @param payload
      */
-    public void sendToUser(Integer receiverId, Object payload);
+    public void sendToUser(NotificationDTO dto);
 
     /**
      * 获取未读消息数

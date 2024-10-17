@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.constant.WebSocketChannelEnum;
 import com.coderman.admin.dao.notification.NotificationDAO;
+import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.dto.common.WebsocketRedisMsg;
 import com.coderman.admin.model.notification.NotificationModel;
 import com.coderman.admin.service.notification.NotificationService;
@@ -45,30 +46,32 @@ public class NotificationServiceImpl implements NotificationService {
     private RedisService redisService;
 
     @Override
-    public void saveNotifyToUser(Integer userId, JSONObject data, String type) {
+    public void saveNotifyToUser(NotificationDTO payload) {
+
+        String msgType = payload.getType();
+        Assert.notNull(msgType, "消息类型不能为空!");
 
         // 保存消息
         NotificationModel notificationModel = new NotificationModel();
         notificationModel.setCreateTime(new Date());
-        notificationModel.setNotificationType(type);
+        notificationModel.setNotificationType(msgType);
         notificationModel.setIsRead(0);
-        notificationModel.setData(data.toJSONString());
-        notificationModel.setUserId(userId);
+        notificationModel.setData(JSON.toJSONString(payload));
+        notificationModel.setUserId(payload.getUserId());
         this.notificationDAO.insertSelective(notificationModel);
-
         // 实时提示
-        this.sendToUser(userId, notificationModel);
+        this.sendToUser(payload);
     }
 
     /**
      * 发送消息到用户的方法
      *
-     * @param receiverId 接收方id
-     * @param payload    消息内容
      * @return void
      */
     @Override
-    public void sendToUser(Integer receiverId, Object payload) {
+    public void sendToUser(NotificationDTO payload) {
+
+        Integer receiverId = payload.getUserId();
 
         String receiver = String.valueOf(receiverId);
         String destination = String.format(WebSocketChannelEnum.USER_SYS_MSG.getSubscribeUrl(), receiverId);
