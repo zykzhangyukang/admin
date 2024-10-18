@@ -7,14 +7,12 @@ import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.notification.NotificationService;
 import com.coderman.admin.utils.FundBean;
-import com.google.common.collect.Maps;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.JobHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -26,9 +24,10 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @JobHandler(value = "tianTianFundRefreshHandler")
 @Component
@@ -37,11 +36,6 @@ public class TianTianFundHandler extends IJobHandler {
 
     @Resource
     private NotificationService notificationService;
-
-    private static final int SHORT_TERM_PERIOD = 5; // 短期移动平均线周期
-    private static final int LONG_TERM_PERIOD = 20; // 长期移动平均线周期
-    private static final BigDecimal RSI_OVERBOUGHT = new BigDecimal("70"); // RSI超买阈值
-    private static final BigDecimal RSI_OVERSOLD = new BigDecimal("30"); // RSI超卖阈值
 
     public static String getHistoryRequest(String url) {
         String result = null;
@@ -118,7 +112,7 @@ public class TianTianFundHandler extends IJobHandler {
                 fundBeans.add(fundBean);
 
                 // 获取历史的净值情况
-                this.fetchHistoryData(code);
+                // this.fetchHistoryData(code);
 
             } catch (Exception e) {
                 log.error("处理基金编码 [{}] 时发生异常: {}", code, e.getMessage(), e);
