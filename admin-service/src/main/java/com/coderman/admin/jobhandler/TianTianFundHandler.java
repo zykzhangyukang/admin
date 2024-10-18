@@ -11,7 +11,6 @@ import com.xxl.job.core.handler.annotation.JobHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -23,12 +22,15 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-@JobHandler(value = "fundRefreshHandler")
+@JobHandler(value = "tianTianFundHandler")
 @Component
 @Slf4j
-public class FundRefreshHandler extends IJobHandler {
+public class TianTianFundHandler  extends IJobHandler {
 
     @Resource
     private NotificationService notificationService;
@@ -54,7 +56,12 @@ public class FundRefreshHandler extends IJobHandler {
     @Override
     public ReturnT<String> execute(String s) {
 
-        List<String> codes = Collections.singletonList("161725,0.8965,24740.72");
+        List<String> codes = Lists.newArrayList();
+
+        codes.add("161725,0.8965,24740.72");
+        codes.add("008888,1.0340,2417.79");
+        codes.add("007690,1.5868,1575.50");
+
         List<String> codeList = new ArrayList<>();
         Map<String, String[]> codeMap = new HashMap<>();
 
@@ -65,7 +72,7 @@ public class FundRefreshHandler extends IJobHandler {
             codeMap.put(strArray[0], strArray);
         }
 
-        List<String> fundBeans = Lists.newArrayList();
+        List<FundBean> fundBeans = Lists.newArrayList();
         for (String code : codeList) {
             try {
                 String url = "http://fundgz.1234567.com.cn/js/" + code + ".js?rt=" + System.currentTimeMillis();
@@ -111,7 +118,8 @@ public class FundRefreshHandler extends IJobHandler {
                         }
                     }
 
-                    fundBeans.add(getMessage(bean));
+                    fundBeans.add(bean);
+                    log.info(getMessage(bean));
 
                 } else {
                     log.error("Fund编码:[" + code + "]无法获取数据");
@@ -123,17 +131,17 @@ public class FundRefreshHandler extends IJobHandler {
 
         NotificationDTO msg = NotificationDTO.builder()
                 .title("基金收益提醒")
-                .message(StringUtils.join(fundBeans, ",") + " [刷新时间:" + DateFormatUtils.format(new Date(),"yyyy-MM-dd HH:mm:ss")+"]")
+                .message(JSON.toJSONString(fundBeans))
                 .url("/dashboard")
                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
                 .isPop(false).build();
         this.notificationService.sendToTopic(msg);
+        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         return ReturnT.SUCCESS;
     }
 
 
     public static String getMessage(FundBean fund) {
-        // log.info(logMessage.toString());
         return "基金信息: " + String.format("[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益: %s, 今日收益: %s] ",
                 fund.getFundCode(),
                 fund.getFundName(),
