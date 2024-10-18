@@ -33,7 +33,7 @@ public class SchedulingConfig {
     private TianTianFundHandler tianTianFundHandler;
 
     @Scheduled(cron = "*/10 * * * * ?")
-    public void tianTianFundHandler(){
+    public void tianTianFundRefreshHandler(){
 
         this.tianTianFundHandler.execute(StringUtils.EMPTY);
     }

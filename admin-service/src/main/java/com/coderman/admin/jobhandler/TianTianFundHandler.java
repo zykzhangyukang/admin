@@ -1,16 +1,20 @@
 package com.coderman.admin.jobhandler;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.notification.NotificationService;
 import com.coderman.admin.utils.FundBean;
+import com.google.common.collect.Maps;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.JobHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -22,18 +26,50 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-@JobHandler(value = "tianTianFundHandler")
+@JobHandler(value = "tianTianFundRefreshHandler")
 @Component
 @Slf4j
-public class TianTianFundHandler  extends IJobHandler {
+public class TianTianFundHandler extends IJobHandler {
 
     @Resource
     private NotificationService notificationService;
+
+    private static final int SHORT_TERM_PERIOD = 5; // 短期移动平均线周期
+    private static final int LONG_TERM_PERIOD = 20; // 长期移动平均线周期
+    private static final BigDecimal RSI_OVERBOUGHT = new BigDecimal("70"); // RSI超买阈值
+    private static final BigDecimal RSI_OVERSOLD = new BigDecimal("30"); // RSI超卖阈值
+
+    public static String getHistoryRequest(String url) {
+        String result = null;
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(url);
+
+            // 设置请求头
+            request.setHeader("accept", "*/*");
+            request.setHeader("accept-language", "zh-CN,zh;q=0.9,en;q=0.8");
+            request.setHeader("cache-control", "no-cache");
+            request.setHeader("pragma", "no-cache");
+            request.setHeader("sec-ch-ua", "\"Google Chrome\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"");
+            request.setHeader("sec-ch-ua-mobile", "?0");
+            request.setHeader("sec-ch-ua-platform", "\"Windows\"");
+            request.setHeader("sec-fetch-dest", "script");
+            request.setHeader("sec-fetch-mode", "no-cors");
+            request.setHeader("sec-fetch-site", "same-site");
+            request.setHeader("referer", "https://fundf10.eastmoney.com/");
+            request.setHeader("referrerPolicy", "strict-origin-when-cross-origin");
+
+            // 执行请求
+            HttpResponse response = httpClient.execute(request);
+            result = EntityUtils.toString(response.getEntity(), "UTF-8");
+        } catch (IOException e) {
+            log.error("HTTP请求失败: {}", e.getMessage());
+        }
+        return result;
+    }
 
     public static String getRequest(String url) {
         String result = null;
@@ -73,57 +109,17 @@ public class TianTianFundHandler  extends IJobHandler {
         }
 
         List<FundBean> fundBeans = Lists.newArrayList();
+
         for (String code : codeList) {
             try {
-                String url = "http://fundgz.1234567.com.cn/js/" + code + ".js?rt=" + System.currentTimeMillis();
-                String result = getRequest(url);
-                String json = result.substring(8, result.length() - 2);
-                if (!json.isEmpty()) {
-                    FundBean bean = JSON.parseObject(json, FundBean.class);
-                    FundBean.loadFund(bean, codeMap);
 
-                    // 当前基金净值估算
-                    BigDecimal now = new BigDecimal(bean.getGsz());
-                    // 持仓成本价
-                    String costPriceStr = bean.getCostPrise();
+                // 获取当前的净值情况
+                FundBean fundBean = this.fetchData(code, codeMap);
+                fundBeans.add(fundBean);
 
-                    if (StringUtils.isNotEmpty(costPriceStr)) {
-                        BigDecimal costPriceDec = new BigDecimal(costPriceStr);
-                        BigDecimal incomeDiff = now.add(costPriceDec.negate());
-                        if (costPriceDec.compareTo(BigDecimal.ZERO) <= 0) {
-                            bean.setIncomePercent("0");
-                        } else {
-                            // 计算收益率 =
-                            BigDecimal incomePercentDec = incomeDiff.divide(costPriceDec, 8, RoundingMode.HALF_UP)
-                                    .multiply(BigDecimal.TEN)
-                                    .multiply(BigDecimal.TEN)
-                                    .setScale(3, RoundingMode.HALF_UP);
-                            bean.setIncomePercent(incomePercentDec.toString());
-                        }
+                // 获取历史的净值情况
+                this.fetchHistoryData(code);
 
-                        String bondStr = bean.getBonds();
-                        if (StringUtils.isNotEmpty(bondStr)) {
-                            BigDecimal bondDec = new BigDecimal(bondStr);
-                            BigDecimal incomeDec = incomeDiff.multiply(bondDec)
-                                    .setScale(2, RoundingMode.HALF_UP);
-                            bean.setIncome(incomeDec.toString());
-
-                            // 计算当天收益  = (当前净值 - 昨天净值) * 份额
-                            if (bean.getDwjz() != null) {
-                                // 计算当天收益
-                                BigDecimal decimal = new BigDecimal(bean.getDwjz());
-                                BigDecimal currentEarnings = now.subtract(decimal).multiply(bondDec);
-                                bean.setTodayIncome(currentEarnings.setScale(2, RoundingMode.HALF_UP).toString());
-                            }
-                        }
-                    }
-
-                    fundBeans.add(bean);
-                    log.info(getMessage(bean));
-
-                } else {
-                    log.error("Fund编码:[" + code + "]无法获取数据");
-                }
             } catch (Exception e) {
                 log.error("处理基金编码 [{}] 时发生异常: {}", code, e.getMessage(), e);
             }
@@ -138,6 +134,86 @@ public class TianTianFundHandler  extends IJobHandler {
         this.notificationService.sendToTopic(msg);
         log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         return ReturnT.SUCCESS;
+    }
+
+    private FundBean fetchData(String code, Map<String, String[]> codeMap) {
+
+        FundBean bean = null;
+
+        String url = "http://fundgz.1234567.com.cn/js/" + code + ".js?rt=" + System.currentTimeMillis();
+        String result = getRequest(url);
+        String json = result.substring(8, result.length() - 2);
+        if (!json.isEmpty()) {
+            bean = JSON.parseObject(json, FundBean.class);
+            FundBean.loadFund(bean, codeMap);
+
+            // 当前基金净值估算
+            BigDecimal now = new BigDecimal(bean.getGsz());
+            // 持仓成本价
+            String costPriceStr = bean.getCostPrise();
+
+            if (StringUtils.isNotEmpty(costPriceStr)) {
+                BigDecimal costPriceDec = new BigDecimal(costPriceStr);
+                BigDecimal incomeDiff = now.add(costPriceDec.negate());
+                if (costPriceDec.compareTo(BigDecimal.ZERO) <= 0) {
+                    bean.setIncomePercent("0");
+                } else {
+                    // 计算收益率 =
+                    BigDecimal incomePercentDec = incomeDiff.divide(costPriceDec, 8, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.TEN)
+                            .multiply(BigDecimal.TEN)
+                            .setScale(3, RoundingMode.HALF_UP);
+                    bean.setIncomePercent(incomePercentDec.toString());
+                }
+
+                String bondStr = bean.getBonds();
+                if (StringUtils.isNotEmpty(bondStr)) {
+                    BigDecimal bondDec = new BigDecimal(bondStr);
+                    BigDecimal incomeDec = incomeDiff.multiply(bondDec)
+                            .setScale(2, RoundingMode.HALF_UP);
+                    bean.setIncome(incomeDec.toString());
+
+                    // 计算当天收益  = (当前净值 - 昨天净值) * 份额
+                    if (bean.getDwjz() != null) {
+                        // 计算当天收益
+                        BigDecimal decimal = new BigDecimal(bean.getDwjz());
+                        BigDecimal currentEarnings = now.subtract(decimal).multiply(bondDec);
+                        bean.setTodayIncome(currentEarnings.setScale(2, RoundingMode.HALF_UP).toString());
+                    }
+                }
+            }
+
+            log.info(getMessage(bean));
+
+        } else {
+            log.error("Fund编码:[" + code + "]无法获取数据");
+        }
+
+        return bean;
+    }
+
+    private void fetchHistoryData(String code) {
+
+        String url = "https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code +
+                "&pageIndex=1&pageSize=20&startDate=&endDate=&_=" + System.currentTimeMillis();
+        String jsonpResponse = getHistoryRequest(url);
+
+        int startIndex = jsonpResponse.indexOf('(') + 1;
+        int endIndex = jsonpResponse.lastIndexOf(')');
+
+        String jsonResponse = jsonpResponse.substring(startIndex, endIndex);
+        JSONObject jsonObject = JSON.parseObject(jsonResponse);
+        JSONObject data = jsonObject.getJSONObject("Data");
+
+        // 第四步：获取 LSJZList 数组
+        JSONArray historyList = data.getJSONArray("LSJZList");
+        for (Object o : historyList) {
+            JSONObject object = (JSONObject) o;
+            String fsrq = object.getString("FSRQ");
+            BigDecimal dwjz = object.getBigDecimal("DWJZ");
+            log.info("{}=>{}", fsrq, dwjz);
+        }
+
     }
 
 
