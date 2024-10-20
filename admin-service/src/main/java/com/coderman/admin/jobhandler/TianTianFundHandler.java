@@ -126,7 +126,6 @@ public class TianTianFundHandler extends IJobHandler {
                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
                 .isPop(false).build();
         this.notificationService.sendToTopic(msg);
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         return ReturnT.SUCCESS;
     }
 
@@ -177,7 +176,7 @@ public class TianTianFundHandler extends IJobHandler {
                 }
             }
 
-            log.info(getMessage(bean));
+            //log.info(getMessage(bean));
 
         } else {
             log.error("Fund编码:[" + code + "]无法获取数据");
