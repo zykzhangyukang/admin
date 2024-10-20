@@ -1,6 +1,8 @@
 package com.coderman.admin.controller.notification;
 
+import com.coderman.admin.model.notification.NotificationModel;
 import com.coderman.admin.service.notification.NotificationService;
+import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
@@ -33,6 +35,15 @@ public class NotificationController {
     })
     public ResultVO<Long> getNotificationCount() {
         return this.notificationService.getNotificationCount();
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取消息列表")
+    @GetMapping(value = "/page")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<PageVO<NotificationModel>> getNotificationPage(String notificationType) {
+        return this.notificationService.getNotificationPage(notificationType);
     }
 
 

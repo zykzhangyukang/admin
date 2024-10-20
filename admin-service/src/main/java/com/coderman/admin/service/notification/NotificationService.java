@@ -1,6 +1,8 @@
 package com.coderman.admin.service.notification;
 
 import com.coderman.admin.dto.common.NotificationDTO;
+import com.coderman.admin.model.notification.NotificationModel;
+import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 
 public interface NotificationService {
@@ -36,4 +38,11 @@ public interface NotificationService {
      * @return
      */
     ResultVO<Void> updateNotificationRead(Integer notificationId);
+
+    /**
+     * 消息列表
+     * @param notificationType
+     * @return
+     */
+    ResultVO<PageVO<NotificationModel>> getNotificationPage(String notificationType);
 }
