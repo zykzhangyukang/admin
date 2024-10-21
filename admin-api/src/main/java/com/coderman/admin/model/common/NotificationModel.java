@@ -1,4 +1,4 @@
-package com.coderman.admin.model.notification;
+package com.coderman.admin.model.common;
 
 import com.coderman.api.model.BaseModel;
 import io.swagger.annotations.ApiModel;

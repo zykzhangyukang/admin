@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
-import com.coderman.admin.service.notification.NotificationService;
+import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.utils.FundBean;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
@@ -24,10 +24,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @JobHandler(value = "tianTianFundRefreshHandler")
 @Component
@@ -111,13 +108,17 @@ public class TianTianFundHandler extends IJobHandler {
                 FundBean fundBean = this.fetchData(code, codeMap);
                 fundBeans.add(fundBean);
 
+                log.info(getMessage(fundBean));
+
                 // 获取历史的净值情况
-                // this.fetchHistoryData(code);
+                // Map<String, BigDecimal> map = this.fetchHistoryData(code);
+                // log.info("历史净值:{}", map);
 
             } catch (Exception e) {
                 log.error("处理基金编码 [{}] 时发生异常: {}", code, e.getMessage(), e);
             }
         }
+        log.info("================================================");
 
         NotificationDTO msg = NotificationDTO.builder()
                 .title("基金收益提醒")
@@ -176,8 +177,6 @@ public class TianTianFundHandler extends IJobHandler {
                 }
             }
 
-            //log.info(getMessage(bean));
-
         } else {
             log.error("Fund编码:[" + code + "]无法获取数据");
         }
@@ -185,7 +184,7 @@ public class TianTianFundHandler extends IJobHandler {
         return bean;
     }
 
-    private void fetchHistoryData(String code) {
+    private Map<String,BigDecimal> fetchHistoryData(String code) {
 
         String url = "https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code +
                 "&pageIndex=1&pageSize=20&startDate=&endDate=&_=" + System.currentTimeMillis();
@@ -199,14 +198,15 @@ public class TianTianFundHandler extends IJobHandler {
         JSONObject data = jsonObject.getJSONObject("Data");
 
         // 第四步：获取 LSJZList 数组
+        Map<String,BigDecimal> map = new LinkedHashMap<>();
         JSONArray historyList = data.getJSONArray("LSJZList");
         for (Object o : historyList) {
             JSONObject object = (JSONObject) o;
             String fsrq = object.getString("FSRQ");
             BigDecimal dwjz = object.getBigDecimal("DWJZ");
-            log.info("{}=>{}", fsrq, dwjz);
+            map.put(fsrq, dwjz);
         }
-
+        return map;
     }
 
 

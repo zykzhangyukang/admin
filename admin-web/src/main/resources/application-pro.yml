@@ -7,7 +7,6 @@ spring:
     username: root
     url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
     password: zhangyukang
-    initialization-mode: never
   redis:
     host: 127.0.0.1
     port: 6379
@@ -34,7 +33,7 @@ sync:
     username: elastic
     password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
-  mq: rocketmq
+  mq: activemq
   rocketmq:
     instantName: SYNC_INSTANT
     namesrvAddr: 47.115.42.112:9876
@@ -107,24 +106,17 @@ job:
   log-retention-days: 30
   log-path: D:\java\logs\xxl-job
 
+# oss
+aliyun:
+  oss:
+    access-key-id: DES@15BF54A5AE211A5CF9D33FBC5F1DC0BBCBB930C2BCC7C3875F2EC4A83FE5B5FD
+    access-key-secret: DES@C198710CB2463E594B6599BE0ABE138AAC0735B5ABBD632655095EBE8F436582
+    end-point: oss-cn-shenzhen.aliyuncs.com
+    bucket-name: ioss-bucket
+
 # log
 logging:
   level:
     root: info
     com.coderman: info
-    com.coderman.admin.dao: debug
-
-# swagger
-swagger:
-  title: 通用后台管理系统
-  description: 帮助用户快速搭建稳定、高效的后台系统。
-  version: 2.0.0
-  contact:
-    name: coderman
-    email: 3053161401@qq.com
-    url: https://github.com/zykzhangyukang
-  exclude-auth:
-    - /auth/user/token
-    - /auth/user/refresh/token
-    - /auth/user/logout
-    - /auth/const/all
+    com.coderman.admin.dao: error

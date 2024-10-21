@@ -1,22 +1,28 @@
-package com.coderman.admin.service.notification.impl;
+package com.coderman.admin.service.common.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.constant.WebSocketChannelEnum;
-import com.coderman.admin.dao.notification.NotificationDAO;
+import com.coderman.admin.dao.common.NotificationDAO;
 import com.coderman.admin.dto.common.NotificationDTO;
+import com.coderman.admin.dto.common.NotificationPageDTO;
 import com.coderman.admin.dto.common.WebsocketRedisMsg;
-import com.coderman.admin.model.notification.NotificationModel;
-import com.coderman.admin.service.notification.NotificationService;
+import com.coderman.admin.model.common.NotificationModel;
+import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.utils.AuthUtil;
+import com.coderman.admin.vo.common.NotificationVO;
 import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
+import com.coderman.service.anntation.LogErrorParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
@@ -25,8 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author ：zhangyukang
@@ -95,10 +100,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @LogError(value = "获取未读消息数")
-    public ResultVO<Long> getNotificationCount() {
+    public ResultVO<Long> getUnReadCount() {
 
         Integer userId = AuthUtil.getUserId();
+        Assert.notNull(userId, "用户未登录!");
+
         Long unreadNotificationCount = this.notificationDAO.getUnreadNotificationCount(userId);
+
         return ResultUtil.getSuccess(Long.class, unreadNotificationCount);
     }
 
@@ -120,12 +128,51 @@ public class NotificationServiceImpl implements NotificationService {
         return ResultUtil.getSuccess();
     }
 
+    @Override
+    @LogError(value = "消息通知列表")
+    public ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(@LogErrorParam NotificationPageDTO notificationPageDTO) {
+
+        Map<String, Object> conditionMap = new HashMap<>(5);
+
+        Integer currentPage = notificationPageDTO.getCurrentPage();
+        Integer pageSize = notificationPageDTO.getPageSize();
+
+        conditionMap.put("userId", AuthUtil.getUserId());
+
+        if (StringUtils.isNotBlank(notificationPageDTO.getModule())) {
+            conditionMap.put("notificationTypes", NotificationConstant.NOTIFICATION_MAP.get(notificationPageDTO.getModule()));
+        }
+        if (Objects.nonNull(notificationPageDTO.getIsRead())) {
+            conditionMap.put("isRead", notificationPageDTO.getIsRead());
+        }
+
+        // 字段排序
+        String sortType = notificationPageDTO.getSortType();
+        String sortField = notificationPageDTO.getSortField();
+        if (StringUtils.isNotBlank(sortType)) {
+            conditionMap.put("sortType", sortType);
+            conditionMap.put("sortField", sortField);
+        }
+
+        PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
+        List<NotificationVO> notificationVOList = Lists.newArrayList();
+
+        // 消息列表
+        Long count = this.notificationDAO.countPage(conditionMap);
+        if (count > 0) {
+            notificationVOList = this.notificationDAO.page(conditionMap);
+        }
+
+        return ResultUtil.getSuccessPage(NotificationVO.class, new PageVO<>(count, notificationVOList, currentPage, pageSize));
+    }
+
     /**
      * 广播主题消息
      *
      * @param payload  消息内容
      */
     @Override
+    @LogError(value = "广播主题消息")
     public void sendToTopic(NotificationDTO payload) {
 
         String destination = WebSocketChannelEnum.TOPIC_SYS_MSG.getSubscribeUrl();
@@ -148,7 +195,7 @@ public class NotificationServiceImpl implements NotificationService {
         String destination = websocketRedisMsg.getDestination();
 
         // 广播类型
-        WebSocketChannelEnum webSocketChannelEnum = WebSocketChannelEnum.getBySubUrl(destination);
+        WebSocketChannelEnum webSocketChannelEnum = WebSocketChannelEnum.getBySubscribeUrl(destination);
         if (WebSocketChannelEnum.TOPIC_SYS_MSG.equals(webSocketChannelEnum)) {
 
             //  广播发送

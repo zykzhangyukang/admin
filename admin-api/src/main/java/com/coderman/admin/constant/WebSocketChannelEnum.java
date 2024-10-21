@@ -22,7 +22,7 @@ public enum WebSocketChannelEnum {
         this.subscribeUrl = subscribeUrl;
     }
 
-    public static WebSocketChannelEnum getBySubUrl(String destination){
+    public static WebSocketChannelEnum getBySubscribeUrl(String destination){
 
         for (WebSocketChannelEnum value : WebSocketChannelEnum.values()) {
 

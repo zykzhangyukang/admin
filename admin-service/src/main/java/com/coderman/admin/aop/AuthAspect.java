@@ -90,7 +90,12 @@ public class AuthAspect {
         whiteListUrl.addAll(Arrays.asList("/auth/user/token", "/auth/user/refresh/token", "/auth/user/logout","/auth/const/all"));
 
         // 无需拦截且有会话信息URL
-        unFilterHasLoginInfoUrl.addAll(Arrays.asList("/auth/user/info","/auth/user/permission","/auth/notification/count","/auth/notification/read"));
+        unFilterHasLoginInfoUrl.addAll(Arrays.asList(
+                "/auth/user/info"
+                ,"/auth/user/permission"
+                ,"/auth/notification/count"
+                ,"/auth/notification/read"
+                , "/auth/notification/page"));
 
         // 刷新系统资源
         refreshSystemAllRescMap();

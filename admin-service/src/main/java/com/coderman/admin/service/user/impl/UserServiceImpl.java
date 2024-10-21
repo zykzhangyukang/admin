@@ -1,7 +1,6 @@
 package com.coderman.admin.service.user.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.AuthConstant;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dao.role.RoleDAO;
@@ -15,7 +14,7 @@ import com.coderman.admin.model.role.RoleModel;
 import com.coderman.admin.model.user.UserModel;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
-import com.coderman.admin.service.notification.NotificationService;
+import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.utils.AuthUtil;

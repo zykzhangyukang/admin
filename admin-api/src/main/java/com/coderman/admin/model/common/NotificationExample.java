@@ -1,4 +1,4 @@
-package com.coderman.admin.model.notification;
+package com.coderman.admin.model.common;
 
 import java.util.ArrayList;
 import java.util.Date;

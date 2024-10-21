@@ -227,7 +227,7 @@ public class SqlUtil {
         StringBuilder stringBuilder = new StringBuilder();
 
         // 添加 SQL 语句
-        stringBuilder.append("执行 SQL 语句: ")
+        stringBuilder.append("执行语句: ")
                 .append(sql);
 
         // 遍历参数列表并格式化

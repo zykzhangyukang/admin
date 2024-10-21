@@ -1,9 +1,13 @@
-package com.coderman.admin.service.notification;
+package com.coderman.admin.service.common;
 
 import com.coderman.admin.dto.common.NotificationDTO;
-import com.coderman.admin.model.notification.NotificationModel;
+import com.coderman.admin.dto.common.NotificationPageDTO;
+import com.coderman.admin.model.common.NotificationModel;
+import com.coderman.admin.vo.common.NotificationVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+
+import java.util.List;
 
 public interface NotificationService {
 
@@ -24,13 +28,12 @@ public interface NotificationService {
      * 推送用户消息
      */
     public void sendToUser(NotificationDTO payload);
-
     /**
      * 获取未读消息数
      *
      * @return
      */
-    ResultVO<Long> getNotificationCount();
+    ResultVO<Long> getUnReadCount();
 
     /**
      * 标记已读
@@ -41,8 +44,8 @@ public interface NotificationService {
 
     /**
      * 消息列表
-     * @param notificationType
+     * @param notificationPageDTO
      * @return
      */
-    ResultVO<PageVO<NotificationModel>> getNotificationPage(String notificationType);
+    ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(NotificationPageDTO notificationPageDTO);
 }

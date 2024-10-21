@@ -1,9 +1,7 @@
 package com.coderman.admin.sync.init;
 
 import com.coderman.admin.sync.config.SyncJdbcConfig;
-import com.coderman.admin.sync.context.SyncContext;
 import com.coderman.admin.sync.db.*;
-import com.coderman.admin.sync.executor.AbstractExecutor;
 import com.coderman.admin.sync.util.SyncBeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author zhangyukang
@@ -54,20 +51,6 @@ public class DataSourceInitializer {
             } else if (dbConfig instanceof MongoConfig) {
 
                 SyncBeanUtil.registerMongoDataSource((MongoConfig) dbConfig);
-            }
-        }
-
-        // 初始化数据库执行器
-        for (Map.Entry<String, String> entry : SyncContext.getContext().getDbTypeMap().entrySet()) {
-
-            String dbName = entry.getKey();
-            try {
-
-                AbstractExecutor abstractExecutor = AbstractExecutor.build(dbName);
-
-                log.info("数据库{} 连接初始化完成:{}", dbName, abstractExecutor);
-            } catch (Exception e) {
-                log.error("数据库{} 连接初始化失败:{}", dbName, e.getMessage());
             }
         }
     }

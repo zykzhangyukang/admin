@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.coderman.admin.dao.notification.NotificationDAO">
-  <resultMap id="BaseResultMap" type="com.coderman.admin.model.notification.NotificationModel">
+<mapper namespace="com.coderman.admin.dao.common.NotificationDAO">
+  <resultMap id="BaseResultMap" type="com.coderman.admin.model.common.NotificationModel">
     <id column="notification_id" jdbcType="INTEGER" property="notificationId" />
     <result column="notification_type" jdbcType="VARCHAR" property="notificationType" />
     <result column="user_id" jdbcType="INTEGER" property="userId" />
@@ -10,7 +10,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.coderman.admin.model.notification.NotificationModel">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.coderman.admin.model.common.NotificationModel">
     <result column="data" jdbcType="LONGVARCHAR" property="data" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -77,7 +77,7 @@
   <sql id="Blob_Column_List">
     data
   </sql>
-  <select id="selectByExampleWithBLOBs" parameterType="com.coderman.admin.model.notification.NotificationExample" resultMap="ResultMapWithBLOBs">
+  <select id="selectByExampleWithBLOBs" parameterType="com.coderman.admin.model.common.NotificationExample" resultMap="ResultMapWithBLOBs">
     select
     <if test="distinct">
       distinct
@@ -93,7 +93,7 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByExample" parameterType="com.coderman.admin.model.notification.NotificationExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.coderman.admin.model.common.NotificationExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -119,13 +119,13 @@
     delete from auth_notification
     where notification_id = #{notificationId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.coderman.admin.model.notification.NotificationExample">
+  <delete id="deleteByExample" parameterType="com.coderman.admin.model.common.NotificationExample">
     delete from auth_notification
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.coderman.admin.model.notification.NotificationModel">
+  <insert id="insert" parameterType="com.coderman.admin.model.common.NotificationModel">
     insert into auth_notification (notification_id, notification_type, 
       user_id, read_time, is_read, 
       create_time, update_time, data
@@ -135,7 +135,7 @@
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{data,jdbcType=LONGVARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.coderman.admin.model.notification.NotificationModel">
+  <insert id="insertSelective" parameterType="com.coderman.admin.model.common.NotificationModel">
     insert into auth_notification
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="notificationId != null">
@@ -190,7 +190,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.coderman.admin.model.notification.NotificationExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.coderman.admin.model.common.NotificationExample" resultType="java.lang.Long">
     select count(*) from auth_notification
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -255,7 +255,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.admin.model.notification.NotificationModel">
+  <update id="updateByPrimaryKeySelective" parameterType="com.coderman.admin.model.common.NotificationModel">
     update auth_notification
     <set>
       <if test="notificationType != null">
@@ -282,7 +282,7 @@
     </set>
     where notification_id = #{notificationId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.coderman.admin.model.notification.NotificationModel">
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.coderman.admin.model.common.NotificationModel">
     update auth_notification
     set notification_type = #{notificationType,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=INTEGER},
@@ -293,7 +293,7 @@
       data = #{data,jdbcType=LONGVARCHAR}
     where notification_id = #{notificationId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.coderman.admin.model.notification.NotificationModel">
+  <update id="updateByPrimaryKey" parameterType="com.coderman.admin.model.common.NotificationModel">
     update auth_notification
     set notification_type = #{notificationType,jdbcType=VARCHAR},
       user_id = #{userId,jdbcType=INTEGER},
@@ -311,5 +311,54 @@
       auth_notification
     WHERE
       user_id = #{userId} and  is_read = 0
+  </select>
+
+  <sql id="pageWhere">
+    <where>
+      user_id = #{userId}
+      <choose>
+        <when test="notificationTypes!=null and notificationTypes.size() > 0">
+          and notification_type IN
+          <foreach collection="notificationTypes" item="item" open="(" close=")" separator=",">
+            #{item}
+          </foreach>
+        </when>
+        <otherwise>
+          and 1 = 0
+        </otherwise>
+      </choose>
+      <if test="isRead!=null">
+        and is_read = #{isRead}
+      </if>
+    </where>
+  </sql>
+
+  <select id="countPage" resultType="java.lang.Long">
+    select count(1)
+    from auth_notification
+    <include refid="pageWhere"/>
+  </select>
+
+  <select id="page" resultType="com.coderman.admin.vo.common.NotificationVO">
+    SELECT
+    notification_id,
+    notification_type,
+    user_id,
+    is_read,
+    `data`,
+    create_time
+    FROM
+    auth_notification
+    <include refid="pageWhere"/>
+    order by
+    <choose>
+      <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
+        ${sortField} ${sortType}
+      </when>
+      <otherwise>
+        notification_id desc
+      </otherwise>
+    </choose>
+    limit #{offset},#{size}
   </select>
 </mapper>
