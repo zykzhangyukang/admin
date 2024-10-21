@@ -1,27 +1,28 @@
 package com.coderman.admin.sync.service.impl;
 
 import com.coderman.admin.sync.callback.CallbackContext;
+import com.coderman.admin.sync.callback.meta.CallbackTask;
+import com.coderman.admin.sync.constant.PlanConstant;
+import com.coderman.admin.sync.constant.SyncConstant;
 import com.coderman.admin.sync.context.SyncContext;
+import com.coderman.admin.sync.dto.CallbackPageDTO;
+import com.coderman.admin.sync.dto.CallbackRepeatDTO;
+import com.coderman.admin.sync.model.CallbackModel;
+import com.coderman.admin.sync.service.CallbackService;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.admin.sync.constant.PlanConstant;
-import com.coderman.admin.sync.constant.SyncConstant;
-import com.coderman.admin.sync.dto.CallbackPageDTO;
-import com.coderman.admin.sync.dto.CallbackRepeatDTO;
-import com.coderman.admin.sync.model.CallbackModel;
+import com.coderman.callback.SyncCallback;
+import com.coderman.callback.SyncMsg;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.util.SpringContextUtil;
-import com.coderman.admin.sync.callback.meta.CallbackTask;
-import com.coderman.admin.sync.service.CallbackService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.ibatis.reflection.ExceptionUtil;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -38,6 +39,16 @@ import java.util.Map;
 @Slf4j
 public class CallbackServiceImpl implements CallbackService {
 
+
+    @SyncCallback(value = "update_admin_sync_user")
+    @LogError(value = "测试回调消息")
+    @Override
+    public ResultVO<Void> insertUserCallback(SyncMsg syncMsg){
+
+        log.info("回调消息执行>>>>> :{}", syncMsg);
+
+        return ResultUtil.getSuccess();
+    }
 
     @Override
     @LogError(value = "消息回调列表")

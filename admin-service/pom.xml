@@ -136,9 +136,24 @@
             <artifactId>activeio-core</artifactId>
         </dependency>
 
+
+        <!-- 文件上传 -->
         <dependency>
             <groupId>com.coderman</groupId>
             <artifactId>base-aliyun-oss</artifactId>
+        </dependency>
+
+
+        <!-- 邮箱 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- 消息回调 -->
+        <dependency>
+            <groupId>com.coderman</groupId>
+            <artifactId>base-sync-callback</artifactId>
         </dependency>
 
 

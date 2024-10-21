@@ -5,6 +5,7 @@ import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.sync.dto.CallbackPageDTO;
 import com.coderman.admin.sync.dto.CallbackRepeatDTO;
 import com.coderman.admin.sync.model.CallbackModel;
+import com.coderman.callback.SyncMsg;
 
 import java.util.List;
 
@@ -24,4 +25,11 @@ public interface CallbackService {
      * @return
      */
     ResultVO<Void> repeatCallback(CallbackRepeatDTO callbackRepeatDTO);
+
+    /**
+     * 新增用户回调
+     * @param syncMsg
+     * @return
+     */
+    public ResultVO<Void> insertUserCallback(SyncMsg syncMsg);
 }

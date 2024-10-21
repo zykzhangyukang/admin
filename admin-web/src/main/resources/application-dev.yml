@@ -13,10 +13,10 @@ spring:
   task:
     scheduling:
       pool:
-        size: 4
+        size: 2
 
 sync:
-  # 回调&&发送库
+  # 回调库&&发送库
   db:
     pub-mq-message: admin_dev
     pub-callback: admin_dev_sync
@@ -33,7 +33,7 @@ sync:
     username: elastic
     password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
-  mq: activemq
+  mq: rocketmq
   rocketmq:
     instantName: SYNC_INSTANT
     namesrvAddr: 47.115.42.112:9876
@@ -55,8 +55,8 @@ sync:
   # 同步回调配置
   callback:
     destList:
-      - project: sync
-        url: http://127.0.0.1:8787
+      - project: admin
+        url: http://127.0.0.1:8989
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20
@@ -119,4 +119,4 @@ logging:
   level:
     root: info
     com.coderman: info
-    com.coderman.admin.dao: error
+    com.coderman.admin.dao: debug

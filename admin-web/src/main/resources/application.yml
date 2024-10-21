@@ -1,3 +1,21 @@
+# email
+spring:
+  mail:
+    host: smtp.163.com
+    username: 15079437282@163.com
+    password: DES@29D767F015838695301024B0F791AD095F2EC4A83FE5B5FD
+    default-encoding: utf-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+        debug: false
+
+# mybatis
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

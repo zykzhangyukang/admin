@@ -40,6 +40,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -118,10 +119,10 @@ public class CallBackExecutor {
         this.httpClientBuilder.evictIdleConnections(3, TimeUnit.SECONDS);
 
         // 初始化回调地址
-        initCallbackUrl();
+        this.initCallbackUrl();
 
         // 节点可用性线程启动
-        initCheckNodeThread();
+        this.initCheckNodeThread();
     }
 
     private void initCallbackUrl() {

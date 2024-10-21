@@ -1,6 +1,5 @@
 package com.coderman.admin.sync.config;
 
-import com.coderman.admin.jobhandler.TianTianFundHandler;
 import com.coderman.admin.sync.jobhandler.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,14 +28,6 @@ public class SchedulingConfig {
     private UpdateSuccessHandler updateSuccessHandler;
     @Resource
     private CallbackHandler callbackHandler;
-    @Resource
-    private TianTianFundHandler tianTianFundHandler;
-
-    @Scheduled(cron = "*/10 * * * * ?")
-    public void tianTianFundRefreshHandler(){
-
-        this.tianTianFundHandler.execute(StringUtils.EMPTY);
-    }
 
     @Scheduled(cron = "0 */5 * * * ?")
     public void repeatSyncHandler() {

@@ -316,17 +316,12 @@
   <sql id="pageWhere">
     <where>
       user_id = #{userId}
-      <choose>
-        <when test="notificationTypes!=null and notificationTypes.size() > 0">
-          and notification_type IN
-          <foreach collection="notificationTypes" item="item" open="(" close=")" separator=",">
-            #{item}
-          </foreach>
-        </when>
-        <otherwise>
-          and 1 = 0
-        </otherwise>
-      </choose>
+      <if test="notificationTypes!=null and notificationTypes.size() > 0">
+        and notification_type IN
+        <foreach collection="notificationTypes" item="item" open="(" close=")" separator=",">
+          #{item}
+        </foreach>
+      </if>
       <if test="isRead!=null">
         and is_read = #{isRead}
       </if>

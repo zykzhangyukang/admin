@@ -54,4 +54,23 @@ public class FundBean {
     public int hashCode() {
         return Objects.hash(fundCode);
     }
+
+
+    @Override
+    public String toString() {
+        return "FundBean{" +
+                "fundCode='" + fundCode + '\'' +
+                ", fundName='" + fundName + '\'' +
+                ", jzrq='" + jzrq + '\'' +
+                ", dwjz='" + dwjz + '\'' +
+                ", gsz='" + gsz + '\'' +
+                ", gszzl='" + gszzl + '\'' +
+                ", gztime='" + gztime + '\'' +
+                ", costPrise='" + costPrise + '\'' +
+                ", bonds='" + bonds + '\'' +
+                ", incomePercent='" + incomePercent + '\'' +
+                ", income='" + income + '\'' +
+                ", todayIncome='" + todayIncome + '\'' +
+                '}';
+    }
 }

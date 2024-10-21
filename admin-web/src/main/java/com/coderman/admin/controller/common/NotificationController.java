@@ -11,10 +11,7 @@ import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -40,13 +37,14 @@ public class NotificationController {
         return this.notificationService.getUnReadCount();
     }
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取消息列表")
-    @GetMapping(value = "/page")
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "获取消息列表")
+    @PostMapping(value = "/page")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "PageVO",value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
             @ApiReturnParam(name = "NotificationVO", value = {"notificationId", "notificationType", "userId","isRead","createTime","data"}),
     })
-    public ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(NotificationPageDTO notificationPageDTO) {
+    public ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(@RequestBody NotificationPageDTO notificationPageDTO) {
         return this.notificationService.getNotificationPage(notificationPageDTO);
     }
 
