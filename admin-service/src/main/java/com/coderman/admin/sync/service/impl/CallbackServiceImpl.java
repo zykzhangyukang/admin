@@ -13,8 +13,6 @@ import com.coderman.api.constant.CommonConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
-import com.coderman.callback.SyncCallback;
-import com.coderman.callback.SyncMsg;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.util.SpringContextUtil;
@@ -39,16 +37,6 @@ import java.util.Map;
 @Slf4j
 public class CallbackServiceImpl implements CallbackService {
 
-
-    @SyncCallback(value = "update_admin_sync_user")
-    @LogError(value = "测试回调消息")
-    @Override
-    public ResultVO<Void> insertUserCallback(SyncMsg syncMsg){
-
-        log.info("回调消息执行>>>>> :{}", syncMsg);
-
-        return ResultUtil.getSuccess();
-    }
 
     @Override
     @LogError(value = "消息回调列表")

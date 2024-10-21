@@ -6,17 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.common.NotificationService;
-import com.coderman.admin.utils.EmailUtil;
 import com.coderman.admin.utils.FundBean;
-import com.coderman.api.constant.RedisDbConstant;
-import com.coderman.redis.service.RedisService;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.JobHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -24,18 +20,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @JobHandler(value = "tianTianFundRefreshHandler")
 @Component
@@ -44,40 +33,6 @@ public class TianTianFundHandler  extends IJobHandler{
 
     @Resource
     private NotificationService notificationService;
-
-    private static final LocalTime MORNING_START = LocalTime.of(9, 30);
-    private static final LocalTime MORNING_END = LocalTime.of(11, 30);
-    private static final LocalTime AFTERNOON_START = LocalTime.of(13, 0);
-    private static final LocalTime AFTERNOON_END = LocalTime.of(15, 0);
-
-    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-    @PostConstruct
-    public void init() {
-
-        Runnable task = () -> {
-            LocalDateTime now = LocalDateTime.now();
-            DayOfWeek dayOfWeek = now.getDayOfWeek();
-            LocalTime currentTime = now.toLocalTime();
-
-            // 判断是否是周一到周五
-            /**
-            if (dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY) {
-                // 判断是否在上午或下午的指定时间段内
-                if ((currentTime.isAfter(MORNING_START) && currentTime.isBefore(MORNING_END)) ||
-                        (currentTime.isAfter(AFTERNOON_START) && currentTime.isBefore(AFTERNOON_END))) {
-
-                    this.execute(StringUtils.EMPTY);
-                }
-            }
-             */
-
-            this.execute(StringUtils.EMPTY);
-        };
-
-        // 每10秒执行一次任务
-        scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
-    }
 
     public static String getHistoryRequest(String url) {
         String result = null;

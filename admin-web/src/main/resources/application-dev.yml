@@ -55,7 +55,7 @@ sync:
   # 同步回调配置
   callback:
     destList:
-      - project: admin
+      - project: sync
         url: http://127.0.0.1:8989
   # 同步系统jdbc配置
   jdbc:
