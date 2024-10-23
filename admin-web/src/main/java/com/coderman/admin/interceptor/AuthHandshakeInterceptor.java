@@ -71,13 +71,13 @@ public class AuthHandshakeInterceptor implements ChannelInterceptor {
         accessor.setUser(new AuthPrincipal(userId));
         if (this.redisService.isSetMember(RedisConstant.WEBSOCKET_USER_SET, String.valueOf(userId), RedisDbConstant.REDIS_DB_DEFAULT)) {
 
-            log.warn("同一个用户:{}, sessionId:{}, 不允许建立多个连接. 已重新连接WebSocket", userId, sessionId);
+            log.warn("userId:{}, sessionId:{}, 重新连接WebSocket", userId, sessionId);
             return message;
         }
 
         // 将用户id存到Redis中
         this.redisService.addToSet(RedisConstant.WEBSOCKET_USER_SET, String.valueOf(userId), RedisDbConstant.REDIS_DB_DEFAULT);
-        log.info("用户:{} 请求建立WebSocket连接, sessionId:{}", userId, sessionId);
+        log.info("userId:{}, sessionId:{}, 请求建立WebSocket连接", userId, sessionId);
 
         return message;
     }

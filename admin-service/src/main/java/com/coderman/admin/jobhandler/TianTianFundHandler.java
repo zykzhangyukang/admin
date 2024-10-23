@@ -6,11 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.common.NotificationService;
+import com.coderman.admin.utils.EmailUtil;
 import com.coderman.admin.utils.FundBean;
 import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.JobHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -103,22 +105,16 @@ public class TianTianFundHandler  extends IJobHandler{
 
         for (String code : codeList) {
             try {
-
-                // 获取当前的净值情况
+                // 当前基金净值
                 FundBean fundBean = this.fetchData(code, codeMap);
                 fundBeans.add(fundBean);
-
-                // log.info(getMessage(fundBean));
-
-                // 获取历史的净值情况
-                // Map<String, BigDecimal> map = this.fetchHistoryData(code);
-                // log.info("历史净值:{}", map);
 
             } catch (Exception e) {
                 log.error("处理基金编码 [{}] 时发生异常: {}", code, e.getMessage(), e);
             }
         }
-        // log.info("================================================");
+
+        this.printLogInfo(fundBeans);
 
         NotificationDTO msg = NotificationDTO.builder()
                 .title("基金收益提醒")
@@ -210,15 +206,21 @@ public class TianTianFundHandler  extends IJobHandler{
     }
 
 
-    public static String getMessage(FundBean fund) {
-        return "基金信息: " + String.format("[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益: %s, 今日收益: %s] ",
-                fund.getFundCode(),
-                fund.getFundName(),
-                fund.getGsz(),
-                fund.getGszzl() != null ? (fund.getGszzl().startsWith("-") ? fund.getGszzl() : "+" + fund.getGszzl()) + "%" : "--",
-                fund.getGztime() != null ? fund.getGztime() : "--",
-                fund.getIncome() != null ? fund.getIncome() : "--",
-                fund.getTodayIncome() != null ? fund.getTodayIncome() : "--"
-        );
+    private  void printLogInfo(List<FundBean> fundBeanList) {
+        if(CollectionUtils.isEmpty(fundBeanList)){
+            return;
+        }
+        for (FundBean fund : fundBeanList) {
+            String msg = String.format("[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益: %s, 今日收益: %s] ",
+                    fund.getFundCode(),
+                    fund.getFundName(),
+                    fund.getGsz(),
+                    fund.getGszzl() != null ? (fund.getGszzl().startsWith("-") ? fund.getGszzl() : "+" + fund.getGszzl()) + "%" : "--",
+                    fund.getGztime() != null ? fund.getGztime() : "--",
+                    fund.getIncome() != null ? fund.getIncome() : "--",
+                    fund.getTodayIncome() != null ? fund.getTodayIncome() : "--");
+            log.info(msg);
+        }
+        log.info("================================================================================================================================================");
     }
 }
