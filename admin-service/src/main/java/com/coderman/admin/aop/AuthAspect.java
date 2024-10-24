@@ -56,9 +56,14 @@ public class AuthAspect {
      * 无需拦截的url且有登录信息
      */
     public static List<String> unFilterHasLoginInfoUrl = new ArrayList<>();
-
+    /**
+     * 资源api
+     */
     @Resource
     private RescService rescApi;
+    /**
+     * 用户api
+     */
     @Resource
     private UserService userApi;
 
@@ -87,15 +92,19 @@ public class AuthAspect {
     public void init() {
 
         // 白名单URL
-        whiteListUrl.addAll(Arrays.asList("/auth/user/token", "/auth/user/refresh/token", "/auth/user/logout","/auth/const/all"));
+        whiteListUrl.addAll(Arrays.asList(
+                "/auth/user/token"
+                , "/auth/user/refresh/token"
+                , "/auth/user/logout"));
 
         // 无需拦截且有会话信息URL
         unFilterHasLoginInfoUrl.addAll(Arrays.asList(
                 "/auth/user/info"
-                ,"/auth/user/permission"
-                ,"/auth/notification/count"
-                ,"/auth/notification/read"
-                , "/auth/notification/page"));
+                , "/auth/user/permission"
+                , "/common/notification/count"
+                , "/common/notification/read"
+                , "/common/notification/page"
+                , "/common/const/all"));
 
         // 刷新系统资源
         refreshSystemAllRescMap();
@@ -119,7 +128,6 @@ public class AuthAspect {
 
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         HttpServletResponse response = HttpContextUtil.getHttpServletResponse();
-
         String path = request.getServletPath();
 
         // 白名单直接放行
@@ -130,16 +138,13 @@ public class AuthAspect {
 
         // 访问令牌
         String token = AuthUtil.getAccessToken();
-
         if (StringUtils.isBlank(token)) {
-
             response.setStatus(ResultConstant.RESULT_CODE_401);
             return null;
         }
 
         // 系统不存在的资源直接返回
         if (!systemAllResourceMap.containsKey(path) && !unFilterHasLoginInfoUrl.contains(path)) {
-
             response.setStatus(ResultConstant.RESULT_CODE_404);
             return null;
         }
@@ -183,7 +188,6 @@ public class AuthAspect {
 
 
         if (CollectionUtils.isNotEmpty(myRescIds)) {
-
             for (Integer rescId : rescIds) {
                 if (myRescIds.contains(rescId)) {
 

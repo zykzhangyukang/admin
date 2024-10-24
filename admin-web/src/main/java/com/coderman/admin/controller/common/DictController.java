@@ -14,6 +14,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -29,6 +30,7 @@ import java.util.Set;
 @Api(value = "字典接口", tags = "字典接口")
 @RestController
 @Slf4j
+@RequestMapping(value = "/common/const")
 public class DictController {
 
     @Resource
@@ -40,7 +42,7 @@ public class DictController {
      * @return
      */
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "常量列表")
-    @GetMapping(value = "/auth/const/all")
+    @GetMapping(value = "/all")
     @SuppressWarnings("unchecked")
     public ResultVO<Map<String, List<ConstItems>>> constAll() {
 

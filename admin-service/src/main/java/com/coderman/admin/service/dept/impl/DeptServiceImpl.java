@@ -1,11 +1,11 @@
-package com.coderman.admin.service.common.impl;
+package com.coderman.admin.service.dept.impl;
 
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.dao.dept.DeptDAO;
 import com.coderman.admin.model.dept.DeptExample;
 import com.coderman.admin.model.dept.DeptModel;
-import com.coderman.admin.service.common.DeptService;
+import com.coderman.admin.service.dept.DeptService;
 import com.coderman.service.anntation.LogError;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;

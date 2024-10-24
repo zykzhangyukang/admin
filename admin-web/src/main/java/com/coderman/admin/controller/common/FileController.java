@@ -20,7 +20,7 @@ import javax.annotation.Resource;
  */
 @Api(value = "文件上传", tags = "文件上传")
 @RestController
-@RequestMapping(value = "/auth/file")
+@RequestMapping(value = "/common/file")
 public class FileController {
 
     @Resource

@@ -1,7 +1,6 @@
 package com.coderman.admin.controller.common;
 
 import com.coderman.admin.dto.common.NotificationPageDTO;
-import com.coderman.admin.model.common.NotificationModel;
 import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.vo.common.NotificationVO;
 import com.coderman.api.vo.PageVO;
@@ -22,8 +21,8 @@ import java.util.List;
  */
 @Api(value = "消息通知", tags = "消息通知")
 @RestController
-@RequestMapping(value = "/auth/notification")
-public class NotificationController {
+@RequestMapping(value = "/common/notification")
+public class NotifyController {
 
     @Resource
     private NotificationService notificationService;
