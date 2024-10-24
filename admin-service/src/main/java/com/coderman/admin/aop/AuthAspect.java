@@ -95,16 +95,20 @@ public class AuthAspect {
         whiteListUrl.addAll(Arrays.asList(
                 "/auth/user/token"
                 , "/auth/user/refresh/token"
-                , "/auth/user/logout"));
+                , "/auth/user/logout"
+        ));
 
         // 无需拦截且有会话信息URL
         unFilterHasLoginInfoUrl.addAll(Arrays.asList(
                 "/auth/user/info"
                 , "/auth/user/permission"
+                , "/common/const/all"
                 , "/common/notification/count"
                 , "/common/notification/read"
                 , "/common/notification/page"
-                , "/common/const/all"));
+                , "/common/fund/list"
+                , "/common/fund/history"
+        ));
 
         // 刷新系统资源
         refreshSystemAllRescMap();
@@ -207,11 +211,11 @@ public class AuthAspect {
     @RedisChannelListener(channelName = RedisConstant.CHANNEL_REFRESH_RESC)
     public void doRefresh(String msgContent) {
 
-        log.warn("doRefresh start - > {}" ,msgContent);
+        log.warn("doRefresh start - > {}", msgContent);
 
         // 刷新系统资源
         this.refreshSystemAllRescMap();
 
-        log.warn("doRefresh end - > {}" ,msgContent);
+        log.warn("doRefresh end - > {}", msgContent);
     }
 }
