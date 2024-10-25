@@ -166,7 +166,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                     .message("欢迎您登录系统, 当前时间:" + DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"))
                     .url("/dashboard")
                     .type(NotificationConstant.NOTIFICATION_LOGIN_WELCOME)
-                    .isPop(false).build();
+                    .build();
             this.notificationService.saveNotifyToUser(msg);
 
             TokenResultVO response = TokenResultVO.builder()

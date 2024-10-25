@@ -41,6 +41,10 @@ public class FundJobHandler {
     @Scheduled(cron = "*/10 * * * * ?")
     public void refreshFundData() {
 
+        if (!isOpen(LocalDateTime.now())) {
+            return;
+        }
+
         List<FundBean> fundBeans = this.fundService.getListData();
         if (CollectionUtils.isEmpty(fundBeans)) {
             return;
@@ -48,7 +52,6 @@ public class FundJobHandler {
 
         // 保存到redis
         this.saveToRedis(fundBeans);
-
         // 打印日志
         this.printLog(fundBeans);
 
@@ -57,14 +60,11 @@ public class FundJobHandler {
                 .message(JSON.toJSONString(fundBeans))
                 .url("/dashboard")
                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
-                .isPop(false).build();
+                .build();
         this.notificationService.sendToTopic(msg);
     }
 
     private void saveToRedis(List<FundBean> fundBeans) {
-        if (!isOpen(LocalDateTime.now())) {
-            return;
-        }
 
         for (FundBean fund : fundBeans) {
 
