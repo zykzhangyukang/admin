@@ -13,7 +13,6 @@ public interface FundService {
      * @return
      */
     List<FundBean> getListData();
-
     /**
      * 获取历史净值
      * @param currentPage
