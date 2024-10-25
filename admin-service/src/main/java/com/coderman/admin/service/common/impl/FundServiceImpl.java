@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.utils.FundBean;
+import com.coderman.admin.utils.HttpClientUtil;
+import com.coderman.api.util.ResultUtil;
 import com.coderman.service.anntation.LogError;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -62,68 +65,54 @@ public class FundServiceImpl implements FundService {
 
     @Override
     @LogError(value = "获取历史净值")
-    public JSONObject getHistoryData(Integer currentPage, Integer pageSize, String code) {
+    public JSONObject getHistoryData(Integer currentPage, Integer pageSize, String code) throws IOException {
 
         currentPage = Optional.ofNullable(currentPage).orElse(1);
         pageSize = Optional.ofNullable(pageSize).orElse(20);
 
-        String url = "https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code +
-                "&pageIndex="+currentPage+"&pageSize="+pageSize+"&startDate=&endDate=&_=" + System.currentTimeMillis();
+        Map<String,String> headers = Maps.newHashMap();
 
-        String jsonpResponse = null;
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+        headers.put("accept", "*/*");
+        headers.put("accept-language", "zh-CN,zh;q=0.9,en;q=0.8");
+        headers.put("cache-control", "no-cache");
+        headers.put("pragma", "no-cache");
+        headers.put("sec-ch-ua", "\"Google Chrome\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"");
+        headers.put("sec-ch-ua-mobile", "?0");
+        headers.put("sec-ch-ua-platform", "\"Windows\"");
+        headers.put("sec-fetch-dest", "script");
+        headers.put("sec-fetch-mode", "no-cors");
+        headers.put("sec-fetch-site", "same-site");
+        headers.put("referer", "https://fundf10.eastmoney.com/");
+        headers.put("referrerPolicy", "strict-origin-when-cross-origin");
 
-            HttpGet request = new HttpGet(url);
-            // 设置请求头
-            request.setHeader("accept", "*/*");
-            request.setHeader("accept-language", "zh-CN,zh;q=0.9,en;q=0.8");
-            request.setHeader("cache-control", "no-cache");
-            request.setHeader("pragma", "no-cache");
-            request.setHeader("sec-ch-ua", "\"Google Chrome\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"");
-            request.setHeader("sec-ch-ua-mobile", "?0");
-            request.setHeader("sec-ch-ua-platform", "\"Windows\"");
-            request.setHeader("sec-fetch-dest", "script");
-            request.setHeader("sec-fetch-mode", "no-cors");
-            request.setHeader("sec-fetch-site", "same-site");
-            request.setHeader("referer", "https://fundf10.eastmoney.com/");
-            request.setHeader("referrerPolicy", "strict-origin-when-cross-origin");
+        String result = HttpClientUtil.doGet("https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code +
+                        "&pageIndex=" + currentPage + "&pageSize=" + pageSize + "&startDate=&endDate=&_=" + System.currentTimeMillis(),
+                headers
+        );
 
-            // 执行请求
-            HttpResponse response = httpClient.execute(request);
-            jsonpResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
-        } catch (IOException e) {
-            log.error("HTTP请求失败: {}", e.getMessage());
-        }
+        Assert.notNull(result , "获取数据错误!");
 
-        Assert.notNull(jsonpResponse , "获取数据错误!");
+        int startIndex = result.indexOf('(') + 1;
+        int endIndex = result.lastIndexOf(')');
 
-        int startIndex = jsonpResponse.indexOf('(') + 1;
-        int endIndex = jsonpResponse.lastIndexOf(')');
-
-        String jsonResponse = jsonpResponse.substring(startIndex, endIndex);
+        String jsonResponse = result.substring(startIndex, endIndex);
         JSONObject jsonObject = JSON.parseObject(jsonResponse);
         return jsonObject.getJSONObject("Data");
     }
 
+    @Override
+    public List<JSONObject> getSearchData() throws IOException {
+        String result = HttpClientUtil.doGet("http://fund.eastmoney.com/js/fundcode_search.js", Maps.newHashMap());
+        Assert.notNull(result, "获取数据错误!");
+        return Lists.newArrayList();
+    }
 
-    private FundBean fetchListData(String code, Map<String, String[]> codeMap) {
+
+    private FundBean fetchListData(String code, Map<String, String[]> codeMap) throws IOException {
 
         FundBean bean = null;
 
-        String url = "http://fundgz.1234567.com.cn/js/" + code + ".js?rt=" + System.currentTimeMillis();
-        String result = null;
-        // 创建一个HttpClient实例
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-
-            // 创建一个GET请求
-            HttpGet request = new HttpGet(url);
-            // 执行请求
-            HttpResponse response = httpClient.execute(request);
-            // 获取响应内容
-            result = EntityUtils.toString(response.getEntity(), "UTF-8");
-        } catch (IOException e) {
-            log.error("HTTP请求失败: {}", e.getMessage());
-        }
+        String result = HttpClientUtil.doGet("http://fundgz.1234567.com.cn/js/" + code + ".js?rt=" + System.currentTimeMillis(), Maps.newHashMap());
         Assert.notNull(result, "获取数据错误!");
 
         String json = result.substring(8, result.length() - 2);

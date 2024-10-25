@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.utils.FundBean;
 import com.coderman.api.util.ResultUtil;
-import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -42,6 +42,16 @@ public class FundController {
         return ResultUtil.getSuccessList(FundBean.class, list);
     }
 
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "基金搜索")
+    @GetMapping(value = "/search")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<List<JSONObject>> getSearchData() throws IOException {
+        List<JSONObject> list = this.fundService.getSearchData();
+        return ResultUtil.getSuccessList(JSONObject.class, list);
+    }
+
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取历史净值")
     @GetMapping(value = "/history")
@@ -49,7 +59,7 @@ public class FundController {
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
     })
-    public ResultVO<JSONObject> getHistoryData(Integer currentPage, Integer pageSize, String code) {
+    public ResultVO<JSONObject> getHistoryData(Integer currentPage, Integer pageSize, String code) throws IOException {
         JSONObject jsonObject = this.fundService.getHistoryData(currentPage, pageSize, code);
         return ResultUtil.getSuccess(JSONObject.class, jsonObject);
     }

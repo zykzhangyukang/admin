@@ -3,6 +3,7 @@ package com.coderman.admin.service.common;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.utils.FundBean;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface FundService {
@@ -20,5 +21,13 @@ public interface FundService {
      * @param code
      * @return
      */
-    JSONObject getHistoryData(Integer currentPage, Integer pageSize, String code);
+    JSONObject getHistoryData(Integer currentPage, Integer pageSize, String code) throws IOException;
+
+    /**
+     * 基金搜索
+     *
+     * @return
+     */
+    List<JSONObject> getSearchData() throws IOException;
+
 }

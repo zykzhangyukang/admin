@@ -96,6 +96,9 @@ public class AuthAspect {
                 "/auth/user/token"
                 , "/auth/user/refresh/token"
                 , "/auth/user/logout"
+                , "/common/fund/list"
+                , "/common/fund/history"
+                , "/common/fund/search"
         ));
 
         // 无需拦截且有会话信息URL
@@ -106,8 +109,6 @@ public class AuthAspect {
                 , "/common/notification/count"
                 , "/common/notification/read"
                 , "/common/notification/page"
-                , "/common/fund/list"
-                , "/common/fund/history"
         ));
 
         // 刷新系统资源
