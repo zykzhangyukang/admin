@@ -5,8 +5,8 @@ spring:
     name: admin
   datasource:
     username: root
-    url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-    password: zhangyukang
+    url: jdbc:mysql://47.115.42.112:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    password: DES@99D5518076FE8F32214D66F4B59766B7
   redis:
     host: 127.0.0.1
     port: 6379
@@ -75,14 +75,14 @@ sync:
     dbList:
 
       - dbname: admin_dev
-        url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        url: jdbc:mysql://47.115.42.112:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
-        password: zhangyukang
+        password: DES@99D5518076FE8F32214D66F4B59766B7
 
       - dbname: admin_dev_sync
-        url: jdbc:mysql://127.0.0.1:3306/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        url: jdbc:mysql://47.115.42.112:3306/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
-        password: zhangyukang
+        password: DES@99D5518076FE8F32214D66F4B59766B7
 
 #    - dbname:  ecp_cart_dev
 #      url: 127.0.0.1:27017
