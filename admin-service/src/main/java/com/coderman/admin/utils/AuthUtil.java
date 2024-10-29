@@ -12,9 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 
 /**
  * @author zhangyukang
@@ -119,9 +121,11 @@ public class AuthUtil {
 
         // 尝试从cookie中获取
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if(StringUtils.equals(cookie.getName() , "ACCESS_TOKEN")){
-                return cookie.getValue();
+        if(cookies!=null && cookies.length > 0){
+            for (Cookie cookie : cookies) {
+                if(StringUtils.equals(cookie.getName() , "ACCESS_TOKEN")){
+                    return cookie.getValue();
+                }
             }
         }
         return null;
