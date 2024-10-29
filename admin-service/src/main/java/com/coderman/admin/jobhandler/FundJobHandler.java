@@ -1,6 +1,7 @@
 package com.coderman.admin.jobhandler;
 
 import com.alibaba.fastjson.JSON;
+import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.common.FundService;
@@ -10,18 +11,19 @@ import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 
 @Component
@@ -34,6 +36,39 @@ public class FundJobHandler {
     private FundService fundService;
     @Resource
     private RedisService redisService;
+
+    /**
+     * 监控数据推送
+     */
+    @Scheduled(cron = "*/10 * * * * ?")
+    public void notifyFundData() {
+
+        List<FundBean> resultList = Lists.newArrayList();
+        for (String str : FundConstant.FUND_CODE_LIST) {
+
+            // 解析基金编号
+            String[] strArray = str.contains(",") ? str.split(",") : new String[]{str};
+            String redisKey = "TIME_SERIES_KEY_" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+
+            // 获取最新的一条数据
+            Set<FundBean> fundBeans = this.redisService.zRevRange(redisKey, FundBean.class, 0, 1, RedisDbConstant.REDIS_DB_DEFAULT);
+            if (CollectionUtils.isNotEmpty(fundBeans)) {
+                resultList.addAll(fundBeans);
+            }
+        }
+
+        // 推送消息
+        NotificationDTO msg = NotificationDTO.builder()
+                .title("基金收益提醒")
+                .message(JSON.toJSONString(resultList))
+                .url("/dashboard")
+                .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
+                .build();
+        this.notificationService.sendToTopic(msg);
+
+        // 打印日志
+        this.printLog(resultList);
+    }
 
     /**
      * 刷新基金实时走势
@@ -50,18 +85,8 @@ public class FundJobHandler {
             return;
         }
 
-        // 保存到redis
+        // 持久化到redis
         this.saveToRedis(fundBeans);
-        // 打印日志
-        this.printLog(fundBeans);
-
-        NotificationDTO msg = NotificationDTO.builder()
-                .title("基金收益提醒")
-                .message(JSON.toJSONString(fundBeans))
-                .url("/dashboard")
-                .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
-                .build();
-        this.notificationService.sendToTopic(msg);
     }
 
     private void saveToRedis(List<FundBean> fundBeans) {
@@ -69,8 +94,7 @@ public class FundJobHandler {
         for (FundBean fund : fundBeans) {
 
             String redisKey = "TIME_SERIES_KEY_" + fund.getFundCode() + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
-            // 将字符串时间转换为时间戳
-            long timestamp = convertToTimestamp(fund.getGztime());
+            long timestamp = new Date().getTime() / 1000;
 
             this.redisService.zSetAdd(redisKey, fund , timestamp,RedisDbConstant.REDIS_DB_DEFAULT);
         }
@@ -92,16 +116,6 @@ public class FundJobHandler {
             log.info(msg);
         }
         log.info("=========================================================================================================================================================");
-    }
-
-    private long convertToTimestamp(String timeString) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        try {
-            Date date = sdf.parse(timeString);
-            return date.getTime() / 1000; // 转换为秒级时间戳
-        } catch (ParseException e) {
-            throw new RuntimeException("时间格式不正确：" + timeString, e);
-        }
     }
 
     public static boolean isOpen(LocalDateTime dateTime) {

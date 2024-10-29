@@ -11,7 +11,9 @@ import com.coderman.service.util.SpringContextUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.Assert;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -38,7 +40,7 @@ public class AuthUtil {
         } else {
 
             // 如果用户的token存在，则尝试从redis中获取
-            String token = getAccessToken();
+            String token = getToken();
 
             if (StringUtils.isNotBlank(token)) {
 
@@ -104,14 +106,24 @@ public class AuthUtil {
      *
      * @return
      */
-    public static String getAccessToken() {
+    public static String getToken() {
 
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
+        Assert.notNull(request, "request is null");
+
+        // 先从请求头中获取
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (token != null && token.startsWith("Bearer ")) {
             return token.substring(7);
         }
 
+        // 尝试从cookie中获取
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            if(StringUtils.equals(cookie.getName() , "ACCESS_TOKEN")){
+                return cookie.getValue();
+            }
+        }
         return null;
     }
 }

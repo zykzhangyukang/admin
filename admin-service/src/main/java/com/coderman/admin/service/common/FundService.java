@@ -21,7 +21,6 @@ public interface FundService {
      * @return
      */
     JSONObject getHistoryData(Integer currentPage, Integer pageSize, String code) throws IOException;
-
     /**
      * 基金搜索
      *

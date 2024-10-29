@@ -2,12 +2,8 @@ package com.coderman.admin.utils;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Objects;
 
 @Data
 public class FundBean {
@@ -41,20 +37,6 @@ public class FundBean {
             }
         }
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FundBean fundBean = (FundBean) o;
-        return Objects.equals(fundCode, fundBean.fundCode);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fundCode);
-    }
-
 
     @Override
     public String toString() {

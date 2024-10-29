@@ -2,6 +2,7 @@ package com.coderman.admin.service.common.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.utils.FundBean;
 import com.coderman.admin.utils.HttpClientUtil;
@@ -36,11 +37,7 @@ public class FundServiceImpl implements FundService {
     @LogError(value = "基金列表")
     public List<FundBean> getListData() {
 
-        List<String> codes = Lists.newArrayList();
-
-        codes.add("161725,0.8965,24740.72");
-        codes.add("008888,1.0340,2417.79");
-        codes.add("007690,1.5868,1575.50");
+        List<String> codes = FundConstant.FUND_CODE_LIST;
 
         List<String> codeList = new ArrayList<>();
         Map<String, String[]> codeMap = new HashMap<>();

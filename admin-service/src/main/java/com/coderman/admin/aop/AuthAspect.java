@@ -7,6 +7,7 @@ import com.coderman.admin.utils.AuthUtil;
 import com.coderman.admin.vo.user.AuthUserVO;
 import com.coderman.api.constant.AopConstant;
 import com.coderman.api.constant.ResultConstant;
+import com.coderman.api.exception.BusinessException;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.service.util.HttpContextUtil;
 import com.google.common.cache.Cache;
@@ -27,7 +28,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -132,7 +132,6 @@ public class AuthAspect {
     public Object around(ProceedingJoinPoint point) throws Throwable {
 
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
-        HttpServletResponse response = HttpContextUtil.getHttpServletResponse();
         String path = request.getServletPath();
 
         // 白名单直接放行
@@ -142,23 +141,19 @@ public class AuthAspect {
         }
 
         // 访问令牌
-        String token = AuthUtil.getAccessToken();
+        String token = AuthUtil.getToken();
         if (StringUtils.isBlank(token)) {
-            response.setStatus(ResultConstant.RESULT_CODE_401);
-            return null;
+            throw new BusinessException(ResultConstant.RESULT_CODE_401, "用户未登录，请先登录!");
         }
-
         // 系统不存在的资源直接返回
         if (!systemAllResourceMap.containsKey(path) && !unFilterHasLoginInfoUrl.contains(path)) {
-            response.setStatus(ResultConstant.RESULT_CODE_404);
-            return null;
+            throw new BusinessException(ResultConstant.RESULT_CODE_404 , "您访问的接口不存在!");
         }
 
         // 用户信息
         AuthUserVO authUserVO = null;
         try {
             authUserVO = USER_TOKEN_CACHE_MAP.get(token, () -> {
-
                 log.debug("尝试从redis中获取用户信息结果.token:{}", token);
                 return userApi.getUserByToken(token);
             });
@@ -167,15 +162,10 @@ public class AuthAspect {
             log.error("尝试从redis中获取用户信息结果失败:{}", e.getMessage());
         }
 
-
         if (authUserVO == null || System.currentTimeMillis() > authUserVO.getExpiredTime()) {
-
             USER_TOKEN_CACHE_MAP.invalidate(token);
-            assert response != null;
-            response.setStatus(ResultConstant.RESULT_CODE_401);
-            return null;
+            throw new BusinessException(ResultConstant.RESULT_CODE_401, "用户未登录，请先登录!");
         }
-
 
         // 不需要过滤的url且有登入信息,设置会话后直接放行
         if (unFilterHasLoginInfoUrl.contains(path)) {
@@ -191,7 +181,6 @@ public class AuthAspect {
             rescIds = new HashSet<>(systemAllResourceMap.get(path));
         }
 
-
         if (CollectionUtils.isNotEmpty(myRescIds)) {
             for (Integer rescId : rescIds) {
                 if (myRescIds.contains(rescId)) {
@@ -203,20 +192,17 @@ public class AuthAspect {
 
         }
 
-
-        assert response != null;
-        response.setStatus(ResultConstant.RESULT_CODE_403);
-        return null;
+        throw new BusinessException(ResultConstant.RESULT_CODE_403 , "接口无权限");
     }
 
     @RedisChannelListener(channelName = RedisConstant.CHANNEL_REFRESH_RESC)
-    public void doRefresh(String msgContent) {
+    public void doRefreshResc(String msgContent) {
 
-        log.warn("doRefresh start - > {}", msgContent);
+        log.warn("doRefreshResc start - > {}", msgContent);
 
         // 刷新系统资源
         this.refreshSystemAllRescMap();
 
-        log.warn("doRefresh end - > {}", msgContent);
+        log.warn("doRefreshResc end - > {}", msgContent);
     }
 }
