@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Api(value = "基金模块接口", tags = "基金模块接口")
 @RestController
-@RequestMapping(value = "/common/fund")
+@RequestMapping(value = "/trade/fund")
 public class FundController {
 
     @Resource

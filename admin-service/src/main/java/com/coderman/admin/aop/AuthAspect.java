@@ -96,9 +96,6 @@ public class AuthAspect {
                 "/auth/user/token"
                 , "/auth/user/refresh/token"
                 , "/auth/user/logout"
-                , "/common/fund/list"
-                , "/common/fund/history"
-                , "/common/fund/search"
         ));
 
         // 无需拦截且有会话信息URL
