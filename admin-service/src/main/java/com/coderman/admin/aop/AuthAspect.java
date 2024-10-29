@@ -157,9 +157,7 @@ public class AuthAspect {
                 log.debug("尝试从redis中获取用户信息结果.token:{}", token);
                 return userApi.getUserByToken(token);
             });
-        } catch (Exception e) {
-
-            log.error("尝试从redis中获取用户信息结果失败:{}", e.getMessage());
+        } catch (Exception ignore) {
         }
 
         if (authUserVO == null || System.currentTimeMillis() > authUserVO.getExpiredTime()) {
