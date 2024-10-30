@@ -108,7 +108,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -126,12 +126,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.coderman.admin.model.common.NotificationModel">
-    insert into auth_notification (notification_id, notification_type, 
-      user_id, read_time, is_read, 
+    insert into auth_notification (notification_id, notification_type,
+      user_id, read_time, is_read,
       create_time, update_time, data
       )
-    values (#{notificationId,jdbcType=INTEGER}, #{notificationType,jdbcType=VARCHAR}, 
-      #{userId,jdbcType=INTEGER}, #{readTime,jdbcType=TIMESTAMP}, #{isRead,jdbcType=BIT}, 
+    values (#{notificationId,jdbcType=INTEGER}, #{notificationType,jdbcType=VARCHAR},
+      #{userId,jdbcType=INTEGER}, #{readTime,jdbcType=TIMESTAMP}, #{isRead,jdbcType=BIT},
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{data,jdbcType=LONGVARCHAR}
       )
   </insert>
@@ -316,12 +316,20 @@
   <sql id="pageWhere">
     <where>
       user_id = #{userId}
-      <if test="notificationTypes!=null and notificationTypes.size() > 0">
-        and notification_type IN
-        <foreach collection="notificationTypes" item="item" open="(" close=")" separator=",">
-          #{item}
-        </foreach>
+      <if test="module!=null and module!='all' ">
+        <choose>
+          <when test="notificationTypes!=null and notificationTypes.size() > 0">
+            and notification_type IN
+            <foreach collection="notificationTypes" item="item" open="(" close=")" separator=",">
+              #{item}
+            </foreach>
+          </when>
+          <otherwise>
+            and 1 = 0
+          </otherwise>
+        </choose>
       </if>
+
       <if test="isRead!=null">
         and is_read = #{isRead}
       </if>

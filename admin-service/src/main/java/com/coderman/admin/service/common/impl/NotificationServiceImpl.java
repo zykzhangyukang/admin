@@ -133,11 +133,13 @@ public class NotificationServiceImpl implements NotificationService {
     public ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(@LogErrorParam NotificationPageDTO notificationPageDTO) {
 
         Map<String, Object> conditionMap = new HashMap<>(5);
+        Assert.hasText(notificationPageDTO.getModule() , "请选择消息模块！");
 
         Integer currentPage = notificationPageDTO.getCurrentPage();
         Integer pageSize = notificationPageDTO.getPageSize();
 
         conditionMap.put("userId", AuthUtil.getUserId());
+        conditionMap.put("module", notificationPageDTO.getModule());
 
         if (StringUtils.isNotBlank(notificationPageDTO.getModule())) {
             conditionMap.put("notificationTypes", NotificationConstant.NOTIFICATION_MAP.get(notificationPageDTO.getModule()));

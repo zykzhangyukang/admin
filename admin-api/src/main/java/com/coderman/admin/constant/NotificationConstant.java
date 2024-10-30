@@ -48,4 +48,12 @@ public interface NotificationConstant {
     public static final String NOTIFICATION_LOGIN_WELCOME = "login_welcome";
     @ConstList(group = "notification_type",name = "基金收益提醒")
     public static final String NOTIFICATION_FUND_TIPS = "fund_tips";
+
+    /**
+     * 消息是否已读
+     */
+    @ConstList(group = "is_read",name = "已读")
+    public static final Integer IS_READ = 1;
+    @ConstList(group = "is_read",name = "未读")
+    public static final Integer IS_UNREAD = 0;
 }
