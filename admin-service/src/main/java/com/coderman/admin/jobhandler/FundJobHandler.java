@@ -11,16 +11,18 @@ import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -46,15 +48,18 @@ public class FundJobHandler {
         List<FundBean> resultList = Lists.newArrayList();
         for (String str : FundConstant.FUND_CODE_LIST) {
 
-            // 解析基金编号
             String[] strArray = str.contains(",") ? str.split(",") : new String[]{str};
             String redisKey = "TIME_SERIES_KEY_" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
 
             // 获取最新的一条数据
-            Set<FundBean> fundBeans = this.redisService.zRevRange(redisKey, FundBean.class, 0, 1, RedisDbConstant.REDIS_DB_DEFAULT);
+            Set<FundBean> fundBeans = this.redisService.zRevRange(redisKey, FundBean.class, 0, 0, RedisDbConstant.REDIS_DB_DEFAULT);
             if (CollectionUtils.isNotEmpty(fundBeans)) {
                 resultList.addAll(fundBeans);
             }
+        }
+
+        if(CollectionUtils.isEmpty(resultList)){
+            return;
         }
 
         // 推送消息
@@ -65,9 +70,6 @@ public class FundJobHandler {
                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
                 .build();
         this.notificationService.sendToTopic(msg);
-
-        // 打印日志
-        this.printLog(resultList);
     }
 
     /**
@@ -79,25 +81,28 @@ public class FundJobHandler {
         if (!isOpen(LocalDateTime.now())) {
             return;
         }
-
         List<FundBean> fundBeans = this.fundService.getListData();
         if (CollectionUtils.isEmpty(fundBeans)) {
             return;
         }
-
         // 持久化到redis
-        this.saveToRedis(fundBeans);
+         this.saveToRedis(fundBeans);
+        // 打印日志
+        this.printLog(fundBeans);
     }
 
-    private void saveToRedis(List<FundBean> fundBeans) {
+    private List<Boolean> saveToRedis(List<FundBean> fundBeans) {
 
+        List<Boolean> result = Lists.newArrayList();
         for (FundBean fund : fundBeans) {
 
             String redisKey = "TIME_SERIES_KEY_" + fund.getFundCode() + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
             long timestamp = new Date().getTime() / 1000;
 
-            this.redisService.zSetAdd(redisKey, fund , timestamp,RedisDbConstant.REDIS_DB_DEFAULT);
+            Boolean success = this.redisService.zSetAdd(redisKey, fund, timestamp, RedisDbConstant.REDIS_DB_DEFAULT);
+            result.add(success);
         }
+        return result;
     }
 
     private void printLog(List<FundBean> fundBeans) {

@@ -15,6 +15,16 @@ spring:
           socketFactoryClass: javax.net.ssl.SSLSocketFactory
         debug: false
 
+# 监控
+management:
+  endpoints:
+    web:
+      exposure:
+        include: 'prometheus'
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 # mybatis
 mybatis:
   configuration:

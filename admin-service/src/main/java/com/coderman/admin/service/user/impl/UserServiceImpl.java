@@ -25,6 +25,7 @@ import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.admin.vo.user.*;
 import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -242,7 +243,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         final String lockName = "USER_REFRESH_TOKEN_LOCK_" + refreshToken;
         boolean lock = this.redisLockService.tryLock(lockName, TimeUnit.SECONDS.toMillis(30), TimeUnit.SECONDS.toMillis(5));
         if (!lock) {
-            return ResultUtil.getFail("请勿重复登录!!");
+            return ResultUtil.getFail("请勿重复登录!");
         }
 
         try {
@@ -250,8 +251,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             AuthUserVO refreshObj = this.redisService.getObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken,
                     AuthUserVO.class, RedisDbConstant.REDIS_DB_AUTH);
             if (refreshObj == null) {
-
-                return ResultUtil.getFail("用户会话已过期,请重新登录!");
+                throw new BusinessException(ResultConstant.RESULT_CODE_401, "用户会话已过期,请重新登录!");
             }
 
             // 原先的访问令牌是否过期
@@ -268,7 +268,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
                 UserVO userVO = this.selectUserByName(refreshObj.getUsername());
                 if (Objects.equals(AuthConstant.USER_STATUS_DISABLE, userVO.getUserStatus())) {
-                    return ResultUtil.getFail("当前用户状态已被禁用!");
+                    throw new BusinessException(ResultConstant.RESULT_CODE_401, "当前用户状态已被禁用!");
                 }
 
                 AuthUserVO authUserVO = this.createSession(userVO.getUsername());
