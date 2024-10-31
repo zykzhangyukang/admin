@@ -1,19 +1,19 @@
 package com.coderman.admin.jobhandler;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.utils.FundBean;
+import com.coderman.admin.utils.WxApiUtils;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -40,25 +40,38 @@ public class FundJobHandler {
     private RedisService redisService;
 
     /**
-     * 监控数据推送
+     * (每天上午11:30和下午14:30执行)
+     * 基金收益提醒
+     */
+    @Scheduled(cron = "0 30 11,14 * * ?")
+    public void notifyFundDataToUser() {
+        List<FundBean> currentFundData = this.getRedisData();
+        if (CollectionUtils.isEmpty(currentFundData)) {
+            return;
+        }
+        StringBuilder message = new StringBuilder();
+        for (FundBean fundBean : currentFundData) {
+            message
+                    .append(fundBean.getFundName()).append("(").append(fundBean.getFundCode()).append(")")
+                    .append(",估算涨跌:")
+                    .append(fundBean.getGszzl()).append("%")
+                    .append(",当前净值:")
+                    .append(fundBean.getGsz())
+                    .append(",今日收益:")
+                    .append(fundBean.getTodayIncome())
+                    .append("\n");
+        }
+        JSONObject jsonObject = WxApiUtils.getInstance().sendMessage(Collections.singletonList("zhangyukang"), message.toString());
+        log.info("发送企业微信消息:{}", jsonObject.toJSONString());
+    }
+
+    /**
+     * websocket监控数据推送
      */
     @Scheduled(cron = "*/10 * * * * ?")
-    public void notifyFundData() {
-
-        List<FundBean> resultList = Lists.newArrayList();
-        for (String str : FundConstant.FUND_CODE_LIST) {
-
-            String[] strArray = str.contains(",") ? str.split(",") : new String[]{str};
-            String redisKey = "TIME_SERIES_KEY_" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
-
-            // 获取最新的一条数据
-            Set<FundBean> fundBeans = this.redisService.zRevRange(redisKey, FundBean.class, 0, 0, RedisDbConstant.REDIS_DB_DEFAULT);
-            if (CollectionUtils.isNotEmpty(fundBeans)) {
-                resultList.addAll(fundBeans);
-            }
-        }
-
-        if(CollectionUtils.isEmpty(resultList)){
+    public void notifyFundWebsocketData() {
+        List<FundBean> resultList = this.getRedisData();
+        if (CollectionUtils.isEmpty(resultList)) {
             return;
         }
 
@@ -70,6 +83,24 @@ public class FundJobHandler {
                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
                 .build();
         this.notificationService.sendToTopic(msg);
+    }
+
+
+    private List<FundBean> getRedisData(){
+        List<FundBean> resultList = Lists.newArrayList();
+
+        for (String str : FundConstant.FUND_CODE_LIST) {
+
+            String[] strArray = str.contains(",") ? str.split(",") : new String[]{str};
+            String redisKey = "TIME_SERIES_KEY_" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+
+            // 获取最新的一条数据
+            Set<FundBean> fundBeans = this.redisService.zRevRange(redisKey, FundBean.class, 0, 0, RedisDbConstant.REDIS_DB_DEFAULT);
+            if (CollectionUtils.isNotEmpty(fundBeans)) {
+                resultList.addAll(fundBeans);
+            }
+        }
+        return resultList;
     }
 
     /**
