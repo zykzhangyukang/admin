@@ -27,6 +27,9 @@ public class NotificationVO {
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 
+    @ApiModelProperty(value = "消息内容")
+    private String message;
+
     @ApiModelProperty(value = "消息通知数据(json)")
     private String data;
 }

@@ -36,6 +36,7 @@ import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
 import com.coderman.service.service.BaseService;
+import com.coderman.service.util.IpUtil;
 import com.coderman.sync.util.MsgBuilder;
 import com.coderman.sync.util.ProjectEnum;
 import com.coderman.sync.util.SyncUtil;
@@ -164,7 +165,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             NotificationDTO msg = NotificationDTO.builder()
                     .userId(authUserVO.getUserId())
                     .title("欢迎您登录系统")
-                    .message("欢迎您登录系统, 当前时间:" + DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"))
+                    .message("你的账号在新设备或平台登录成功，如非本人操作，请及时修改密码（参考登录地:" + IpUtil.getCityInfo() + "）")
                     .url("/dashboard")
                     .type(NotificationConstant.NOTIFICATION_LOGIN_WELCOME)
                     .build();

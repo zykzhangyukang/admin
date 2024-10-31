@@ -41,7 +41,7 @@ public class NotifyController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO",value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
-            @ApiReturnParam(name = "NotificationVO", value = {"notificationId", "notificationType", "userId","isRead","createTime","data"}),
+            @ApiReturnParam(name = "NotificationVO", value = {"notificationId", "notificationType", "userId","isRead","createTime","data","message"}),
     })
     public ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(@RequestBody NotificationPageDTO notificationPageDTO) {
         return this.notificationService.getNotificationPage(notificationPageDTO);

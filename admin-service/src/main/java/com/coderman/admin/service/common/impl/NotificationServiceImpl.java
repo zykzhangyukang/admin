@@ -1,6 +1,7 @@
 package com.coderman.admin.service.common.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.constant.WebSocketChannelEnum;
@@ -163,6 +164,16 @@ public class NotificationServiceImpl implements NotificationService {
         Long count = this.notificationDAO.countPage(conditionMap);
         if (count > 0) {
             notificationVOList = this.notificationDAO.page(conditionMap);
+            for (NotificationVO notificationVO : notificationVOList) {
+                try {
+                    // 消息内容
+                    if (StringUtils.isNotBlank(notificationVO.getData())) {
+                        JSONObject jsonObject = JSON.parseObject(notificationVO.getData());
+                        notificationVO.setMessage(jsonObject.getString("message"));
+                    }
+                } catch (Exception ignore) {
+                }
+            }
         }
 
         return ResultUtil.getSuccessPage(NotificationVO.class, new PageVO<>(count, notificationVOList, currentPage, pageSize));
