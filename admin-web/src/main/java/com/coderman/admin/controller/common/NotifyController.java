@@ -2,8 +2,6 @@ package com.coderman.admin.controller.common;
 
 import com.coderman.admin.dto.common.NotificationPageDTO;
 import com.coderman.admin.service.common.NotificationService;
-import com.coderman.admin.vo.common.NotificationVO;
-import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
@@ -13,7 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author ：zhangyukang
@@ -43,7 +41,7 @@ public class NotifyController {
             @ApiReturnParam(name = "PageVO",value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
             @ApiReturnParam(name = "NotificationVO", value = {"notificationId", "notificationType", "userId","isRead","createTime","data","message"}),
     })
-    public ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(@RequestBody NotificationPageDTO notificationPageDTO) {
+    public ResultVO<Map<String,Object>> getNotificationPage(@RequestBody NotificationPageDTO notificationPageDTO) {
         return this.notificationService.getNotificationPage(notificationPageDTO);
     }
 

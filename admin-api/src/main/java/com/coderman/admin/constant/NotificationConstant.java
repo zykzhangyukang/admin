@@ -4,6 +4,7 @@ import com.coderman.api.anntation.ConstList;
 import com.coderman.api.anntation.Constant;
 import com.google.common.collect.ImmutableMap;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,16 @@ import java.util.Map;
 @Constant
 public interface NotificationConstant {
 
-    /** 消息分组关系*/
+    /**
+     * 消息分组关系
+     */
     public Map<String, List<String>> NOTIFICATION_MAP =
             ImmutableMap.<String, List<String>>builder()
+                    // 全部消息
+                    .put(NotificationConstant.NOTIFICATION_MODULE_ALL, Arrays.asList(
+                            NotificationConstant.NOTIFICATION_LOGIN_WELCOME,
+                            NotificationConstant.NOTIFICATION_FUND_TIPS
+                    ))
                     // 系统消息
                     .put(NotificationConstant.NOTIFICATION_MODULE_SYSTEM, Collections.singletonList(
                             NotificationConstant.NOTIFICATION_LOGIN_WELCOME

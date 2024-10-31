@@ -364,4 +364,16 @@
     </choose>
     limit #{offset},#{size}
   </select>
+
+  <select id="getUnreadNotificationList" resultType="com.coderman.admin.vo.common.NotificationCountVO">
+    SELECT
+        notification_type,
+        count( 1 ) AS un_read_count
+    FROM
+        auth_notification
+    WHERE
+        user_id = #{userId} and  is_read = 0
+    GROUP BY
+        notification_type
+  </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.coderman.admin.dao.common;
 
 import com.coderman.admin.model.common.NotificationExample;
 import com.coderman.admin.model.common.NotificationModel;
+import com.coderman.admin.vo.common.NotificationCountVO;
 import com.coderman.admin.vo.common.NotificationVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
@@ -32,4 +33,10 @@ public interface NotificationDAO extends BaseDAO<NotificationModel, Notification
      */
     List<NotificationVO> page(Map<String, Object> conditionMap);
 
+    /**
+     * 未读消息汇总
+     * @param userId
+     * @return
+     */
+    List<NotificationCountVO> getUnreadNotificationList(@Param(value = "userId") Integer userId);
 }

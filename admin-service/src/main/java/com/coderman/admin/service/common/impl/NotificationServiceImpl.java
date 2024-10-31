@@ -12,6 +12,7 @@ import com.coderman.admin.dto.common.WebsocketRedisMsg;
 import com.coderman.admin.model.common.NotificationModel;
 import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.utils.AuthUtil;
+import com.coderman.admin.vo.common.NotificationCountVO;
 import com.coderman.admin.vo.common.NotificationVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.util.PageUtil;
@@ -22,6 +23,7 @@ import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -131,53 +133,56 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @LogError(value = "消息通知列表")
-    public ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(@LogErrorParam NotificationPageDTO notificationPageDTO) {
-
+    public ResultVO<Map<String,Object>> getNotificationPage(@LogErrorParam NotificationPageDTO notificationPageDTO) {
+        // 构建查询条件
         Map<String, Object> conditionMap = new HashMap<>(5);
-        Assert.hasText(notificationPageDTO.getModule() , "请选择消息模块！");
-
-        Integer currentPage = notificationPageDTO.getCurrentPage();
-        Integer pageSize = notificationPageDTO.getPageSize();
-
+        Assert.hasText(notificationPageDTO.getModule(), "请选择消息模块！");
         conditionMap.put("userId", AuthUtil.getUserId());
         conditionMap.put("module", notificationPageDTO.getModule());
+        conditionMap.put("notificationTypes", NotificationConstant.NOTIFICATION_MAP.get(notificationPageDTO.getModule()));
 
-        if (StringUtils.isNotBlank(notificationPageDTO.getModule())) {
-            conditionMap.put("notificationTypes", NotificationConstant.NOTIFICATION_MAP.get(notificationPageDTO.getModule()));
-        }
         if (Objects.nonNull(notificationPageDTO.getIsRead())) {
             conditionMap.put("isRead", notificationPageDTO.getIsRead());
         }
-
-        // 字段排序
-        String sortType = notificationPageDTO.getSortType();
-        String sortField = notificationPageDTO.getSortField();
-        if (StringUtils.isNotBlank(sortType)) {
-            conditionMap.put("sortType", sortType);
-            conditionMap.put("sortField", sortField);
+        if (StringUtils.isNotBlank(notificationPageDTO.getSortType())) {
+            conditionMap.put("sortType", notificationPageDTO.getSortType());
+            conditionMap.put("sortField", notificationPageDTO.getSortField());
         }
 
-        PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
-        List<NotificationVO> notificationVOList = Lists.newArrayList();
+        PageUtil.getConditionMap(conditionMap, notificationPageDTO.getCurrentPage(), notificationPageDTO.getPageSize());
 
-        // 消息列表
-        Long count = this.notificationDAO.countPage(conditionMap);
+        // 获取消息列表
+        List<NotificationVO> notificationVOList = new ArrayList<>();
+        Long count = notificationDAO.countPage(conditionMap);
         if (count > 0) {
-            notificationVOList = this.notificationDAO.page(conditionMap);
+            notificationVOList = notificationDAO.page(conditionMap);
             for (NotificationVO notificationVO : notificationVOList) {
-                try {
-                    // 消息内容
-                    if (StringUtils.isNotBlank(notificationVO.getData())) {
+                // 解析消息内容
+                if (StringUtils.isNotBlank(notificationVO.getData())) {
+                    try {
                         JSONObject jsonObject = JSON.parseObject(notificationVO.getData());
                         notificationVO.setMessage(jsonObject.getString("message"));
+                    } catch (Exception ignore) {
                     }
-                } catch (Exception ignore) {
                 }
             }
         }
+        // 获取未读数量
+        Map<String, Object> resultMap = new LinkedHashMap<>();
+        List<NotificationCountVO> countVOList = notificationDAO.getUnreadNotificationList(AuthUtil.getUserId());
+        for (String module : NotificationConstant.NOTIFICATION_MAP.keySet()) {
+            Long unReadCount = countVOList.stream()
+                    .filter(countVO -> NotificationConstant.NOTIFICATION_MAP.get(module).contains(countVO.getNotificationType()))
+                    .mapToLong(NotificationCountVO::getUnReadCount)
+                    .sum();
+            resultMap.put(module, unReadCount);
+        }
 
-        return ResultUtil.getSuccessPage(NotificationVO.class, new PageVO<>(count, notificationVOList, currentPage, pageSize));
+        PageVO<List<NotificationVO>> pageInfo = new PageVO<>(count, notificationVOList, notificationPageDTO.getCurrentPage(), notificationPageDTO.getPageSize());
+        resultMap.put("pageInfo", pageInfo);
+        return ResultUtil.getSuccessMap(Map.class, resultMap);
     }
+
 
     /**
      * 广播主题消息

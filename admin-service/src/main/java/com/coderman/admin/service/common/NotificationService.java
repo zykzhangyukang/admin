@@ -7,6 +7,7 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface NotificationService {
 
@@ -46,5 +47,5 @@ public interface NotificationService {
      * @param notificationPageDTO
      * @return
      */
-    ResultVO<PageVO<List<NotificationVO>>> getNotificationPage(NotificationPageDTO notificationPageDTO);
+    ResultVO<Map<String,Object>> getNotificationPage(NotificationPageDTO notificationPageDTO);
 }
