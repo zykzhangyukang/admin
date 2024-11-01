@@ -6,17 +6,18 @@ spring:
   datasource:
     username: root
     url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
-    password: zhangyukang
+    password: DES@99D5518076FE8F32214D66F4B59766B7
   redis:
     host: 127.0.0.1
     port: 6379
+    password: DES@99D5518076FE8F32214D66F4B59766B7
   task:
     scheduling:
       pool:
-        size: 4
+        size: 2
 
 sync:
-  # 回调&&发送库
+  # 回调库&&发送库
   db:
     pub-mq-message: admin_dev
     pub-callback: admin_dev_sync
@@ -56,7 +57,7 @@ sync:
   callback:
     destList:
       - project: sync
-        url: http://127.0.0.1:8787
+        url: http://127.0.0.1:8989
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20
@@ -77,12 +78,12 @@ sync:
       - dbname: admin_dev
         url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
-        password: zhangyukang
+        password: DES@99D5518076FE8F32214D66F4B59766B7
 
       - dbname: admin_dev_sync
         url: jdbc:mysql://127.0.0.1:3306/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
-        password: zhangyukang
+        password: DES@99D5518076FE8F32214D66F4B59766B7
 
 #    - dbname:  ecp_cart_dev
 #      url: 127.0.0.1:27017

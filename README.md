@@ -20,5 +20,5 @@
 ### 2. Linux部署参数
 
 ```shell script
-nohup java -Dserver.port=8989 -Ddomain=admin -Dspring.profiles.active=pro -Dsecret=xxxx -Dlog.file=/root/app/logs  -jar admin-web-1.0.0-DEV-SNAPSHOT.jar &
+nohup java -Dserver.port=8989 -Ddomain=admin -Dspring.profiles.active=pro -Dsecret.key=xxxx -Dlog.file=/root/app/logs  -jar admin-web-1.0.0-DEV-SNAPSHOT.jar &
 ```
