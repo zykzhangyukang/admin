@@ -11,6 +11,7 @@ import com.coderman.admin.utils.FundBean;
 import com.coderman.admin.utils.WxApiUtils;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
+import com.coderman.service.util.IpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
@@ -43,26 +44,47 @@ public class FundJobHandler {
      * (每天上午11:30和下午14:30执行)
      * 基金收益提醒
      */
-    @Scheduled(cron = "0 30 11,14 * * ?")
+     @Scheduled(cron = "0 30 11,14 * * ?")
     public void notifyFundDataToUser() {
+        if(!isOpen(LocalDateTime.now())){
+            return;
+        }
         List<FundBean> currentFundData = this.getRedisData();
         if (CollectionUtils.isEmpty(currentFundData)) {
             return;
         }
         StringBuilder message = new StringBuilder();
-        for (FundBean fundBean : currentFundData) {
+        int size = currentFundData.size();
+        for (int i = 0; i < size; i++) {
+            FundBean fundBean = currentFundData.get(i);
             message
                     .append(fundBean.getFundName()).append("(").append(fundBean.getFundCode()).append(")")
-                    .append(",估算涨跌:")
+                    .append(", 估算涨跌: ")
                     .append(fundBean.getGszzl()).append("%")
-                    .append(",当前净值:")
+                    .append(", 当日净值: ")
+                    .append(fundBean.getDwjz())
+                    .append(", 当前净值: ")
                     .append(fundBean.getGsz())
-                    .append(",今日收益:")
-                    .append(fundBean.getTodayIncome())
-                    .append("\n");
+                    .append(", 今日收益: ")
+                    .append(fundBean.getTodayIncome());
+            if (i < size - 1) {
+                message.append("\n");
+            }
         }
+
+        // 发送企业微信消息
         JSONObject jsonObject = WxApiUtils.getInstance().sendMessage(Collections.singletonList("zhangyukang"), message.toString());
         log.info("发送企业微信消息:{}", jsonObject.toJSONString());
+
+        // 发送系统消息提醒
+         NotificationDTO msg = NotificationDTO.builder()
+                 .userId(61)
+                 .title("基金收益提醒")
+                 .message(message.toString())
+                 .url("/trade/fund")
+                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
+                 .build();
+        this.notificationService.saveNotifyToUser(msg);
     }
 
     /**

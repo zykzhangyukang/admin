@@ -42,10 +42,9 @@ public class WxApiUtils {
     }
 
     private WxApiUtils() {
-        String crypyKey = System.getProperty("secret.key");
         redisService = SpringContextUtil.getBean(RedisService.class);
-        QYWX_CORPID = DesUtil.encrypt(QYWX_CORPID, crypyKey);
-        QYWX_SECRET = DesUtil.encrypt(QYWX_SECRET, crypyKey);
+        QYWX_CORPID = DesUtil.decrypt(QYWX_CORPID);
+        QYWX_SECRET = DesUtil.decrypt(QYWX_SECRET);
     }
 
     public static WxApiUtils getInstance() {
@@ -73,7 +72,7 @@ public class WxApiUtils {
             // 缓存token
             Integer expiresIn = jsonObject.getInteger("expires_in");
             String accessToken = jsonObject.getString("access_token");
-            this.redisService.setString(TOKEN_CACHE_KEY, accessToken, expiresIn, RedisDbConstant.REDIS_DB_DEFAULT);
+            this.redisService.setString(TOKEN_CACHE_KEY, accessToken, expiresIn -  60, RedisDbConstant.REDIS_DB_DEFAULT);
             return accessToken;
 
         } catch (IOException e) {

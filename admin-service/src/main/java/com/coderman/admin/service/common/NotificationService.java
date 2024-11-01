@@ -2,11 +2,8 @@ package com.coderman.admin.service.common;
 
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.dto.common.NotificationPageDTO;
-import com.coderman.admin.vo.common.NotificationVO;
-import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 
-import java.util.List;
 import java.util.Map;
 
 public interface NotificationService {
