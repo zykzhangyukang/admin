@@ -21,6 +21,9 @@ public class RescPageDTO extends BaseModel {
     @ApiModelProperty(value = "资源url")
     private String rescUrl;
 
+    @ApiModelProperty(value = "功能标识")
+    private String funcKey;
+
     @ApiModelProperty(value = "资源所属系统")
     private String rescDomain;
 

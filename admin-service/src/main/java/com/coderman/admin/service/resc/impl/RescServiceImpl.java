@@ -64,6 +64,7 @@ public class RescServiceImpl implements RescService {
         String rescName = rescPageDTO.getRescName();
         String rescDomain = rescPageDTO.getRescDomain();
         String methodType = rescPageDTO.getMethodType();
+        String funcKey = rescPageDTO.getFuncKey();
 
         Map<String, Object> conditionMap = new HashMap<>(6);
 
@@ -78,6 +79,9 @@ public class RescServiceImpl implements RescService {
         }
         if (StringUtils.isNotBlank(methodType)) {
             conditionMap.put("methodType", methodType);
+        }
+        if (StringUtils.isNotBlank(funcKey)) {
+            conditionMap.put("funcKey", funcKey);
         }
         // 字段排序
         String sortField = rescPageDTO.getSortField();

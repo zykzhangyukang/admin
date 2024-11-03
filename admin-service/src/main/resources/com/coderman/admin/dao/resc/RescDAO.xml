@@ -283,6 +283,18 @@
       <if test="methodType!=null and methodType!=''">
         and method_type  = #{methodType}
       </if>
+      <if test="funcKey!=null and funcKey!=''">
+        AND EXISTS (
+        SELECT
+        1
+        FROM
+        auth_func_resc fr
+        LEFT JOIN auth_func f ON fr.func_id = f.func_id
+        WHERE
+        f.func_key = #{funcKey}
+        AND fr.resc_id = auth_resc.resc_id
+        )
+      </if>
     </where>
   </sql>
 

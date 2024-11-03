@@ -421,6 +421,9 @@
       <if test="ipAddress!=null and ipAddress!=''">
         and al.ip_address  = #{ipAddress}
       </if>
+      <if test="deviceInfo!=null and deviceInfo!=''">
+        and al.device_info  = #{deviceInfo}
+      </if>
     </where>
   </sql>
 </mapper>

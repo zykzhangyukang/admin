@@ -86,6 +86,7 @@ public class LogServiceImpl extends BaseService implements LogService {
 
         Integer currentPage = logPageDTO.getCurrentPage();
         Integer pageSize = logPageDTO.getPageSize();
+        String deviceInfo = logPageDTO.getDeviceInfo();
 
         if (StringUtils.isNotBlank(logPageDTO.getLogModule())) {
             conditionMap.put("logModule", logPageDTO.getLogModule());
@@ -101,6 +102,9 @@ public class LogServiceImpl extends BaseService implements LogService {
         }
         if (StringUtils.isNotBlank(logPageDTO.getIpAddress())) {
             conditionMap.put("ipAddress", logPageDTO.getIpAddress());
+        }
+        if (StringUtils.isNotBlank(logPageDTO.getDeviceInfo())) {
+            conditionMap.put("deviceInfo", logPageDTO.getDeviceInfo());
         }
 
         if (StringUtils.isNotBlank(logPageDTO.getSortType()) && StringUtils.isNotBlank(logPageDTO.getSortField())) {

@@ -34,6 +34,9 @@ public class LogPageDTO extends BaseModel {
     @ApiModelProperty(value = "IP地址")
     private String ipAddress;
 
+    @ApiModelProperty(value = "设备信息")
+    private String deviceInfo;
+
     @ApiModelProperty(value = "排序类型")
     private String sortType;
 
