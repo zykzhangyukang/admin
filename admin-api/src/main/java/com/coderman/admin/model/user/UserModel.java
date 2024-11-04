@@ -27,6 +27,9 @@ public class UserModel extends BaseModel {
     @ApiModelProperty(value = "真实名称")
     private String realName;
 
+    @ApiModelProperty(value = "头像地址")
+    private String avatar;
+
     @ApiModelProperty(value = "邮箱地址")
     private String email;
 

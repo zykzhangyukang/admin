@@ -2,6 +2,7 @@ package com.coderman.admin.service.user.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.coderman.admin.constant.AuthConstant;
+import com.coderman.admin.constant.FileConstant;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dao.role.RoleDAO;
 import com.coderman.admin.dao.user.UserDAO;
@@ -17,10 +18,7 @@ import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
-import com.coderman.admin.utils.AuthUtil;
-import com.coderman.admin.utils.MaskUtil;
-import com.coderman.admin.utils.PasswordUtils;
-import com.coderman.admin.utils.ValidationUtil;
+import com.coderman.admin.utils.*;
 import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.admin.vo.user.*;
@@ -31,6 +29,8 @@ import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.oss.enums.FileModuleEnum;
+import com.coderman.oss.util.AliYunOssUtil;
 import com.coderman.redis.service.RedisLockService;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
@@ -45,13 +45,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
+import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -455,6 +455,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         insertModel.setDeptId(deptId);
         insertModel.setEmail(email);
         insertModel.setPhone(phone);
+        insertModel.setAvatar(this.createAvatar(insertModel.getUsername()));
 
         // 新增用户
         this.userDAO.insertReturnKey(insertModel);
@@ -467,6 +468,24 @@ public class UserServiceImpl extends BaseService implements UserService {
         SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
+    }
+
+    /**
+     * 生成用户头像
+     *
+     * @param username
+     * @return
+     */
+    private String createAvatar(String username) {
+        String filePath = AliYunOssUtil.getInstance().genFilePath(username.hashCode() + "_.png", FileModuleEnum.USER_MODULE);
+        try {
+            byte[] bytes = AvatarUtil.create(username.hashCode());
+            AliYunOssUtil.getInstance().uploadStream(new ByteArrayInputStream(bytes), filePath);
+        } catch (Exception e) {
+            log.error("生成用户头像失败:{}, 上传失败设置默认头像: {}", e.getMessage(), FileConstant.DEFAULT_AVATAR, e);
+            return FileConstant.DEFAULT_AVATAR;
+        }
+        return FileConstant.OSS_FILE_DOMAIN + filePath;
     }
 
     /**
