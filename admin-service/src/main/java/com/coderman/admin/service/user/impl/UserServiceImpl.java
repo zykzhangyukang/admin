@@ -320,6 +320,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         authUserVO.setDeptName(user.getDeptName());
         authUserVO.setRescIdList(rescIdList);
         authUserVO.setRoleList(roleList);
+        authUserVO.setAvatar(user.getAvatar());
         authUserVO.setExpiredTime(DateUtils.addSeconds(new Date(), AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND).getTime());
 
         // 保存会话信息到redis

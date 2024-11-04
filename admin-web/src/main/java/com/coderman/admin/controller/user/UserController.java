@@ -49,7 +49,7 @@ public class UserController {
     @GetMapping(value = "/info")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserVO", value = {"userId","username","realName","deptName","deptCode","roleList","createTime","updateTime","userStatus","password"}),
+            @ApiReturnParam(name = "UserVO", value = {"userId","username","realName","deptName","avatar","deptCode","roleList","createTime","updateTime","userStatus","password"}),
     })
     public ResultVO<UserVO> info() {
         return userService.getUserInfo();
@@ -154,7 +154,7 @@ public class UserController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"dataList", "pageRow", "totalRow", "currPage", "totalPage"}),
-            @ApiReturnParam(name = "UserVO", value = {"deptId", "realName", "deptName", "userStatus", "createTime", "updateTime", "userId", "deptCode", "username", "roleList","password","phone","email"})
+            @ApiReturnParam(name = "UserVO", value = {"deptId","avatar", "realName", "deptName", "userStatus", "createTime", "updateTime", "userId", "deptCode", "username", "roleList","password","phone","email"})
     })
     public ResultVO<PageVO<List<UserVO>>> page(@RequestBody UserPageDTO queryVO) {
         return userService.page(queryVO);
