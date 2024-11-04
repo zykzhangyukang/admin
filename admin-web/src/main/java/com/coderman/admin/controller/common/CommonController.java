@@ -30,8 +30,8 @@ import java.util.Set;
 @Api(value = "字典接口", tags = "字典接口")
 @RestController
 @Slf4j
-@RequestMapping(value = "/common/const")
-public class DictController {
+@RequestMapping(value = "/common")
+public class CommonController {
 
     @Resource
     private RedisService redisService;
@@ -42,7 +42,7 @@ public class DictController {
      * @return
      */
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "常量列表")
-    @GetMapping(value = "/all")
+    @GetMapping(value = "/const/all")
     @SuppressWarnings("unchecked")
     public ResultVO<Map<String, List<ConstItems>>> constAll() {
 

@@ -17,6 +17,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -157,6 +159,14 @@ public class UserController {
     public ResultVO<PageVO<List<UserVO>>> page(@RequestBody UserPageDTO queryVO) {
         return userService.page(queryVO);
     }
+
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "用户列表导出")
+    @RequestMapping(value = "/export",method = RequestMethod.GET)
+    public void export(UserPageDTO userPageDTO) {
+         userService.export(userPageDTO);
+    }
+
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_PUT, value = "更新密码")
     @PutMapping(value = "/pwd/update")

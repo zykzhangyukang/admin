@@ -7,11 +7,10 @@ import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.service.common.NotificationService;
-import com.coderman.admin.utils.FundBean;
+import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.admin.utils.WxApiUtils;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
-import com.coderman.service.util.IpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
@@ -49,24 +48,24 @@ public class FundJobHandler {
         if(!isOpen(LocalDateTime.now())){
             return;
         }
-        List<FundBean> currentFundData = this.getRedisData();
+        List<FundBeanVO> currentFundData = this.getRedisData();
         if (CollectionUtils.isEmpty(currentFundData)) {
             return;
         }
         StringBuilder message = new StringBuilder();
         int size = currentFundData.size();
         for (int i = 0; i < size; i++) {
-            FundBean fundBean = currentFundData.get(i);
+            FundBeanVO fundBeanVO = currentFundData.get(i);
             message
-                    .append(fundBean.getFundName()).append("(").append(fundBean.getFundCode()).append(")")
+                    .append(fundBeanVO.getFundName()).append("(").append(fundBeanVO.getFundCode()).append(")")
                     .append(", 估算涨跌: ")
-                    .append(fundBean.getGszzl()).append("%")
+                    .append(fundBeanVO.getGszzl()).append("%")
                     .append(", 当日净值: ")
-                    .append(fundBean.getDwjz())
+                    .append(fundBeanVO.getDwjz())
                     .append(", 当前净值: ")
-                    .append(fundBean.getGsz())
+                    .append(fundBeanVO.getGsz())
                     .append(", 今日收益: ")
-                    .append(fundBean.getTodayIncome());
+                    .append(fundBeanVO.getTodayIncome());
             if (i < size - 1) {
                 message.append("\n");
             }
@@ -92,7 +91,7 @@ public class FundJobHandler {
      */
     @Scheduled(cron = "*/10 * * * * ?")
     public void notifyFundWebsocketData() {
-        List<FundBean> resultList = this.getRedisData();
+        List<FundBeanVO> resultList = this.getRedisData();
         if (CollectionUtils.isEmpty(resultList)) {
             return;
         }
@@ -108,8 +107,8 @@ public class FundJobHandler {
     }
 
 
-    private List<FundBean> getRedisData(){
-        List<FundBean> resultList = Lists.newArrayList();
+    private List<FundBeanVO> getRedisData(){
+        List<FundBeanVO> resultList = Lists.newArrayList();
 
         for (String str : FundConstant.FUND_CODE_LIST) {
 
@@ -117,9 +116,9 @@ public class FundJobHandler {
             String redisKey = "TIME_SERIES_KEY_" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
 
             // 获取最新的一条数据
-            Set<FundBean> fundBeans = this.redisService.zRevRange(redisKey, FundBean.class, 0, 0, RedisDbConstant.REDIS_DB_DEFAULT);
-            if (CollectionUtils.isNotEmpty(fundBeans)) {
-                resultList.addAll(fundBeans);
+            Set<FundBeanVO> fundBeanVOS = this.redisService.zRevRange(redisKey, FundBeanVO.class, 0, 0, RedisDbConstant.REDIS_DB_DEFAULT);
+            if (CollectionUtils.isNotEmpty(fundBeanVOS)) {
+                resultList.addAll(fundBeanVOS);
             }
         }
         return resultList;
@@ -134,20 +133,20 @@ public class FundJobHandler {
         if (!isOpen(LocalDateTime.now())) {
             return;
         }
-        List<FundBean> fundBeans = this.fundService.getListData();
-        if (CollectionUtils.isEmpty(fundBeans)) {
+        List<FundBeanVO> fundBeanVOS = this.fundService.getListData();
+        if (CollectionUtils.isEmpty(fundBeanVOS)) {
             return;
         }
         // 持久化到redis
-         this.saveToRedis(fundBeans);
+         this.saveToRedis(fundBeanVOS);
         // 打印日志
-        this.printLog(fundBeans);
+        this.printLog(fundBeanVOS);
     }
 
-    private List<Boolean> saveToRedis(List<FundBean> fundBeans) {
+    private List<Boolean> saveToRedis(List<FundBeanVO> fundBeanVOS) {
 
         List<Boolean> result = Lists.newArrayList();
-        for (FundBean fund : fundBeans) {
+        for (FundBeanVO fund : fundBeanVOS) {
 
             String redisKey = "TIME_SERIES_KEY_" + fund.getFundCode() + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
             long timestamp = new Date().getTime() / 1000;
@@ -158,8 +157,8 @@ public class FundJobHandler {
         return result;
     }
 
-    private void printLog(List<FundBean> fundBeans) {
-        for (FundBean fund : fundBeans) {
+    private void printLog(List<FundBeanVO> fundBeanVOS) {
+        for (FundBeanVO fund : fundBeanVOS) {
             String msg = String.format(
                     "[编码: %s, 基金名称: %s, 估算净值: %s, 估算涨跌: %s, 更新时间: %s, 收益率: %s, 收益: %s, 今日收益: %s] ",
                     fund.getFundCode(),

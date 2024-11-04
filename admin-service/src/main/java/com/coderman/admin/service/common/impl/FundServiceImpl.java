@@ -4,19 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.service.common.FundService;
-import com.coderman.admin.utils.FundBean;
+import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.admin.utils.HttpClientUtil;
-import com.coderman.api.util.ResultUtil;
 import com.coderman.service.anntation.LogError;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -35,7 +29,7 @@ public class FundServiceImpl implements FundService {
 
     @Override
     @LogError(value = "基金列表")
-    public List<FundBean> getListData() {
+    public List<FundBeanVO> getListData() {
 
         List<String> codes = FundConstant.FUND_CODE_LIST;
 
@@ -49,15 +43,15 @@ public class FundServiceImpl implements FundService {
             codeMap.put(strArray[0], strArray);
         }
 
-        List<FundBean> fundBeans = Lists.newArrayList();
+        List<FundBeanVO> fundBeanVOS = Lists.newArrayList();
         for (String code : codeList) {
             try {
-                fundBeans.add(this.fetchListData(code, codeMap));
+                fundBeanVOS.add(this.fetchListData(code, codeMap));
             } catch (Exception e) {
                 log.error("处理基金编码 [{}] 时发生异常: {}", code, e.getMessage(), e);
             }
         }
-        return fundBeans;
+        return fundBeanVOS;
     }
 
     @Override
@@ -105,17 +99,17 @@ public class FundServiceImpl implements FundService {
     }
 
 
-    private FundBean fetchListData(String code, Map<String, String[]> codeMap) throws IOException {
+    private FundBeanVO fetchListData(String code, Map<String, String[]> codeMap) throws IOException {
 
-        FundBean bean = null;
+        FundBeanVO bean = null;
 
         String result = HttpClientUtil.doGet("http://fundgz.1234567.com.cn/js/" + code + ".js?rt=" + System.currentTimeMillis(), Maps.newHashMap());
         Assert.notNull(result, "获取数据错误!");
 
         String json = result.substring(8, result.length() - 2);
         if (!json.isEmpty()) {
-            bean = JSON.parseObject(json, FundBean.class);
-            FundBean.loadFund(bean, codeMap);
+            bean = JSON.parseObject(json, FundBeanVO.class);
+            FundBeanVO.loadFund(bean, codeMap);
 
             // 当前基金净值估算
             BigDecimal now = new BigDecimal(bean.getGsz());

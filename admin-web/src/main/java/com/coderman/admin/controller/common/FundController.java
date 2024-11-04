@@ -2,7 +2,7 @@ package com.coderman.admin.controller.common;
 
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.service.common.FundService;
-import com.coderman.admin.utils.FundBean;
+import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -37,9 +37,9 @@ public class FundController {
             @ApiReturnParam(name = "PageVO", value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
             @ApiReturnParam(name = "FundBean", value = {"gszzl", "costPrise", "incomePercent", "dwjz", "jzrq", "todayIncome", "income", "fundName", "gsz", "fundCode", "bonds", "gztime"}),
     })
-    public ResultVO<List<FundBean>> getListData() {
-        List<FundBean> list = this.fundService.getListData();
-        return ResultUtil.getSuccessList(FundBean.class, list);
+    public ResultVO<List<FundBeanVO>> getListData() {
+        List<FundBeanVO> list = this.fundService.getListData();
+        return ResultUtil.getSuccessList(FundBeanVO.class, list);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "基金搜索")

@@ -1,4 +1,4 @@
-package com.coderman.admin.utils;
+package com.coderman.admin.vo.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Map;
 
 @Data
-public class FundBean {
+public class FundBeanVO {
     @JSONField(name = "fundcode")
     private String fundCode;
     @JSONField(name = "name")
@@ -23,11 +23,11 @@ public class FundBean {
     private String income;//收益
     private String todayIncome; // 当前收益
 
-    public FundBean() {
+    public FundBeanVO() {
     }
 
 
-    public static void loadFund(FundBean fund, Map<String, String[]> codeMap) {
+    public static void loadFund(FundBeanVO fund, Map<String, String[]> codeMap) {
         String code = fund.getFundCode();
         if (codeMap.containsKey(code)) {
             String[] codeStr = codeMap.get(code);

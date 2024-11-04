@@ -13,9 +13,9 @@ import com.coderman.admin.dto.user.*;
 import com.coderman.admin.model.resc.RescModel;
 import com.coderman.admin.model.role.RoleModel;
 import com.coderman.admin.model.user.UserModel;
+import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
-import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.utils.*;
@@ -338,17 +338,36 @@ public class UserServiceImpl extends BaseService implements UserService {
     /**
      * 用户列表
      *
-     * @param queryVO
+     * @param dto
      * @return
      */
     @Override
     @LogError(value = "查询用户列表")
-    public ResultVO<PageVO<List<UserVO>>> page(@LogErrorParam UserPageDTO queryVO) {
+    public ResultVO<PageVO<List<UserVO>>> page(@LogErrorParam UserPageDTO dto) {
 
+        Integer pageSize = dto.getPageSize();
+        Integer currentPage = dto.getCurrentPage();
+
+        // 查询条件
+        Map<String, Object> conditionMap = getCondition(dto);
+        // 分页
+        PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
+
+        // 总条数
+        Long count = this.userDAO.countPage(conditionMap);
+        List<UserVO> list = new ArrayList<>();
+        if (count > 0) {
+            list = this.userDAO.selectPage(conditionMap);
+            for (UserVO userVO : list) {
+                userVO.setPhone(MaskUtil.maskPhone(userVO.getPhone()));
+                userVO.setEmail(MaskUtil.maskPhone(userVO.getEmail()));
+            }
+        }
+        return ResultUtil.getSuccessPage(UserVO.class, PageUtil.getPageVO(count, list, currentPage, pageSize));
+    }
+
+    private Map<String, Object> getCondition(@LogErrorParam UserPageDTO queryVO) {
         Map<String, Object> conditionMap = new HashMap<>(4);
-
-        Integer pageSize = queryVO.getPageSize();
-        Integer currentPage = queryVO.getCurrentPage();
 
         if (StringUtils.isNotBlank(queryVO.getUsername())) {
             conditionMap.put("username", queryVO.getUsername());
@@ -369,45 +388,28 @@ public class UserServiceImpl extends BaseService implements UserService {
             conditionMap.put("sortField", sortField);
             conditionMap.put("sortType", sortType);
         }
-
-        PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
-
-        // 总条数
-        Long count = this.userDAO.countPage(conditionMap);
-        List<UserVO> list = new ArrayList<>();
-        if (count > 0) {
-
-            list = this.userDAO.selectPage(conditionMap);
-            // 隐藏敏感信息
-            for (UserVO userVO : list) {
-                userVO.setPhone(MaskUtil.maskPhone(userVO.getPhone()));
-                userVO.setEmail(MaskUtil.maskPhone(userVO.getEmail()));
-            }
-        }
-
-
-        return ResultUtil.getSuccessPage(UserVO.class, PageUtil.getPageVO(count, list, currentPage, pageSize));
+        return conditionMap;
     }
 
     /**
      * 用户创建
      *
-     * @param userSaveDTO
+     * @param dto
      * @return
      */
     @Override
     @LogError(value = "新增用户信息")
-    public ResultVO<Void> save(@LogErrorParam UserSaveDTO userSaveDTO) {
+    public ResultVO<Void> save(@LogErrorParam UserSaveDTO dto) {
 
-        String username = userSaveDTO.getUsername();
-        String realName = userSaveDTO.getRealName();
-        String password = userSaveDTO.getPassword();
-        Integer userStatus = userSaveDTO.getUserStatus();
-        Integer deptId = userSaveDTO.getDeptId();
         Date currentDate = new Date();
-        String phone = userSaveDTO.getPhone();
-        String email = userSaveDTO.getEmail();
 
+        String username = dto.getUsername();
+        String realName = dto.getRealName();
+        String password = dto.getPassword();
+        Integer userStatus = dto.getUserStatus();
+        Integer deptId = dto.getDeptId();
+        String phone = dto.getPhone();
+        String email = dto.getEmail();
 
         if(!ValidationUtil.isValidUsername(username)){
             return ResultUtil.getWarn("用户账号必须是 3 到 20 个字符，以字母开头，可以包含字母、数字、下划线和连字符！");
@@ -787,6 +789,21 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_MODULE_IMPORTANT, "用户分配功能");
 
         return ResultUtil.getSuccess();
+    }
+
+    @Override
+    @LogError(value = "用户列表导出")
+    public void export(UserPageDTO dto) {
+        // 查询条件
+        Map<String, Object> conditionMap = this.getCondition(dto);
+        // 查询数据
+        List<UserExcelVO> list = this.userDAO.selectExportList(conditionMap);
+        // 导出excel
+        try {
+            EasyExcelUtils.exportExcel(UserExcelVO.class, list, "用户列表.xlsx");
+        } catch (Exception e) {
+            log.error("error:{}", e.getMessage());
+        }
     }
 
 

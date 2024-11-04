@@ -21,6 +21,7 @@
 
     <properties>
         <elasticsearch.version>7.6.2</elasticsearch.version>
+        <easyexcel.version>4.0.3</easyexcel.version>
     </properties>
 
     <dependencyManagement>

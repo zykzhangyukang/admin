@@ -9,6 +9,8 @@ import com.coderman.admin.vo.user.UserVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -175,4 +177,10 @@ public interface UserService {
      * @return
      */
     ResultVO<Void> updateUserFunc(UserFuncUpdateDTO userFuncUpdateDTO);
+
+    /**
+     * 用户列表导出
+     * @param userPageDTO
+     */
+    void export(UserPageDTO userPageDTO);
 }

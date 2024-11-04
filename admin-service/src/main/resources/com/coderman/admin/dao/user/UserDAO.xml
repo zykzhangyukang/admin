@@ -333,6 +333,32 @@
       limit #{offset}, #{size}
   </select>
 
+  <select id="selectExportList" resultType="com.coderman.admin.vo.user.UserExcelVO">
+    SELECT
+    u.user_id,
+    u.username,
+    u.real_name,
+    u.dept_id,
+    u.phone,
+    u.email,
+    u.user_status,
+    u.create_time,
+    d.dept_name
+    FROM
+    auth_user u
+    LEFT JOIN auth_dept d ON u.dept_id = d.dept_id
+    <include refid="pageCondition"/>
+    ORDER BY
+    <choose>
+      <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
+        ${sortField} ${sortType}
+      </when>
+      <otherwise>
+        u.create_time DESC
+      </otherwise>
+    </choose>
+  </select>
+
 
   <select id="countPage" resultType="java.lang.Long">
       SELECT
