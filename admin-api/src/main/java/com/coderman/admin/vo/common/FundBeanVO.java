@@ -12,6 +12,10 @@ public class FundBeanVO {
     @JSONField(name = "name")
     private String fundName;
     private String jzrq;//净值日期
+    private String jz5; // 5天均线
+    private String jz10; // 10 天均线
+    private String jz20; // 20 天均线
+    private String jz30; // 30 天均线
     private String dwjz;//当日净值
     private String gsz; //估算净值
     private String gszzl;//估算涨跌百分比 即-0.42%

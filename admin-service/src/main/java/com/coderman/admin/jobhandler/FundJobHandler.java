@@ -164,11 +164,11 @@ public class FundJobHandler {
                     fund.getFundCode(),
                     fund.getFundName(),
                     fund.getGsz(),
-                    fund.getGszzl() != null ? (fund.getGszzl().startsWith("-") ? fund.getGszzl() : "+" + fund.getGszzl()) + "%" : "--",
-                    fund.getGztime() != null ? fund.getGztime() : "--",
-                    fund.getIncomePercent() != null ? fund.getIncomePercent() + "%" : "--",
-                    fund.getIncome() != null ? fund.getIncome() : "--",
-                    fund.getTodayIncome() != null ? fund.getTodayIncome() : "--"
+                    fund.getGszzl() != null ? (fund.getGszzl().startsWith("-") ? fund.getGszzl() : "+" + fund.getGszzl()) + "%" : "-",
+                    fund.getGztime() != null ? fund.getGztime() : "-",
+                    fund.getIncomePercent() != null ? fund.getIncomePercent() + "%" : "-",
+                    fund.getIncome() != null ? fund.getIncome() : "-",
+                    fund.getTodayIncome() != null ? fund.getTodayIncome() : "-"
             );
             log.info(msg);
         }

@@ -11,6 +11,8 @@ public interface FundConstant {
     public static List<String> FUND_CODE_LIST = Arrays.asList(
             "161725,0.8965,24740.72",
             "008888,1.0340,2417.79",
-            "007690,1.5868,1575.50"
+            "007690,1.5868,1575.50",
+            "008701",
+            "019807"
     );
 }

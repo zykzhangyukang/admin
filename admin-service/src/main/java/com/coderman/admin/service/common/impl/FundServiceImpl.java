@@ -1,6 +1,7 @@
 package com.coderman.admin.service.common.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.service.common.FundService;
@@ -18,6 +19,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.ToDoubleFunction;
+import java.util.stream.Collectors;
 
 /**
  * @author ：zhangyukang
@@ -145,6 +148,45 @@ public class FundServiceImpl implements FundService {
                         bean.setTodayIncome(currentEarnings.setScale(2, RoundingMode.HALF_UP).toString());
                     }
                 }
+            }
+
+            // 获取近30天的历史净值数据
+            try {
+                JSONObject historyData = this.getHistoryData(1, 30, code);
+                JSONArray list = historyData.getJSONArray("LSJZList");
+
+                // 5日、10日、20日、30日
+                BigDecimal average5 = list.stream()
+                        .limit(5)
+                        .map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .divide(new BigDecimal(5), 2, RoundingMode.HALF_DOWN);
+
+                BigDecimal average10 = list.stream()
+                        .limit(10)
+                        .map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .divide(new BigDecimal(10), 2, RoundingMode.HALF_DOWN);
+
+                BigDecimal average20 = list.stream()
+                        .limit(20)
+                        .map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .divide(new BigDecimal(20), 2, RoundingMode.HALF_DOWN);
+
+                BigDecimal average30 = list.stream()
+                        .limit(30)
+                        .map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add)
+                        .divide(new BigDecimal(30), 2, RoundingMode.HALF_DOWN);
+
+                bean.setJz5(average5.toString());
+                bean.setJz10(average10.toString());
+                bean.setJz20(average20.toString());
+                bean.setJz30(average30.toString());
+
+            } catch (Exception e) {
+                log.error("计算基金编码 [{}] 的近15天和7天均值时发生异常: {}", code, e.getMessage(), e);
             }
 
         } else {

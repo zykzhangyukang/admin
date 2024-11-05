@@ -5,10 +5,10 @@ spring:
     name: admin
   datasource:
     username: root
-    url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://10.1.8.9:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
     password: DES@99D5518076FE8F32214D66F4B59766B7
   redis:
-    host: 127.0.0.1
+    host: 10.1.8.9
     port: 6379
     password: DES@99D5518076FE8F32214D66F4B59766B7
   task:
@@ -24,7 +24,7 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: docker-cluster
-    hosts: 127.0.0.1:9200
+    hosts: 10.1.8.9:9200
     scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
@@ -37,7 +37,7 @@ sync:
   mq: activemq
   rocketmq:
     instantName: SYNC_INSTANT
-    namesrvAddr: 127.0.0.1:9876
+    namesrvAddr: 10.1.8.9:9876
     retryTimes: 16
     sendMsgTimeoutMillis: 10000
     syncOrderTopic: SYNC_ORDER_TOPIC
@@ -57,7 +57,7 @@ sync:
   callback:
     destList:
       - project: sync
-        url: http://127.0.0.1:8989
+        url: http://10.1.8.9:8989
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20
@@ -76,12 +76,12 @@ sync:
     dbList:
 
       - dbname: admin_dev
-        url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        url: jdbc:mysql://10.1.8.9:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
         password: DES@99D5518076FE8F32214D66F4B59766B7
 
       - dbname: admin_dev_sync
-        url: jdbc:mysql://127.0.0.1:3306/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+        url: jdbc:mysql://10.1.8.9:3306/admin_dev_sync?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
         username: root
         password: DES@99D5518076FE8F32214D66F4B59766B7
 
