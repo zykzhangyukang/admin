@@ -113,7 +113,7 @@ public class FundJobHandler {
         for (String str : FundConstant.FUND_CODE_LIST) {
 
             String[] strArray = str.contains(",") ? str.split(",") : new String[]{str};
-            String redisKey = "TIME_SERIES_KEY_" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+            String redisKey = "FUND_JZ_DATA:" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
 
             // 获取最新的一条数据
             Set<FundBeanVO> fundBeanVOS = this.redisService.zRevRange(redisKey, FundBeanVO.class, 0, 0, RedisDbConstant.REDIS_DB_DEFAULT);
@@ -138,7 +138,7 @@ public class FundJobHandler {
             return;
         }
         // 持久化到redis
-         this.saveToRedis(fundBeanVOS);
+        List<Boolean> saveToRedis = this.saveToRedis(fundBeanVOS);
         // 打印日志
         this.printLog(fundBeanVOS);
     }
@@ -148,7 +148,7 @@ public class FundJobHandler {
         List<Boolean> result = Lists.newArrayList();
         for (FundBeanVO fund : fundBeanVOS) {
 
-            String redisKey = "TIME_SERIES_KEY_" + fund.getFundCode() + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+            String redisKey = "FUND_JZ_DATA:" + fund.getFundCode() + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
             long timestamp = new Date().getTime() / 1000;
 
             Boolean success = this.redisService.zSetAdd(redisKey, fund, timestamp, RedisDbConstant.REDIS_DB_DEFAULT);
@@ -186,7 +186,7 @@ public class FundJobHandler {
                 return true;
             }
             // 判断下午 13:00 到 15:00
-            return time.isAfter(LocalTime.of(13, 0)) && time.isBefore(LocalTime.of(15, 0));
+            return time.isAfter(LocalTime.of(13, 0)) && time.isBefore(LocalTime.of(18, 30));
         }
         return false;
     }

@@ -5,22 +5,24 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.service.common.FundService;
-import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.admin.utils.HttpClientUtil;
+import com.coderman.admin.vo.common.FundBeanVO;
+import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.function.ToDoubleFunction;
-import java.util.stream.Collectors;
 
 /**
  * @author ：zhangyukang
@@ -29,6 +31,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class FundServiceImpl implements FundService {
+
+    @Resource
+    private RedisService redisService;
 
     @Override
     @LogError(value = "基金列表")
@@ -150,10 +155,16 @@ public class FundServiceImpl implements FundService {
                 }
             }
 
-            // 获取近30天的历史净值数据
             try {
-                JSONObject historyData = this.getHistoryData(1, 30, code);
-                JSONArray list = historyData.getJSONArray("LSJZList");
+
+                // 获取近30天的历史净值数据
+                String key = "FUND_HISTORY_DATA:" + code + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+                JSONArray list = this.redisService.getObject(key, JSONArray.class, RedisDbConstant.REDIS_DB_DEFAULT);
+                if (list == null || list.isEmpty()) {
+                    JSONObject historyData = this.getHistoryData(1, 30, code);
+                    list = historyData.getJSONArray("LSJZList");
+                    this.redisService.setObject(key, list, 3600, RedisDbConstant.REDIS_DB_DEFAULT);
+                }
 
                 // 5日、10日、20日、30日
                 BigDecimal average5 = list.stream()

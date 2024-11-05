@@ -9,19 +9,14 @@ public interface RedisConstant {
     /**
      * 刷新系统资源
      */
-    public static final String CHANNEL_REFRESH_RESC = "TOPIC://REFRESH_RESC";
+    public static final String CHANNEL_REFRESH_RESC = "topic://refresh_resc";
 
     /**
      * websocket消息广播
      */
-    public static final String CHANNEL_WEBSOCKET_NOTIFY = "TOPIC://WEBSOCKET_NOTIFY";
-
+    public static final String CHANNEL_WEBSOCKET_NOTIFY = "topic://websocket_notify";
     /**
      * 存储websocket连接的用户
      */
     public static final String WEBSOCKET_USER_SET = "websocket:user_set";
-    /**
-     *
-     */
-    public static final String DOWNLOAD_TOKEN = "download:token:";
 }
