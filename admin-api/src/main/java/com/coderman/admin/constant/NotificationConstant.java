@@ -60,8 +60,8 @@ public interface NotificationConstant {
     /**
      * 消息是否已读
      */
-    @ConstList(group = "is_read",name = "已读")
+    @ConstList(group = "is_read",name = "已读消息")
     public static final Integer IS_READ = 1;
-    @ConstList(group = "is_read",name = "未读")
+    @ConstList(group = "is_read",name = "未读消息")
     public static final Integer IS_UNREAD = 0;
 }
