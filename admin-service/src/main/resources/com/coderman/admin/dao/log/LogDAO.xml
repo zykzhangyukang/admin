@@ -424,6 +424,12 @@
       <if test="deviceInfo!=null and deviceInfo!=''">
         and al.device_info  = #{deviceInfo}
       </if>
+      <if test="startTime!=null">
+        and al.create_time &gt;= #{startTime}
+      </if>
+      <if test="endTime!=null">
+        and al.create_time &lt;= #{endTime}
+      </if>
     </where>
   </sql>
 </mapper>

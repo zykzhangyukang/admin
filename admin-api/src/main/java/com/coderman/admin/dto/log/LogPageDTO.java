@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 /**
  * @author ：zhangyukang
  * @date ：2023/09/27 17:22
@@ -36,6 +38,12 @@ public class LogPageDTO extends BaseModel {
 
     @ApiModelProperty(value = "设备信息")
     private String deviceInfo;
+
+    @ApiModelProperty(value = "开始时间")
+    private Date startTime;
+
+    @ApiModelProperty(value = "结束时间")
+    private Date endTime;
 
     @ApiModelProperty(value = "排序类型")
     private String sortType;
