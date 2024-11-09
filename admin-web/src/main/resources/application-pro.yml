@@ -49,7 +49,7 @@ sync:
     consumeThreadMax: 10
     consumeThreadMin: 2
   activemq:
-    queueName: SYNC_QUEUE_DEV
+    queueName: SYNC_QUEUE
     brokerUrl: nio://localhost:61616 # vm://localhost
     username: admin
     password: 123456

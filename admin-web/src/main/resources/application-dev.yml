@@ -23,7 +23,7 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: docker-cluster
-    hosts: 127.0.0.1:9200
+    hosts: 47.115.42.112:9200
     scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
@@ -33,18 +33,18 @@ sync:
     username: elastic
     password:  DES@99D5518076FE8F32214D66F4B59766B7
   # 消息队列配置
-  mq: activemq
+  mq: rocketmq
   rocketmq:
-    instantName: SYNC_INSTANT
-    namesrvAddr: 127.0.0.1:9876
+    instantName: SYNC_INSTANT_DEV
+    namesrvAddr: 47.115.42.112:9876
     retryTimes: 16
     sendMsgTimeoutMillis: 10000
-    syncOrderTopic: SYNC_ORDER_TOPIC
+    syncOrderTopic: SYNC_ORDER_TOPIC_DEV
     syncTopic: SYNC_TOPIC
-    producerGroup: SYNC_PRODUCE_GROUP
-    producerOrderGroup: SYNC_PRODUCE_ORDER_GROUP
-    consumerGroup: SYNC_CONSUME_GROUP
-    consumerOrderGroup: SYNC_CONSUME_ORDER_GROUP
+    producerGroup: SYNC_PRODUCE_GROUP_DEV
+    producerOrderGroup: SYNC_PRODUCE_ORDER_GROUP_DEV
+    consumerGroup: SYNC_CONSUME_GROUP_DEV
+    consumerOrderGroup: SYNC_CONSUME_ORDER_GROUP_DEV
     consumeThreadMax: 10
     consumeThreadMin: 2
   activemq:

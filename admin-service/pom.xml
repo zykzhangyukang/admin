@@ -89,6 +89,13 @@
             <artifactId>rocketmq-client</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-tools</artifactId>
+            <version>4.7.0</version>
+        </dependency>
+
+
         <!-- 同步系统sdk -->
         <dependency>
             <groupId>com.coderman</groupId>
