@@ -17,8 +17,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -158,6 +156,15 @@ public class UserController {
     })
     public ResultVO<PageVO<List<UserVO>>> page(@RequestBody UserPageDTO queryVO) {
         return userService.page(queryVO);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "查看手机号")
+    @RequestMapping(value = "/phone",method = RequestMethod.GET)
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<String> selectUserPhone(Integer userId) {
+        return userService.selectUserPhone(userId);
     }
 
 

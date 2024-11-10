@@ -6,8 +6,11 @@ import com.coderman.admin.sync.service.ResultService;
 import com.coderman.sync.properties.SyncProperties;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.acl.common.AclClientRPCHook;
+import org.apache.rocketmq.acl.common.SessionCredentials;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.remoting.RPCHook;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -24,9 +27,12 @@ public class RocketMQListenerConfig {
     @Bean(value = "defaultMQPushConsumer", initMethod = "start", destroyMethod = "shutdown")
     public DefaultMQPushConsumer defaultMQPushConsumer(SyncProperties syncProperties, ResultService resultService) throws MQClientException {
 
+
         SyncProperties.RocketMQ properties = syncProperties.getRocketmq();
 
-        DefaultMQPushConsumer mqPushConsumer = new DefaultMQPushConsumer();
+        RPCHook rpcHook = new AclClientRPCHook(new SessionCredentials(properties.getUsername(), properties.getPassword()));
+
+        DefaultMQPushConsumer mqPushConsumer = new DefaultMQPushConsumer(rpcHook);
         mqPushConsumer.setNamesrvAddr(properties.getNamesrvAddr());
         mqPushConsumer.setInstanceName(properties.getInstantName());
         mqPushConsumer.setConsumerGroup(properties.getConsumerGroup());
@@ -42,7 +48,9 @@ public class RocketMQListenerConfig {
 
         SyncProperties.RocketMQ properties = syncProperties.getRocketmq();
 
-        DefaultMQPushConsumer mqPushConsumer = new DefaultMQPushConsumer();
+        RPCHook rpcHook = new AclClientRPCHook(new SessionCredentials(properties.getUsername(), properties.getPassword()));
+
+        DefaultMQPushConsumer mqPushConsumer = new DefaultMQPushConsumer(rpcHook);
         mqPushConsumer.setNamesrvAddr(properties.getNamesrvAddr());
         mqPushConsumer.setInstanceName(properties.getInstantName());
         mqPushConsumer.setConsumerGroup(properties.getConsumerOrderGroup());

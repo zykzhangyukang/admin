@@ -35,12 +35,14 @@ sync:
   # 消息队列配置
   mq: rocketmq
   rocketmq:
+    username: rocketmq_root
+    password: DES@99D5518076FE8F32214D66F4B59766B7
     instantName: SYNC_INSTANT_DEV
     namesrvAddr: 47.115.42.112:9876
     retryTimes: 16
     sendMsgTimeoutMillis: 10000
     syncOrderTopic: SYNC_ORDER_TOPIC_DEV
-    syncTopic: SYNC_TOPIC
+    syncTopic: SYNC_TOPIC_DEV
     producerGroup: SYNC_PRODUCE_GROUP_DEV
     producerOrderGroup: SYNC_PRODUCE_ORDER_GROUP_DEV
     consumerGroup: SYNC_CONSUME_GROUP_DEV

@@ -807,6 +807,18 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
     }
 
+    @Override
+    @LogError(value = "查看用户手机")
+    public ResultVO<String> selectUserPhone(Integer userId) {
+
+        UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
+        if(userModel == null){
+            return ResultUtil.getFail("用户不存在!");
+        }
+
+        return ResultUtil.getSuccess(String.class, userModel.getPhone());
+    }
+
 
     @Override
     @LogError(value = "用户更新密码")

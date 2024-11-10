@@ -36,6 +36,8 @@ sync:
   # 消息队列配置
   mq: activemq
   rocketmq:
+    username: rocketmq_root
+    password: DES@99D5518076FE8F32214D66F4B59766B7
     instantName: SYNC_INSTANT
     namesrvAddr: 10.1.8.9:9876
     retryTimes: 16

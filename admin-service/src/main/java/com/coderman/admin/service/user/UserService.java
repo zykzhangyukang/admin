@@ -183,4 +183,11 @@ public interface UserService {
      * @param userPageDTO
      */
     void export(UserPageDTO userPageDTO);
+
+    /**
+     * 查看手机号
+     * @param userId
+     * @return
+     */
+    ResultVO<String> selectUserPhone(Integer userId);
 }
