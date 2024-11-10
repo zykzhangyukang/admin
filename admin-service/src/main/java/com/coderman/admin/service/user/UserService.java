@@ -8,6 +8,7 @@ import com.coderman.admin.vo.user.UserRoleInitVO;
 import com.coderman.admin.vo.user.UserVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -190,4 +191,11 @@ public interface UserService {
      * @return
      */
     ResultVO<String> selectUserPhone(Integer userId);
+
+    /**
+     * 上传用户头像
+     * @param file
+     * @return
+     */
+    ResultVO<String> uploadAvatar(MultipartFile file);
 }

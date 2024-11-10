@@ -41,6 +41,7 @@ import com.coderman.sync.util.MsgBuilder;
 import com.coderman.sync.util.ProjectEnum;
 import com.coderman.sync.util.SyncUtil;
 import com.coderman.sync.vo.PlanMsg;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -49,6 +50,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
@@ -545,6 +547,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         Integer userStatus = userUpdateDTO.getUserStatus();
         String phone = userUpdateDTO.getPhone();
         String email = userUpdateDTO.getEmail();
+        String avatar = userUpdateDTO.getAvatar();
 
         if (Objects.isNull(userId)) {
             return ResultUtil.getWarn("用户id不能为空！");
@@ -575,6 +578,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         if(!ValidationUtil.isValidEmail(email)){
             return ResultUtil.getWarn("邮箱填写不合法！");
         }
+        if(StringUtils.isBlank(avatar)){
+            avatar = FileConstant.DEFAULT_AVATAR;
+        }
 
         UserModel updateModel = new UserModel();
         updateModel.setUserId(userId);
@@ -584,6 +590,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         updateModel.setDeptId(deptId);
         updateModel.setEmail(email);
         updateModel.setPhone(phone);
+        updateModel.setAvatar(avatar);
 
         // 更新用户
         this.userDAO.updateByPrimaryKeySelective(updateModel);
@@ -817,6 +824,38 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         return ResultUtil.getSuccess(String.class, userModel.getPhone());
+    }
+
+    @SneakyThrows
+    @Override
+    @LogError(value = "上传用户头像")
+    public ResultVO<String> uploadAvatar(MultipartFile file) {
+
+
+       final String[] FILE_SUFFIX_SUPPORT = {".jpg", ".jpeg", ".png",".webp"};
+
+        if(file == null || file.isEmpty()){
+            return ResultUtil.getWarn("上传的头像不能为空！");
+        }
+
+        if(file.getSize() > 2 * 1024 * 1024){
+            return ResultUtil.getWarn("上传的头像不能大于2M！");
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        assert originalFilename != null;
+        String suffix = originalFilename.substring(originalFilename.lastIndexOf('.'));
+
+        if (!Arrays.asList(FILE_SUFFIX_SUPPORT).contains(suffix.toLowerCase(Locale.ROOT))) {
+
+            return ResultUtil.getWarn("文件格式不支持,请更换后重试!");
+        }
+
+        String path = AliYunOssUtil.getInstance().genFilePath(originalFilename, FileModuleEnum.USER_MODULE);
+        AliYunOssUtil.getInstance().uploadStreamIfNotExist(file.getInputStream(),path);
+
+
+        return ResultUtil.getSuccess(String.class, FileConstant.OSS_FILE_DOMAIN + path);
     }
 
 

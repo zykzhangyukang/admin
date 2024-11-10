@@ -25,6 +25,9 @@ public class UserUpdateDTO extends BaseModel {
     @ApiModelProperty(value = "联系方式")
     private String phone;
 
+    @ApiModelProperty(value = "用户头像")
+    private String avatar;
+
     @ApiModelProperty(value = "部门id")
     private Integer deptId;
 

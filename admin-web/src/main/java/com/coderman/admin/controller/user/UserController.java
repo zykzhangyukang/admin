@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -32,6 +33,18 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "上传用户头像")
+    @PostMapping(value = "/upload/avatar")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<String> uploadAvatar(@RequestPart(value = "file") MultipartFile file) {
+        return userService.uploadAvatar(file);
+    }
+
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取用户权限信息")
     @GetMapping(value = "/permission")
@@ -141,7 +154,7 @@ public class UserController {
     })
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UserVO", value = {"createTime", "updateTime", "username", "realName", "userStatus", "deptCode", "userId","deptId","phone","email"})
+            @ApiReturnParam(name = "UserVO", value = {"createTime", "updateTime", "username", "realName", "userStatus", "deptCode", "userId","deptId","phone","email","avatar"})
     })
     public ResultVO<UserVO> selectUserById(@RequestParam(value = "userId") Integer userId) {
         return userService.selectUserById(userId);
