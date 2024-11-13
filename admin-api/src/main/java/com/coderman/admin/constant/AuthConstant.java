@@ -18,9 +18,9 @@ public interface AuthConstant {
      */
     Integer ACCESS_TOKEN_EXPIRED_SECOND = 30 * 60;
     /**
-     * 刷新令牌过期时间 1 小时
+     * 刷新令牌过期时间 24 小时
      */
-    Integer REFRESH_TOKEN_EXPIRED_SECOND = 60 * 60 ;
+    Integer REFRESH_TOKEN_EXPIRED_SECOND = 60 * 60 * 24;
 
     /**
      * 用户会话redis key 前缀

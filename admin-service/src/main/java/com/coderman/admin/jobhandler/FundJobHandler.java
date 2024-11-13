@@ -2,6 +2,7 @@ package com.coderman.admin.jobhandler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
@@ -43,7 +44,7 @@ public class FundJobHandler {
      * (每天上午11:30和下午14:30执行)
      * 基金收益提醒
      */
-     @Scheduled(cron = "0 30 11,14 * * ?")
+     @Scheduled(cron = "0 30 10,14 * * ?")
     public void notifyFundDataToUser() {
         if(!isOpen(LocalDateTime.now())){
             return;
@@ -99,7 +100,7 @@ public class FundJobHandler {
         // 推送消息
         NotificationDTO msg = NotificationDTO.builder()
                 .title("基金收益提醒")
-                .message(JSON.toJSONString(resultList))
+                .message(JSON.toJSONString(resultList, SerializerFeature.WriteNullStringAsEmpty))
                 .url("/dashboard")
                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
                 .build();
@@ -127,7 +128,7 @@ public class FundJobHandler {
     /**
      * 刷新基金实时走势
      */
-    @Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(cron = "*/30 * * * * ?")
     public void refreshFundData() {
 
         if (!isOpen(LocalDateTime.now())) {
