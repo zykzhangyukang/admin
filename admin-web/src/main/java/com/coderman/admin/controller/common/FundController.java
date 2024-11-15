@@ -10,9 +10,7 @@ import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -50,6 +48,25 @@ public class FundController {
     public ResultVO<List<JSONObject>> getSearchData() throws IOException {
         List<JSONObject> list = this.fundService.getSearchData();
         return ResultUtil.getSuccessList(JSONObject.class, list);
+    }
+
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "保存基金设置")
+    @PostMapping(value = "/save/setting")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<Void> saveSetting(@RequestBody Object obj) {
+        return this.fundService.saveSetting(obj);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "保存基金设置")
+    @GetMapping(value = "/get/setting")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<Object> getSetting() {
+        return this.fundService.getSetting();
     }
 
 

@@ -8,6 +8,8 @@ import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.utils.HttpClientUtil;
 import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.api.constant.RedisDbConstant;
+import com.coderman.api.util.ResultUtil;
+import com.coderman.api.vo.ResultVO;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.google.common.collect.Maps;
@@ -69,20 +71,7 @@ public class FundServiceImpl implements FundService {
         currentPage = Optional.ofNullable(currentPage).orElse(1);
         pageSize = Optional.ofNullable(pageSize).orElse(20);
 
-        Map<String,String> headers = Maps.newHashMap();
-
-        headers.put("accept", "*/*");
-        headers.put("accept-language", "zh-CN,zh;q=0.9,en;q=0.8");
-        headers.put("cache-control", "no-cache");
-        headers.put("pragma", "no-cache");
-        headers.put("sec-ch-ua", "\"Google Chrome\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"");
-        headers.put("sec-ch-ua-mobile", "?0");
-        headers.put("sec-ch-ua-platform", "\"Windows\"");
-        headers.put("sec-fetch-dest", "script");
-        headers.put("sec-fetch-mode", "no-cors");
-        headers.put("sec-fetch-site", "same-site");
-        headers.put("referer", "https://fundf10.eastmoney.com/");
-        headers.put("referrerPolicy", "strict-origin-when-cross-origin");
+        Map<String, String> headers = getHeaderMap();
 
         String result = HttpClientUtil.doGet("https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code +
                         "&pageIndex=" + currentPage + "&pageSize=" + pageSize + "&startDate=&endDate=&_=" + System.currentTimeMillis(),
@@ -99,11 +88,43 @@ public class FundServiceImpl implements FundService {
         return jsonObject.getJSONObject("Data");
     }
 
+    private static Map<String, String> getHeaderMap() {
+        Map<String,String> headers = Maps.newHashMap();
+
+        headers.put("accept", "*/*");
+        headers.put("accept-language", "zh-CN,zh;q=0.9,en;q=0.8");
+        headers.put("cache-control", "no-cache");
+        headers.put("pragma", "no-cache");
+        headers.put("sec-ch-ua", "\"Google Chrome\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\"");
+        headers.put("sec-ch-ua-mobile", "?0");
+        headers.put("sec-ch-ua-platform", "\"Windows\"");
+        headers.put("sec-fetch-dest", "script");
+        headers.put("sec-fetch-mode", "no-cors");
+        headers.put("sec-fetch-site", "same-site");
+        headers.put("referer", "https://fundf10.eastmoney.com/");
+        headers.put("referrerPolicy", "strict-origin-when-cross-origin");
+        return headers;
+    }
+
     @Override
     public List<JSONObject> getSearchData() throws IOException {
         String result = HttpClientUtil.doGet("http://fund.eastmoney.com/js/fundcode_search.js", Maps.newHashMap());
         Assert.notNull(result, "获取数据错误!");
         return Lists.newArrayList();
+    }
+
+    @Override
+    @LogError(value = "保存基金设置")
+    public ResultVO<Void> saveSetting(Object obj) {
+        this.redisService.setObject("FUND_SETTING_DATA", obj, RedisDbConstant.REDIS_DB_DEFAULT);
+        return ResultUtil.getSuccess();
+    }
+
+    @Override
+    @LogError(value = "获取基金配置")
+    public ResultVO<Object> getSetting() {
+        Object settingData = this.redisService.getObject("FUND_SETTING_DATA", Object.class, RedisDbConstant.REDIS_DB_DEFAULT);
+        return ResultUtil.getSuccess(Object.class, settingData);
     }
 
 
