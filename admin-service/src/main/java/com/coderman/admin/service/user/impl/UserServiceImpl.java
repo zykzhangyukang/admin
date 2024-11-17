@@ -818,11 +818,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 查询数据
         List<UserExcelVO> list = this.userDAO.selectExportList(conditionMap);
         // 导出excel
-        try {
-            EasyExcelUtils.exportExcel(UserExcelVO.class, list, "用户列表.xlsx");
-        } catch (Exception e) {
-            log.error("error:{}", e.getMessage());
-        }
+        EasyExcelUtils.exportExcel(UserExcelVO.class, list, "用户列表");
     }
 
     @Override

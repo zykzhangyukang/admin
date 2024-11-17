@@ -1,6 +1,7 @@
 package com.coderman.admin.vo.user;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,9 +12,6 @@ import java.util.Date;
  */
 @Data
 public class UserExcelVO {
-
-    @ExcelProperty(value = "用户id")
-    private Integer userId;
 
     @ExcelProperty(value = "用户账号")
     private String username;
@@ -37,5 +35,6 @@ public class UserExcelVO {
     private Integer userStatus;
 
     @ExcelProperty(value = "创建时间")
+    @ColumnWidth(value = 20)
     private Date createTime;
 }

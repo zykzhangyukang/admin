@@ -6,13 +6,11 @@ import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.util.MapUtils;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
-import com.alibaba.excel.write.metadata.style.WriteCellStyle;
-import com.alibaba.excel.write.metadata.style.WriteFont;
-import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.HttpContextUtil;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.springframework.http.HttpHeaders;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
@@ -41,13 +39,11 @@ public class EasyExcelUtils {
         String encodedFileName;
         try {
             encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
-            response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName);
-            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "content-disposition");
             response.setCharacterEncoding("utf-8");
             EasyExcel.write(response.getOutputStream(), clazz)
-                    .useDefaultStyle(false)
-                    // 样式修改
-                    .registerWriteHandler(EasyExcelUtils.buildDefStyle())
                     // 宽度自适应
                     .registerWriteHandler(new AbstractColumnWidthStyleStrategy() {
 
@@ -106,74 +102,4 @@ public class EasyExcelUtils {
             throw new BusinessException("导出文件失败:"+ e.getMessage());
         }
     }
-
-
-    /**
-     * 表头样式
-     */
-    private static WriteFont buildHeadWriteFont() {
-        WriteFont headWriteFont = new WriteFont();
-        headWriteFont.setFontName("宋体");
-        headWriteFont.setFontHeightInPoints((short) 10);
-        headWriteFont.setBold(false);
-        headWriteFont.setColor(IndexedColors.WHITE.getIndex());
-        return headWriteFont;
-    }
-
-
-    private static WriteCellStyle defCellStyle() {
-        WriteCellStyle style = new WriteCellStyle();
-        //默认都是居中
-        style.setHorizontalAlignment(HorizontalAlignment.CENTER);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-
-        style.setFillPatternType(FillPatternType.SOLID_FOREGROUND);
-        style.setBorderRight(BorderStyle.THIN);
-        style.setRightBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setLeftBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-        style.setBorderTop(BorderStyle.THIN);
-        style.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-
-        style.setWriteFont(buildHeadWriteFont());
-        return style;
-    }
-
-
-    private static WriteCellStyle buildHeadStyle() {
-        WriteCellStyle style = defCellStyle();
-        // 头部居中
-        style.setHorizontalAlignment(HorizontalAlignment.CENTER);
-        style.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());
-        style.setWriteFont(buildHeadWriteFont());
-        return style;
-    }
-
-    private static WriteCellStyle buildContentStyle() {
-        WriteCellStyle style = defCellStyle();
-        // 内容左对齐
-        style.setHorizontalAlignment(HorizontalAlignment.LEFT);
-        style.setWriteFont(new WriteFont());
-        //设置 自动不换行
-        style.setWrapped(false);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-
-        // 内容区域字体设置
-        WriteFont contentWriteFont = new WriteFont();
-        contentWriteFont.setFontName("Arial");
-        contentWriteFont.setFontHeightInPoints((short) 10);
-        contentWriteFont.setColor(IndexedColors.BLACK.getIndex());
-        style.setWriteFont(contentWriteFont);
-        return style;
-    }
-
-
-    public static HorizontalCellStyleStrategy buildDefStyle() {
-        WriteCellStyle headStyle = buildHeadStyle();
-        WriteCellStyle contentStyle = buildContentStyle();
-        return new HorizontalCellStyleStrategy(headStyle, contentStyle);
-    }
-
 }

@@ -342,6 +342,7 @@
     u.dept_id,
     u.phone,
     u.email,
+    u.avatar,
     u.user_status,
     u.create_time,
     d.dept_name
