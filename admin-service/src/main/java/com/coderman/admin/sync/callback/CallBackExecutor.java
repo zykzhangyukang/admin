@@ -1,12 +1,12 @@
 package com.coderman.admin.sync.callback;
 
 import com.alibaba.fastjson.JSONObject;
-import com.coderman.admin.sync.context.SyncContext;
-import com.coderman.admin.sync.constant.PlanConstant;
-import com.coderman.admin.sync.constant.SyncConstant;
 import com.coderman.admin.sync.callback.meta.CallBackNode;
 import com.coderman.admin.sync.callback.meta.CallbackTask;
 import com.coderman.admin.sync.config.CallbackConfig;
+import com.coderman.admin.sync.constant.PlanConstant;
+import com.coderman.admin.sync.constant.SyncConstant;
+import com.coderman.admin.sync.context.SyncContext;
 import com.coderman.admin.sync.executor.AbstractExecutor;
 import com.coderman.admin.sync.sql.SelectBuilder;
 import com.coderman.admin.sync.sql.UpdateBuilder;
@@ -16,8 +16,10 @@ import com.coderman.admin.sync.util.SqlUtil;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
+import com.coderman.service.util.DesUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
@@ -40,7 +42,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -432,7 +433,7 @@ public class CallBackExecutor {
 
             sqlMeta.setSql(SqlUtil.fillParam(sqlMeta, executor));
             List<SqlMeta> sqlMetaList = executor.execute();
-            if (sqlMetaList != null && sqlMetaList.size() == 1 && sqlMetaList.get(0).getResultList() != null && sqlMetaList.get(0).getResultList().size() > 0) {
+            if (sqlMetaList != null && sqlMetaList.size() == 1 && sqlMetaList.get(0).getResultList() != null && !sqlMetaList.get(0).getResultList().isEmpty()) {
 
                 callbackId = sqlMetaList.get(0).getResultList().get(0).get("callback_id");
 
@@ -523,8 +524,16 @@ public class CallBackExecutor {
             // 回调接口调用
             HttpPost post = new HttpPost(callbackUrl);
 
+            String msg = callback.getMsg();
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String nonce = RandomStringUtils.randomAlphanumeric(32);
+            String encrypt = DesUtil.encrypt((msg + nonce + timestamp), System.getProperty("secret.key"));
+            // 接口签名
+            post.setHeader("timestamp", timestamp);
+            post.setHeader("nonce", nonce);
+            post.setHeader("sign", encrypt);
             post.setConfig(this.requestConfig);
-            post.setEntity(new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("msg", callback.getMsg())), "UTF-8"));
+            post.setEntity(new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("msg", msg)), "UTF-8"));
 
             response = client.execute(post);
 
@@ -538,11 +547,11 @@ public class CallBackExecutor {
                     if (jsonObject != null && jsonObject.containsKey("code") && HttpStatus.SC_OK == jsonObject.getInteger("code")) {
                         result = true;
                     } else {
-                        error = String.format("业务系统回调失败,resultVO code 错误！！！resultVO:%s, retryCount:%s", resultStr, callback.getRetry());
+                        error = resultStr;
                     }
                 }
             } else {
-                error = String.format("业务系统回调 url:%s ,http状态码错误 ！！！statusLine:%s, retryCount:%s", callbackUrl, response.getStatusLine(), callback.getRetry());
+                error = response.getStatusLine().toString();
             }
 
         } catch (Exception e) {
