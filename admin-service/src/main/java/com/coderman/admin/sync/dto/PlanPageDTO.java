@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 /**
  * @author zhangyukang
  */
@@ -38,6 +40,12 @@ public class PlanPageDTO extends BaseModel {
 
     @ApiModelProperty(value = "目标系统")
     private String destProject;
+
+    @ApiModelProperty(value = "开始时间")
+    private Date startTime;
+
+    @ApiModelProperty(value = "结束时间")
+    private Date endTime;
 
     @ApiModelProperty(value = "排序字段")
     private String sortField;

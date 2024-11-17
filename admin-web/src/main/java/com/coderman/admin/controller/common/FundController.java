@@ -3,6 +3,7 @@ package com.coderman.admin.controller.common;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.vo.common.FundBeanVO;
+import com.coderman.admin.vo.common.FundSettingItemVO;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -56,16 +57,17 @@ public class FundController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
-    public ResultVO<Void> saveSetting(@RequestBody Object obj) {
-        return this.fundService.saveSetting(obj);
+    public ResultVO<Void> saveSetting(@RequestBody List<FundSettingItemVO> settingItemVos) {
+        return this.fundService.saveSetting(settingItemVos);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "保存基金设置")
     @GetMapping(value = "/get/setting")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "FundSettingItemVO", value = {"costPrise", "fundCode", "bonds"}),
     })
-    public ResultVO<Object> getSetting() {
+    public ResultVO<List<FundSettingItemVO>> getSetting() {
         return this.fundService.getSetting();
     }
 

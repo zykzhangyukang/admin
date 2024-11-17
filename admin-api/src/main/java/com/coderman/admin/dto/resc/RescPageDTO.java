@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class RescPageDTO extends BaseModel {
@@ -23,6 +25,12 @@ public class RescPageDTO extends BaseModel {
 
     @ApiModelProperty(value = "功能标识")
     private String funcKey;
+
+    @ApiModelProperty(value = "开始时间")
+    private Date startTime;
+
+    @ApiModelProperty(value = "结束时间")
+    private Date endTime;
 
     @ApiModelProperty(value = "资源所属系统")
     private String rescDomain;

@@ -84,6 +84,8 @@ public class FuncServiceImpl implements FuncService {
         Integer parentId = funcPageDTO.getParentId();
         Integer hide = funcPageDTO.getHide();
         String rescUrl = funcPageDTO.getRescUrl();
+        Date startTime = funcPageDTO.getStartTime();
+        Date endTime = funcPageDTO.getEndTime();
 
         Integer currentPage = funcPageDTO.getCurrentPage();
         Integer pageSize = funcPageDTO.getPageSize();
@@ -105,6 +107,12 @@ public class FuncServiceImpl implements FuncService {
         }
         if (Objects.nonNull(parentId)) {
             conditionMap.put("parentId", parentId);
+        }
+        if (Objects.nonNull(startTime)) {
+            conditionMap.put("startTime", startTime);
+        }
+        if (Objects.nonNull(endTime)) {
+            conditionMap.put("endTime", endTime);
         }
         // 字段排序
         String sortType = funcPageDTO.getSortType();

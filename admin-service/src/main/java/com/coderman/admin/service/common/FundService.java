@@ -2,6 +2,7 @@ package com.coderman.admin.service.common;
 
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.vo.common.FundBeanVO;
+import com.coderman.admin.vo.common.FundSettingItemVO;
 import com.coderman.api.vo.ResultVO;
 
 import java.io.IOException;
@@ -31,14 +32,20 @@ public interface FundService {
 
     /**
      * 保存基金设置
-     * @param obj
+     * @param settingItemVos
      * @return
      */
-    ResultVO<Void> saveSetting(Object obj);
+    ResultVO<Void> saveSetting(List<FundSettingItemVO> settingItemVos);
 
     /**
      * 获取基金配置
      * @return
      */
-    ResultVO<Object> getSetting();
+    ResultVO<List<FundSettingItemVO>> getSetting();
+
+    /**
+     * 获取基金参数
+     * @return
+     */
+    List<String> getApiParams();
 }

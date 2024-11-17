@@ -65,6 +65,8 @@ public class RescServiceImpl implements RescService {
         String rescDomain = rescPageDTO.getRescDomain();
         String methodType = rescPageDTO.getMethodType();
         String funcKey = rescPageDTO.getFuncKey();
+        Date startTime = rescPageDTO.getStartTime();
+        Date endTime = rescPageDTO.getEndTime();
 
         Map<String, Object> conditionMap = new HashMap<>(6);
 
@@ -82,6 +84,12 @@ public class RescServiceImpl implements RescService {
         }
         if (StringUtils.isNotBlank(funcKey)) {
             conditionMap.put("funcKey", funcKey);
+        }
+        if (Objects.nonNull(startTime)) {
+            conditionMap.put("startTime", startTime);
+        }
+        if (Objects.nonNull(endTime)) {
+            conditionMap.put("endTime", endTime);
         }
         // 字段排序
         String sortField = rescPageDTO.getSortField();

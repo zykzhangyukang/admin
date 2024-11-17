@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 /**
  * 用户列表查询DTO
  */
@@ -20,6 +22,21 @@ public class UserPageDTO extends BaseModel {
 
     @ApiModelProperty(value = "用户账号")
     private String username;
+
+    @ApiModelProperty(value = "手机号")
+    private String phone;
+
+    @ApiModelProperty(value = "邮箱")
+    private String email;
+
+    @ApiModelProperty(value = "部门")
+    private String deptId;
+
+    @ApiModelProperty(value = "开始时间")
+    private Date startTime;
+
+    @ApiModelProperty(value = "结束时间")
+    private Date endTime;
 
     @ApiModelProperty(value = "真实名称")
     private String realName;

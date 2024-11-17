@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 /**
  * @author zhangyukang
  */
@@ -35,6 +37,12 @@ public class FuncPageDTO extends BaseModel {
 
     @ApiModelProperty("父级功能id")
     private Integer parentId;
+
+    @ApiModelProperty(value = "开始时间")
+    private Date startTime;
+
+    @ApiModelProperty(value = "结束时间")
+    private Date endTime;
 
     @ApiModelProperty(value = "排序类型")
     private String sortType;

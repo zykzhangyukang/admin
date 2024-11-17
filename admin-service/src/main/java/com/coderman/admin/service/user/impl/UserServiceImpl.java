@@ -363,7 +363,6 @@ public class UserServiceImpl extends BaseService implements UserService {
             list = this.userDAO.selectPage(conditionMap);
             for (UserVO userVO : list) {
                 userVO.setPhone(MaskUtil.maskPhone(userVO.getPhone()));
-                userVO.setEmail(MaskUtil.maskPhone(userVO.getEmail()));
             }
         }
         return ResultUtil.getSuccessPage(UserVO.class, PageUtil.getPageVO(count, list, currentPage, pageSize));
@@ -375,14 +374,26 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (StringUtils.isNotBlank(queryVO.getUsername())) {
             conditionMap.put("username", queryVO.getUsername());
         }
+        if (StringUtils.isNotBlank(queryVO.getPhone())) {
+            conditionMap.put("phone", queryVO.getPhone());
+        }
+        if (StringUtils.isNotBlank(queryVO.getEmail())) {
+            conditionMap.put("email", queryVO.getEmail());
+        }
+        if (Objects.nonNull(queryVO.getDeptId())) {
+            conditionMap.put("deptId", queryVO.getDeptId());
+        }
         if (StringUtils.isNotBlank(queryVO.getRealName())) {
             conditionMap.put("realName", queryVO.getRealName());
         }
         if (Objects.nonNull(queryVO.getUserStatus())) {
             conditionMap.put("userStatus", queryVO.getUserStatus());
         }
-        if (StringUtils.isNotBlank(queryVO.getDeptCode())) {
-            conditionMap.put("deptCode", queryVO.getDeptCode());
+        if (Objects.nonNull(queryVO.getStartTime())) {
+            conditionMap.put("startTime", queryVO.getStartTime());
+        }
+        if (Objects.nonNull(queryVO.getEndTime())) {
+            conditionMap.put("endTime", queryVO.getEndTime());
         }
         // 字段排序
         String sortType = queryVO.getSortType();

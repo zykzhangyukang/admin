@@ -42,7 +42,7 @@ public class EasyExcelUtils {
         try {
             encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
             response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName);
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setContentType("application/octet-stream");
             response.setCharacterEncoding("utf-8");
             EasyExcel.write(response.getOutputStream(), clazz)
                     .useDefaultStyle(false)

@@ -3,10 +3,10 @@ package com.coderman.admin.service.common.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.utils.HttpClientUtil;
 import com.coderman.admin.vo.common.FundBeanVO;
+import com.coderman.admin.vo.common.FundSettingItemVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
@@ -14,6 +14,7 @@ import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -41,7 +42,7 @@ public class FundServiceImpl implements FundService {
     @LogError(value = "基金列表")
     public List<FundBeanVO> getListData() {
 
-        List<String> codes = FundConstant.FUND_CODE_LIST;
+        List<String> codes = this.getApiParams();
 
         List<String> codeList = new ArrayList<>();
         Map<String, String[]> codeMap = new HashMap<>();
@@ -115,16 +116,38 @@ public class FundServiceImpl implements FundService {
 
     @Override
     @LogError(value = "保存基金设置")
-    public ResultVO<Void> saveSetting(Object obj) {
-        this.redisService.setObject("FUND_SETTING_DATA", obj, RedisDbConstant.REDIS_DB_DEFAULT);
+    public ResultVO<Void> saveSetting(List<FundSettingItemVO> settingInfoVO) {
+        this.redisService.setString("FUND_SETTING_DATA", JSONObject.toJSONString(settingInfoVO), RedisDbConstant.REDIS_DB_DEFAULT);
         return ResultUtil.getSuccess();
     }
 
     @Override
     @LogError(value = "获取基金配置")
-    public ResultVO<Object> getSetting() {
-        Object settingData = this.redisService.getObject("FUND_SETTING_DATA", Object.class, RedisDbConstant.REDIS_DB_DEFAULT);
-        return ResultUtil.getSuccess(Object.class, settingData);
+    public ResultVO<List<FundSettingItemVO>> getSetting() {
+        String settingData = this.redisService.getString("FUND_SETTING_DATA", RedisDbConstant.REDIS_DB_DEFAULT);
+        List<FundSettingItemVO> settingItemVOs = JSONObject.parseArray(settingData, FundSettingItemVO.class);
+        return ResultUtil.getSuccessList(FundSettingItemVO.class, settingItemVOs);
+    }
+
+    @Override
+    public List<String> getApiParams() {
+
+        ResultVO<List<FundSettingItemVO>> setting = this.getSetting();
+        List<String> confList = Lists.newArrayList();
+        if(CollectionUtils.isNotEmpty(setting.getResult())){
+
+            for (FundSettingItemVO settingItemVO : setting.getResult()) {
+                StringBuilder str = new StringBuilder(settingItemVO.getFundCode());
+                if(Objects.nonNull(settingItemVO.getCostPrise()) && settingItemVO.getCostPrise().compareTo(BigDecimal.ZERO) > 0){
+                    str.append(",").append(settingItemVO.getCostPrise());
+                }
+                if(Objects.nonNull(settingItemVO.getBonds()) && settingItemVO.getBonds().compareTo(BigDecimal.ZERO) > 0){
+                    str.append(",").append(settingItemVO.getBonds());
+                }
+                confList.add(str.toString());
+            }
+        }
+        return confList;
     }
 
 

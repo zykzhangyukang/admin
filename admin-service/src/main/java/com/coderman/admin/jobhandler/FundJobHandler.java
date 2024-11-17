@@ -3,13 +3,12 @@ package com.coderman.admin.jobhandler;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.coderman.admin.constant.FundConstant;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.service.common.NotificationService;
-import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.admin.utils.WxApiUtils;
+import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
@@ -111,7 +110,8 @@ public class FundJobHandler {
     private List<FundBeanVO> getRedisData(){
         List<FundBeanVO> resultList = Lists.newArrayList();
 
-        for (String str : FundConstant.FUND_CODE_LIST) {
+        List<String> apiParams = this.fundService.getApiParams();
+        for (String str : apiParams) {
 
             String[] strArray = str.contains(",") ? str.split(",") : new String[]{str};
             String redisKey = "FUND_JZ_DATA:" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");

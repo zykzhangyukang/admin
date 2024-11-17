@@ -382,6 +382,18 @@
       <if test="userStatus!=null">
         and user_status = #{userStatus}
       </if>
+      <if test="phone!=null and phone!=''">
+        and phone = #{phone}
+      </if>
+      <if test="email!=null and email!=''">
+        and email = #{email}
+      </if>
+      <if test="startTime!=null">
+        and u.create_time &gt;= #{startTime}
+      </if>
+      <if test="endTime">
+        and u.create_time &lt;= #{endTime}
+      </if>
       <if test="deptId!=null">
         and u.dept_id = #{deptId}
       </if>

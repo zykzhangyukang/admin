@@ -335,6 +335,12 @@
       <if test="parentId!=null">
         and (f.parent_id = #{parentId} or f.func_id = #{parentId})
       </if>
+      <if test="startTime!=null">
+        and f.create_time &gt;= #{startTime}
+      </if>
+      <if test="endTime">
+        and f.create_time &lt;= #{endTime}
+      </if>
       <if test="rescUrl!=null and rescUrl!=''">
         AND EXISTS (
         SELECT

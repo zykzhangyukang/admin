@@ -181,10 +181,10 @@ public class UserController {
     }
 
 
-    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "用户列表导出")
-    @RequestMapping(value = "/export",method = RequestMethod.GET)
-    public void export(UserPageDTO userPageDTO) {
-         userService.export(userPageDTO);
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "用户列表导出")
+    @PostMapping(value = "/export")
+    public void export(@RequestBody UserPageDTO userPageDTO) {
+        userService.export(userPageDTO);
     }
 
 
