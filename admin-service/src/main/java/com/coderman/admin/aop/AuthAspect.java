@@ -66,7 +66,10 @@ public class AuthAspect {
      */
     @Resource
     private UserService userApi;
-
+    /**
+     * 是否单设备登录校验
+     */
+    private static final boolean isOneDeviceLogin = true;
 
     /**
      * 保存token与用户的关系
@@ -140,7 +143,7 @@ public class AuthAspect {
         // 访问令牌
         String token = AuthUtil.getToken();
         if (StringUtils.isBlank(token)) {
-            throw new BusinessException(ResultConstant.RESULT_CODE_401, "用户未登录，请先登录!");
+            throw new BusinessException(ResultConstant.RESULT_CODE_401, "会话已过期, 请重新登录");
         }
         // 系统不存在的资源直接返回
         if (!systemAllResourceMap.containsKey(path) && !unFilterHasLoginInfoUrl.contains(path)) {
@@ -159,7 +162,21 @@ public class AuthAspect {
 
         if (authUserVO == null || System.currentTimeMillis() > authUserVO.getExpiredTime()) {
             USER_TOKEN_CACHE_MAP.invalidate(token);
-            throw new BusinessException(ResultConstant.RESULT_CODE_401, "用户未登录，请先登录!");
+            throw new BusinessException(ResultConstant.RESULT_CODE_401, "会话已过期, 请重新登录");
+        }
+
+        // 单设备校验
+        if(isOneDeviceLogin){
+            Integer userId = authUserVO.getUserId();
+            String deviceToken = null;
+            try {
+                deviceToken = this.userApi.getTokenByUserId(userId);
+            } catch (Exception ignore) {
+            }
+            if (StringUtils.isNotBlank(deviceToken) && !StringUtils.equals(deviceToken, token)) {
+                USER_TOKEN_CACHE_MAP.invalidate(token);
+                throw new BusinessException(ResultConstant.RESULT_CODE_401, "账号已在其他设备上登录！");
+            }
         }
 
         // 不需要过滤的url且有登入信息,设置会话后直接放行

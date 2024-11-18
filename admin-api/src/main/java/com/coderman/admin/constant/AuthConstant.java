@@ -27,6 +27,7 @@ public interface AuthConstant {
      */
     String AUTH_ACCESS_TOKEN_NAME = "auth:access_token:";
     String AUTH_REFRESH_TOKEN_NAME = "auth:refresh_token:";
+    String AUTH_DEVICE_TOKEN_NAME = "auth:device_token:";
 
     /**
      * 用户状态

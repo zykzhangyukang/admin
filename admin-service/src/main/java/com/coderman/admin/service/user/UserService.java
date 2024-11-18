@@ -198,4 +198,11 @@ public interface UserService {
      * @return
      */
     ResultVO<String> uploadAvatar(MultipartFile file);
+
+    /**
+     * 根据用户id获取登入token
+     * @param userId
+     * @return
+     */
+    String getTokenByUserId(Integer userId);
 }

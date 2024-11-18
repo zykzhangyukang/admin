@@ -233,6 +233,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         String refreshToken = authUserVO.getRefreshToken();
         this.redisService.del(AuthConstant.AUTH_ACCESS_TOKEN_NAME + accessToken, RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, RedisDbConstant.REDIS_DB_AUTH);
+        this.redisService.del(AuthConstant.AUTH_DEVICE_TOKEN_NAME + authUserVO.getUserId(), RedisDbConstant.REDIS_DB_AUTH);
 
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "用户注销登录");
 
@@ -328,6 +329,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 保存会话信息到redis
         this.redisService.setObject(AuthConstant.AUTH_ACCESS_TOKEN_NAME + accessToken, authUserVO, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.setObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, authUserVO, AuthConstant.REFRESH_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
+        // 单设备登录
+        this.redisService.setString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + authUserVO.getUserId(), accessToken, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
+
         return authUserVO;
     }
 
@@ -863,6 +867,16 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 
         return ResultUtil.getSuccess(String.class, FileConstant.OSS_FILE_DOMAIN + path);
+    }
+
+    @Override
+    @LogError(value = "根据用户id获取token")
+    public String getTokenByUserId(Integer userId) {
+        if(userId == null){
+            return StringUtils.EMPTY;
+        }else {
+            return this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + userId, RedisDbConstant.REDIS_DB_AUTH);
+        }
     }
 
 
