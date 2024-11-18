@@ -1,10 +1,10 @@
 package com.coderman.admin.interceptor;
 
-import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.dto.common.AuthPrincipal;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.vo.user.AuthUserVO;
+import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * 建立连接时候的权限拦截器
+ *
  * @author zhangyukang
  */
 @Slf4j
@@ -41,7 +42,7 @@ public class AuthHandshakeInterceptor implements ChannelInterceptor {
     private RedisService redisService;
 
     @Override
-    public Message<?> preSend(@NonNull Message<?> message,@NonNull MessageChannel channel) {
+    public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
 
         // 不是第一次连接
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);

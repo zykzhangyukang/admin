@@ -116,9 +116,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + current.getRefreshToken(), RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.del(AuthConstant.AUTH_DEVICE_TOKEN_NAME + current.getUserId(), RedisDbConstant.REDIS_DB_AUTH);
 
-        // 发送广播
-        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_USER_LOGOUT, current);
-
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "切换用户登录");
 
@@ -337,8 +334,10 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 保存会话信息到redis
         this.redisService.setObject(AuthConstant.AUTH_ACCESS_TOKEN_NAME + accessToken, authUserVO, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.setObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, authUserVO, AuthConstant.REFRESH_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
-        // 单设备登录
         this.redisService.setString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + authUserVO.getUserId(), accessToken, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
+
+        // 缓存广播
+        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_USER_LOGOUT, authUserVO);
 
         return authUserVO;
     }

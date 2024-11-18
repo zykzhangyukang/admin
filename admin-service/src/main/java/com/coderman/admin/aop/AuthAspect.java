@@ -89,6 +89,24 @@ public class AuthAspect {
             })
             .recordStats()
             .build();
+    /**
+     * 保存缓存设备的信息
+     */
+    public static final Cache<Integer, String> USER_DEVICE_CACHE_MAP = CacheBuilder.newBuilder()
+            //设置缓存初始大小
+            .initialCapacity(10)
+            //最大值
+            .maximumSize(500)
+            //多线程并发数
+            .concurrencyLevel(5)
+            //过期时间，写入后30s过期
+            .expireAfterWrite(30, TimeUnit.SECONDS)
+            // 过期监听
+            .removalListener((RemovalListener<Integer, String>) removalNotification -> {
+                log.debug("过期设备缓存清除 userId:{} is removed cause:{}", removalNotification.getKey(), removalNotification.getCause());
+            })
+            .recordStats()
+            .build();
 
     @PostConstruct
     public void init() {
@@ -121,6 +139,19 @@ public class AuthAspect {
         systemAllResourceMap = this.rescApi.getSystemAllRescMap(null).getResult();
     }
 
+    /**
+     * 清除本地缓存
+     *
+     * @param token
+     * @param userId
+     */
+    private void clearCache(String token, Integer userId) {
+        // 清除会话缓存
+        USER_TOKEN_CACHE_MAP.invalidate(token);
+        // 清除设备缓存
+        USER_DEVICE_CACHE_MAP.invalidate(userId);
+    }
+
 
     @Pointcut("(execution(* com.coderman..controller..*(..)))")
     public void pointcut() {
@@ -146,7 +177,7 @@ public class AuthAspect {
         }
         // 系统不存在的资源直接返回
         if (!systemAllResourceMap.containsKey(path) && !unFilterHasLoginInfoUrl.contains(path)) {
-            throw new BusinessException(ResultConstant.RESULT_CODE_404 , "您访问的接口不存在!");
+            throw new BusinessException(ResultConstant.RESULT_CODE_404, "您访问的接口不存在!");
         }
 
         // 用户信息
@@ -165,15 +196,15 @@ public class AuthAspect {
         }
 
         // 单设备校验
-        if(isOneDeviceLogin){
+        if (isOneDeviceLogin) {
             Integer userId = authUserVO.getUserId();
-            String deviceToken = null;
-            try {
-                deviceToken = this.userApi.getTokenByUserId(userId);
-            } catch (Exception ignore) {
-            }
+            String deviceToken;
+            deviceToken = USER_DEVICE_CACHE_MAP.get(userId, () -> {
+                log.debug("尝试从redis中获取设备信息结果.userId:{}", userId);
+                return userApi.getTokenByUserId(userId);
+            });
             if (StringUtils.isNotBlank(deviceToken) && !StringUtils.equals(deviceToken, token)) {
-                USER_TOKEN_CACHE_MAP.invalidate(token);
+                USER_DEVICE_CACHE_MAP.invalidate(userId);
                 throw new BusinessException(ResultConstant.RESULT_CODE_401, "账号已在其他设备上登录！");
             }
         }
@@ -203,30 +234,25 @@ public class AuthAspect {
 
         }
 
-        throw new BusinessException(ResultConstant.RESULT_CODE_403 , "接口无权限");
+        throw new BusinessException(ResultConstant.RESULT_CODE_403, "接口无权限");
     }
 
     @RedisChannelListener(channelName = RedisConstant.CHANNEL_REFRESH_RESC)
     public void doRefreshResc(String msgContent) {
 
         log.warn("doRefreshResc start - > {}", msgContent);
-
-        // 刷新系统资源
         this.refreshSystemAllRescMap();
-
         log.warn("doRefreshResc end - > {}", msgContent);
     }
 
-    @RedisChannelListener(channelName = RedisConstant.CHANNEL_USER_LOGOUT,clazz = AuthUserVO.class)
+    @RedisChannelListener(channelName = RedisConstant.CHANNEL_USER_LOGOUT, clazz = AuthUserVO.class)
     public void doUserLogout(AuthUserVO logoutUser) {
 
         String accessToken = logoutUser.getAccessToken();
+        Integer userId = logoutUser.getUserId();
 
         log.warn("doUserLogout start - > {}", accessToken);
-
-        // 清除会话缓存
-        USER_TOKEN_CACHE_MAP.invalidate(accessToken);
-
+        this.clearCache(accessToken, userId);
         log.warn("doUserLogout end - > {}", accessToken);
     }
 }
