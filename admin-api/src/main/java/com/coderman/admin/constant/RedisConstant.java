@@ -10,7 +10,10 @@ public interface RedisConstant {
      * 刷新系统资源
      */
     public static final String CHANNEL_REFRESH_RESC = "topic://refresh_resc";
-
+    /**
+     * 用户退出登录
+     */
+    public static final String CHANNEL_USER_LOGOUT = "topic://user_logout";
     /**
      * websocket消息广播
      */

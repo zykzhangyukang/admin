@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.coderman.admin.constant.AuthConstant;
 import com.coderman.admin.constant.FileConstant;
 import com.coderman.admin.constant.NotificationConstant;
+import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.dao.role.RoleDAO;
 import com.coderman.admin.dao.user.UserDAO;
 import com.coderman.admin.dao.user.UserFuncDAO;
@@ -113,6 +114,10 @@ public class UserServiceImpl extends BaseService implements UserService {
         // 删除当前访问令牌和刷新令牌
         this.redisService.del(AuthConstant.AUTH_ACCESS_TOKEN_NAME + current.getAccessToken(), RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + current.getRefreshToken(), RedisDbConstant.REDIS_DB_AUTH);
+        this.redisService.del(AuthConstant.AUTH_DEVICE_TOKEN_NAME + current.getUserId(), RedisDbConstant.REDIS_DB_AUTH);
+
+        // 发送广播
+        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_USER_LOGOUT, current);
 
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "切换用户登录");
@@ -221,7 +226,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     @LogError(value = "用户退出登录")
     public ResultVO<Void> logout(@LogErrorParam String accessToken) {
 
-        if (StringUtils.isNotBlank(accessToken)) {
+        if (StringUtils.isBlank(accessToken)) {
             return ResultUtil.getSuccess();
         }
 
@@ -236,6 +241,9 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.redisService.del(AuthConstant.AUTH_DEVICE_TOKEN_NAME + authUserVO.getUserId(), RedisDbConstant.REDIS_DB_AUTH);
 
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "用户注销登录");
+
+        // 发送广播
+        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_USER_LOGOUT, authUserVO);
 
         return ResultUtil.getSuccess();
     }

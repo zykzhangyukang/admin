@@ -81,15 +81,14 @@ public class AuthAspect {
             .maximumSize(500)
             //多线程并发数
             .concurrencyLevel(5)
-            //过期时间，写入后5分钟过期
-            .expireAfterWrite(5, TimeUnit.MINUTES)
+            //过期时间，写入后30s过期
+            .expireAfterWrite(30, TimeUnit.SECONDS)
             // 过期监听
             .removalListener((RemovalListener<String, AuthUserVO>) removalNotification -> {
                 log.debug("过期会话缓存清除 token:{} is removed cause:{}", removalNotification.getKey(), removalNotification.getCause());
             })
             .recordStats()
             .build();
-
 
     @PostConstruct
     public void init() {
@@ -216,5 +215,18 @@ public class AuthAspect {
         this.refreshSystemAllRescMap();
 
         log.warn("doRefreshResc end - > {}", msgContent);
+    }
+
+    @RedisChannelListener(channelName = RedisConstant.CHANNEL_USER_LOGOUT,clazz = AuthUserVO.class)
+    public void doUserLogout(AuthUserVO logoutUser) {
+
+        String accessToken = logoutUser.getAccessToken();
+
+        log.warn("doUserLogout start - > {}", accessToken);
+
+        // 清除会话缓存
+        USER_TOKEN_CACHE_MAP.invalidate(accessToken);
+
+        log.warn("doUserLogout end - > {}", accessToken);
     }
 }
