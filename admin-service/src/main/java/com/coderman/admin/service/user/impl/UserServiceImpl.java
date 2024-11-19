@@ -160,20 +160,23 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         try {
 
+            // 是否有其他设备登录， 如果有则需要踢出该设备
+            String oldSession = this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + dbUser.getUserId(), RedisDbConstant.REDIS_DB_AUTH);
+            // 创建用户会话
             AuthUserVO authUserVO = this.createSession(dbUser.getUsername());
-
-            // 记录日志
+            // 记录登录日志
             this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(), "用户登录系统");
-
-            // 发送消息
-            NotificationDTO msg = NotificationDTO.builder()
-                    .userId(authUserVO.getUserId())
-                    .title("欢迎您登录系统")
-                    .message("你的账号在新设备或平台登录成功，如非本人操作，请及时修改密码（参考登录地:" + IpUtil.getCityInfo() + "）")
-                    .url("/dashboard")
-                    .type(NotificationConstant.NOTIFICATION_LOGIN_WELCOME)
-                    .build();
-            this.notificationService.saveNotifyToUser(msg);
+            // 多设备登录提醒
+            if(StringUtils.isNotBlank(oldSession) && !StringUtils.equals(oldSession, authUserVO.getAccessToken())){
+                NotificationDTO msg = NotificationDTO.builder()
+                        .userId(authUserVO.getUserId())
+                        .title("设备登录系统")
+                        .sessionKey(oldSession)
+                        .message("账号已在其他设备上登录！如非本人操作，请及时修改密码（登录地:" + IpUtil.getCityInfo() + "）")
+                        .type(NotificationConstant.NOTIFICATION_DEVICE_CHECK)
+                        .build();
+                this.notificationService.sendToUserSession(msg);
+            }
 
             TokenResultVO response = TokenResultVO.builder()
                     .accessToken(authUserVO.getAccessToken())
@@ -287,10 +290,10 @@ public class UserServiceImpl extends BaseService implements UserService {
                 this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, RedisDbConstant.REDIS_DB_AUTH);
             }
 
-            log.warn("用户刷新令牌，refreshToken:{}, tokenResultVO:{}",refreshToken, JSON.toJSONString(tokenResultVO));
+            log.warn("用户刷新令牌，refreshToken:{}, tokenResultVO:{}", refreshToken, JSON.toJSONString(tokenResultVO));
 
             return ResultUtil.getSuccess(TokenResultVO.class, tokenResultVO);
-        }finally {
+        } finally {
 
             this.redisLockService.unlock(lockName);
         }
@@ -436,7 +439,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         String phone = dto.getPhone();
         String email = dto.getEmail();
 
-        if(!ValidationUtil.isValidUsername(username)){
+        if (!ValidationUtil.isValidUsername(username)) {
             return ResultUtil.getWarn("用户账号必须是 3 到 20 个字符，以字母开头，可以包含字母、数字、下划线和连字符！");
         }
         if (StringUtils.isBlank(realName)) {
@@ -457,10 +460,10 @@ public class UserServiceImpl extends BaseService implements UserService {
         if (Objects.isNull(userStatus)) {
             return ResultUtil.getWarn("用户状态不能为空！");
         }
-        if(!ValidationUtil.isValidPhone(phone)){
+        if (!ValidationUtil.isValidPhone(phone)) {
             return ResultUtil.getWarn("手机号填写不合法");
         }
-        if(!ValidationUtil.isValidEmail(email)){
+        if (!ValidationUtil.isValidEmail(email)) {
             return ResultUtil.getWarn("邮箱填写不合法");
         }
 
@@ -594,13 +597,13 @@ public class UserServiceImpl extends BaseService implements UserService {
 
             return ResultUtil.getWarn("真实姓名2-10个字符！");
         }
-        if(!ValidationUtil.isValidPhone(phone)){
+        if (!ValidationUtil.isValidPhone(phone)) {
             return ResultUtil.getWarn("手机号填写不合法！");
         }
-        if(!ValidationUtil.isValidEmail(email)){
+        if (!ValidationUtil.isValidEmail(email)) {
             return ResultUtil.getWarn("邮箱填写不合法！");
         }
-        if(StringUtils.isBlank(avatar)){
+        if (StringUtils.isBlank(avatar)) {
             avatar = FileConstant.DEFAULT_AVATAR;
         }
 
@@ -658,7 +661,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         UserVO userVO = this.userDAO.selectByUsernameVos(username);
-        if(userVO == null){
+        if (userVO == null) {
             return null;
         }
 
@@ -837,7 +840,7 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<String> selectUserPhone(Integer userId) {
 
         UserModel userModel = this.userDAO.selectByPrimaryKey(userId);
-        if(userModel == null){
+        if (userModel == null) {
             return ResultUtil.getFail("用户不存在!");
         }
 
@@ -850,13 +853,13 @@ public class UserServiceImpl extends BaseService implements UserService {
     public ResultVO<String> uploadAvatar(MultipartFile file) {
 
 
-       final String[] FILE_SUFFIX_SUPPORT = {".jpg", ".jpeg", ".png",".webp"};
+        final String[] FILE_SUFFIX_SUPPORT = {".jpg", ".jpeg", ".png", ".webp"};
 
-        if(file == null || file.isEmpty()){
+        if (file == null || file.isEmpty()) {
             return ResultUtil.getWarn("上传的头像不能为空！");
         }
 
-        if(file.getSize() > 2 * 1024 * 1024){
+        if (file.getSize() > 2 * 1024 * 1024) {
             return ResultUtil.getWarn("上传的头像不能大于2M！");
         }
 
@@ -870,7 +873,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         String path = AliYunOssUtil.getInstance().genFilePath(originalFilename, FileModuleEnum.USER_MODULE);
-        AliYunOssUtil.getInstance().uploadStreamIfNotExist(file.getInputStream(),path);
+        AliYunOssUtil.getInstance().uploadStreamIfNotExist(file.getInputStream(), path);
 
 
         return ResultUtil.getSuccess(String.class, FileConstant.OSS_FILE_DOMAIN + path);
@@ -879,9 +882,9 @@ public class UserServiceImpl extends BaseService implements UserService {
     @Override
     @LogError(value = "根据用户id获取token")
     public String getTokenByUserId(Integer userId) {
-        if(userId == null){
+        if (userId == null) {
             return StringUtils.EMPTY;
-        }else {
+        } else {
             return this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + userId, RedisDbConstant.REDIS_DB_AUTH);
         }
     }
@@ -934,7 +937,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 
     @Override
-    public ResultVO<Map<String,Object>> getPermissionInfo() {
+    public ResultVO<Map<String, Object>> getPermissionInfo() {
         AuthUserVO currentUser = AuthUtil.getCurrent();
         Assert.notNull(currentUser, "当前用户未登录!");
 

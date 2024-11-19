@@ -13,9 +13,17 @@ public class AuthPrincipal implements Principal {
 
     private final Integer userId;
 
+    private  String token;
+
     public AuthPrincipal(Integer userId) {
         this.userId = userId;
     }
+
+    public AuthPrincipal(Integer userId, String token) {
+        this.userId = userId;
+        this.token = token;
+    }
+
 
     @Override
     public String getName() {

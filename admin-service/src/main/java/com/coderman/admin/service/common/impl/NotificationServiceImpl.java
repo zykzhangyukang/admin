@@ -23,9 +23,7 @@ import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
-import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
@@ -94,11 +92,22 @@ public class NotificationServiceImpl implements NotificationService {
         //如果接收者在线，则说明接收者连接了集群的其他节点，需要通知接收者连接的那个节点发送消息
         else if (redisService.isSetMember(RedisConstant.WEBSOCKET_USER_SET, receiver, RedisDbConstant.REDIS_DB_DEFAULT)) {
 
-            WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(receiver, destination, payload);
+            WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(receiver, destination, payload, WebSocketChannelEnum.USER_SYS_MSG);
             redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
         } else {
             log.info("用户:{} 离线不提示信息:{}", receiver, JSON.toJSONString(payload));
         }
+    }
+
+    @Override
+    @LogError(value = "推送用户（指定会话）信息")
+    public void sendToUserSession(NotificationDTO payload) {
+
+        String sessionKey = Optional.ofNullable(payload.getSessionKey()).orElse(AuthUtil.getToken());
+
+        String destination = String.format(WebSocketChannelEnum.USER_CHECK_MSG.getSubscribeUrl(), sessionKey);
+        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(sessionKey, destination, payload, WebSocketChannelEnum.USER_CHECK_MSG);
+        redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
     }
 
     @Override
@@ -194,7 +203,7 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendToTopic(NotificationDTO payload) {
 
         String destination = WebSocketChannelEnum.TOPIC_SYS_MSG.getSubscribeUrl();
-        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(StringUtils.EMPTY, destination, payload);
+        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(StringUtils.EMPTY, destination, payload, WebSocketChannelEnum.TOPIC_SYS_MSG);
         // 广播消息
         redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
     }
@@ -211,16 +220,15 @@ public class NotificationServiceImpl implements NotificationService {
         String receiver = websocketRedisMsg.getReceiver();
         Object content = websocketRedisMsg.getContent();
         String destination = websocketRedisMsg.getDestination();
+        WebSocketChannelEnum socketChannelEnum = websocketRedisMsg.getWebSocketChannelEnum();
 
-        // 广播类型
-        WebSocketChannelEnum webSocketChannelEnum = WebSocketChannelEnum.getBySubscribeUrl(destination);
-        if (WebSocketChannelEnum.TOPIC_SYS_MSG.equals(webSocketChannelEnum)) {
+        if (WebSocketChannelEnum.TOPIC_SYS_MSG.equals(socketChannelEnum)) {
 
             //  广播发送
             simpMessagingTemplate.convertAndSend(destination, content);
             log.debug("handWebSocketNotify-websocket推送广播消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
 
-        } else {
+        } else if(WebSocketChannelEnum.USER_SYS_MSG.equals(socketChannelEnum)){
 
             // 取出用户名并判断是否连接到当前应用节点的WebSocket
             SimpUser simpUser = simpUserRegistry.getUser(receiver);
@@ -230,6 +238,10 @@ public class NotificationServiceImpl implements NotificationService {
                 simpMessagingTemplate.convertAndSend(destination, content);
                 log.debug("handWebSocketNotify-websocket推送点对点消息 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
             }
+        }else if(WebSocketChannelEnum.USER_CHECK_MSG.equals(socketChannelEnum)){
+
+            simpMessagingTemplate.convertAndSend(destination, content);
+            log.debug("handWebSocketNotify-websocket推送多用户设备下线通知 destination => {} ,payload => {}", destination, JSON.toJSONString(content));
         }
     }
 }

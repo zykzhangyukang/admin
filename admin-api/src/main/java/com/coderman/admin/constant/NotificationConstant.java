@@ -56,6 +56,8 @@ public interface NotificationConstant {
     public static final String NOTIFICATION_LOGIN_WELCOME = "login_welcome";
     @ConstList(group = "notification_type",name = "基金收益提醒")
     public static final String NOTIFICATION_FUND_TIPS = "fund_tips";
+    @ConstList(group = "notification_type",name = "多设备登录")
+    public static final String NOTIFICATION_DEVICE_CHECK = "device_check";
 
     /**
      * 消息是否已读

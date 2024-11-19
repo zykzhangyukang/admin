@@ -69,7 +69,7 @@ public class AuthHandshakeInterceptor implements ChannelInterceptor {
         Integer userId = authUserVO.getUserId();
 
         // 单节点会话
-        accessor.setUser(new AuthPrincipal(userId));
+        accessor.setUser(new AuthPrincipal(userId, token));
         if (this.redisService.isSetMember(RedisConstant.WEBSOCKET_USER_SET, String.valueOf(userId), RedisDbConstant.REDIS_DB_DEFAULT)) {
 
             log.warn("userId:{}, sessionId:{}, 重新连接WebSocket", userId, sessionId);

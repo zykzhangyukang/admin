@@ -25,6 +25,12 @@ public interface NotificationService {
      * 推送用户消息
      */
     public void sendToUser(NotificationDTO payload);
+
+    /**
+     * 推送用户（指定会话）信息
+     * @param payload
+     */
+    public void sendToUserSession(NotificationDTO payload);
     /**
      * 获取未读消息数
      *

@@ -24,6 +24,9 @@ public class NotificationDTO {
     @ApiModelProperty(value = "发送人id (为空则为系统发送)")
     private Integer senderId;
 
+    @ApiModelProperty(value = "指定token会话")
+    private String sessionKey;
+
     @ApiModelProperty(value = "消息类型")
     private String type;
 
