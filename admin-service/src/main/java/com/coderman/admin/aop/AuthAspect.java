@@ -198,11 +198,15 @@ public class AuthAspect {
         // 单设备校验
         if (isOneDeviceLogin) {
             Integer userId = authUserVO.getUserId();
-            String deviceToken;
-            deviceToken = USER_DEVICE_CACHE_MAP.get(userId, () -> {
-                log.debug("尝试从redis中获取设备信息结果.userId:{}", userId);
-                return userApi.getTokenByUserId(userId);
-            });
+            String deviceToken = StringUtils.EMPTY;
+            try {
+                deviceToken = USER_DEVICE_CACHE_MAP.get(userId, () -> {
+                    log.debug("尝试从redis中获取设备信息结果.userId:{}", userId);
+                    return userApi.getTokenByUserId(userId);
+                });
+            }catch (Exception ignore){
+
+            }
             if (StringUtils.isNotBlank(deviceToken) && !StringUtils.equals(deviceToken, token)) {
                 USER_DEVICE_CACHE_MAP.invalidate(userId);
                 throw new BusinessException(ResultConstant.RESULT_CODE_401, "账号已在其他设备上登录！");
