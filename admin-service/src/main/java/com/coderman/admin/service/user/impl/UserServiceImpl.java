@@ -47,6 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -168,11 +172,18 @@ public class UserServiceImpl extends BaseService implements UserService {
             this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(), "用户登录系统");
             // 多设备登录提醒
             if(StringUtils.isNotBlank(oldSession) && !StringUtils.equals(oldSession, authUserVO.getAccessToken())){
+
+                String message = String.format("系统检测到当前账号于%s在其他设备上登录-%s(%s)。若非本人操作，您的登录密码可能已经泄露，请及时更改密码，紧急情况可联系管理员冻结账号。（管理员邮箱：3053161401@qq.com）",
+                        DateFormatUtils.format(new Date(),"HH:mm:ss"),
+                        IpUtil.getCityInfo(),
+                        IpUtil.getIpAddr()
+                );
+
                 NotificationDTO msg = NotificationDTO.builder()
                         .userId(authUserVO.getUserId())
                         .title("设备登录系统")
                         .sessionKey(oldSession)
-                        .message("账号已在其他设备上登录！如非本人操作，请及时修改密码（登录地:" + IpUtil.getCityInfo() + "）")
+                        .message(message)
                         .type(NotificationConstant.NOTIFICATION_DEVICE_CHECK)
                         .build();
                 this.notificationService.sendToUserSession(msg);
