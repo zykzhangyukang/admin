@@ -1,6 +1,7 @@
 package com.coderman.admin.vo.role;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,8 +13,6 @@ import java.util.Date;
 @Data
 public class RoleExcelVO {
 
-    @ExcelProperty(value = "角色id")
-    private Integer roleId;
 
     @ExcelProperty(value = "角色名称")
     private String roleName;
@@ -22,8 +21,10 @@ public class RoleExcelVO {
     private String roleDesc;
 
     @ExcelProperty(value = "创建时间")
+    @ColumnWidth(value = 20)
     private Date createTime;
 
     @ExcelProperty(value = "更新时间")
+    @ColumnWidth(value = 20)
     private Date updateTime;
 }
