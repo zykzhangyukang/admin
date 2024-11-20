@@ -221,6 +221,13 @@
     where role_name = #{roleName}
   </select>
 
+  <select id="selectExportList" resultType="com.coderman.admin.vo.role.RoleExcelVO">
+    select
+    r.role_id, r.role_name, r.role_desc, r.create_time, r.update_time
+    from auth_role r
+    <include refid="pageWhere"/>
+  </select>
+
   <select id="page" resultMap="pageResultMap">
     select
     r.role_id, r.role_name, r.role_desc, r.create_time, r.update_time

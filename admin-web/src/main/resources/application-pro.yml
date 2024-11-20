@@ -87,6 +87,14 @@ sync:
         username: root
         password: DES@99D5518076FE8F32214D66F4B59766B7
 
+      - dbname: admin_dev_sms
+        url: jdbc:sqlserver://10.1.8.9:1433;databaseName=admin_dev_sms;useUnicode=true;characterEncoding=UTF-8
+        username: sa
+        password: DES@9239F0CE7B3D34D21A6BCC27B4B5F6BBC95CD5E3D5C35F20
+        logAbandoned: true
+        removeAbandoned: true
+        removeAbandonedTimeout: 300
+
 #    - dbname:  ecp_cart_dev
 #      url: 127.0.0.1:27017
 #      connectionsPerHost: 50

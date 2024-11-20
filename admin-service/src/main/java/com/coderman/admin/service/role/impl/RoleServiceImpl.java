@@ -18,8 +18,10 @@ import com.coderman.admin.model.user.UserRoleExample;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
 import com.coderman.admin.service.role.RoleService;
+import com.coderman.admin.utils.EasyExcelUtils;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.role.*;
+import com.coderman.admin.vo.user.UserExcelVO;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -60,37 +62,18 @@ public class RoleServiceImpl implements RoleService {
     @Resource
     private RoleFuncDAO roleFuncDAO;
 
-
     @Override
     @LogError(value = "角色列表")
     public ResultVO<PageVO<List<RoleVO>>> page(@LogErrorParam RolePageDTO rolePageDTO) {
 
-        Integer currentPage = rolePageDTO.getCurrentPage();
-        Integer pageSize = rolePageDTO.getPageSize();
-        String roleName = rolePageDTO.getRoleName();
+        Map<String, Object> conditionMap = this.getCondition(rolePageDTO);
 
-        Map<String, Object> conditionMap = new HashMap<>(1);
-
-        if (StringUtils.isNotBlank(roleName)) {
-
-            conditionMap.put("roleName", roleName);
-        }
-        // 字段排序
-        String sortType = rolePageDTO.getSortType();
-        String sortField = rolePageDTO.getSortField();
-        if (StringUtils.isNotBlank(sortType) && StringUtils.isNotBlank(sortField)) {
-            conditionMap.put("sortType", sortType);
-            conditionMap.put("sortField", sortField);
-        }
-
-        PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
+        // 查询条件
+        PageUtil.getConditionMap(conditionMap, rolePageDTO.getCurrentPage(), rolePageDTO.getPageSize());
 
         List<RoleVO> roleVOS = new ArrayList<>();
-
         Long count = this.roleDAO.countPage(conditionMap);
-
         if (count > 0) {
-
             roleVOS = this.roleDAO.page(conditionMap);
         }
 
@@ -106,7 +89,7 @@ public class RoleServiceImpl implements RoleService {
             }
         }
 
-        return ResultUtil.getSuccessPage(RoleVO.class, new PageVO<>(count, roleVOS, currentPage, pageSize));
+        return ResultUtil.getSuccessPage(RoleVO.class, new PageVO<>(count, roleVOS, rolePageDTO.getCurrentPage(), rolePageDTO.getPageSize()));
     }
 
     @Override
@@ -453,6 +436,34 @@ public class RoleServiceImpl implements RoleService {
         checkVO.setInsertList(addListModels);
         checkVO.setDelList(delListModels);
         return ResultUtil.getSuccess(RoleFuncCheckVO.class, checkVO);
+    }
+
+    private Map<String, Object> getCondition(@LogErrorParam RolePageDTO rolePageDTO) {
+
+        Map<String, Object> conditionMap = new HashMap<>(3);
+
+        if (StringUtils.isNotBlank(rolePageDTO.getRoleName())) {
+            conditionMap.put("roleName", rolePageDTO.getRoleName());
+        }
+        // 字段排序
+        String sortType = rolePageDTO.getSortType();
+        String sortField = rolePageDTO.getSortField();
+        if (StringUtils.isNotBlank(sortType) && StringUtils.isNotBlank(sortField)) {
+            conditionMap.put("sortField", sortField);
+            conditionMap.put("sortType", sortType);
+        }
+        return conditionMap;
+    }
+
+    @Override
+    @LogError(value = "角色列表导出")
+    public void export(RolePageDTO rolePageDTO) {
+        // 构建条件
+        Map<String, Object> conditionMap = this.getCondition(rolePageDTO);
+        // 查询
+        List<RoleExcelVO> roleExcelVos = this.roleDAO.selectExportList(conditionMap);
+        // 导出excel
+        EasyExcelUtils.exportExcel(RoleExcelVO.class, roleExcelVos, "角色列表");
     }
 
 }

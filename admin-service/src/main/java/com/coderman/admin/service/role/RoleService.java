@@ -77,8 +77,6 @@ public interface RoleService {
      */
     ResultVO<Void> updateRoleUser(Integer roleId, List<Integer> userIdList);
 
-
-
     /**
      * 角色分配功能 - 初始化
      * @param roleId
@@ -102,4 +100,10 @@ public interface RoleService {
      * @return
      */
     ResultVO<RoleFuncCheckVO> roleFuncBeforeCheck(RoleFuncUpdateDTO roleFuncUpdateDTO);
+
+    /**
+     * 角色列表导出
+     * @param rolePageDTO 参数
+     */
+    void export(RolePageDTO rolePageDTO);
 }

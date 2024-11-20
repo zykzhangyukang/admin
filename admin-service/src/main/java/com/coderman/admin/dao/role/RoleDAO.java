@@ -2,6 +2,7 @@ package com.coderman.admin.dao.role;
 
 import com.coderman.admin.model.role.RoleExample;
 import com.coderman.admin.model.role.RoleModel;
+import com.coderman.admin.vo.role.RoleExcelVO;
 import com.coderman.admin.vo.role.RoleVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
@@ -46,4 +47,11 @@ public interface RoleDAO extends BaseDAO<RoleModel, RoleExample> {
      * @return
      */
     int insertReturnKey(RoleModel roleModel);
+
+    /**
+     * 角色列表导出查询
+     * @param conditionMap 查询条件
+     * @return
+     */
+    List<RoleExcelVO> selectExportList(Map<String, Object> conditionMap);
 }

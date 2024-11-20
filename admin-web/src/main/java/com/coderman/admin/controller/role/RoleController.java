@@ -1,6 +1,7 @@
 package com.coderman.admin.controller.role;
 
 import com.coderman.admin.dto.role.*;
+import com.coderman.admin.dto.user.UserPageDTO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.service.role.RoleService;
@@ -101,6 +102,12 @@ public class RoleController {
     })
     public ResultVO<PageVO<List<RoleVO>>> page(@RequestBody RolePageDTO rolePageDTO) {
         return this.roleService.page(rolePageDTO);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "列表导出")
+    @PostMapping(value = "/export")
+    public void export(@RequestBody RolePageDTO rolePageDTO) {
+        this.roleService.export(rolePageDTO);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "新增角色")

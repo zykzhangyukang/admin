@@ -59,10 +59,17 @@ public class LogServiceImpl extends BaseService implements LogService {
         logModel.setDeviceInfo(IpUtil.getClientDeviceInfo(HttpContextUtil.getHttpServletRequest()));
         logDAO.insertSelectiveReturnKey(logModel);
 
-        PlanMsg build = MsgBuilder.create("insert_admin_sync_log", ProjectEnum.ADMIN, ProjectEnum.LOG)
-                .addIntList("insert_admin_sync_log", Collections.singletonList(logModel.getLogId()))
-                .build();
-        SyncUtil.sync(build);
+        // 同步到日志系统
+        SyncUtil.sync(
+                MsgBuilder.create("insert_admin_sync_log", ProjectEnum.ADMIN, ProjectEnum.LOG)
+                        .addIntList("insert_admin_sync_log", Collections.singletonList(logModel.getLogId()))
+                        .build()
+        );
+        // 同步到销售系统
+        SyncUtil.sync(
+                MsgBuilder.create("insert_admin_sms_log", ProjectEnum.ADMIN, ProjectEnum.SMS)
+                .addIntList("insert_admin_sms_log", Collections.singletonList(logModel.getLogId()))
+                .build());
     }
 
     @Override

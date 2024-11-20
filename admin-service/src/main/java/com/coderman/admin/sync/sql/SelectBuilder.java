@@ -135,7 +135,7 @@ public class SelectBuilder {
 
         StringBuilder builder = new StringBuilder();
 
-        if (Objects.equals(SyncConstant.DB_TYPE_MYSQL, this.dbType)) {
+        if (Arrays.asList(SyncConstant.DB_TYPE_MYSQL,SyncConstant.DB_TYPE_MSSQL, SyncConstant.DB_TYPE_ORACLE).contains( this.dbType)) {
 
             builder.append("select ");
             builder.append(StringUtils.join(this.columnList, ", "));
