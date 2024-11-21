@@ -43,7 +43,7 @@ public class FundJobHandler {
      * (每天上午11:30和下午14:30执行)
      * 基金收益提醒
      */
-     @Scheduled(cron = "0 30 10,14 * * ?")
+     @Scheduled(cron = "0 30 11,14 * * ?")
     public void notifyFundDataToUser() {
         if(!isOpen(LocalDateTime.now())){
             return;
