@@ -4,6 +4,7 @@ import com.coderman.admin.constant.RedisConstant;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.service.user.UserService;
 import com.coderman.admin.utils.AuthUtil;
+import com.coderman.admin.utils.CacheUtil;
 import com.coderman.admin.vo.user.AuthUserVO;
 import com.coderman.api.constant.AopConstant;
 import com.coderman.api.constant.ResultConstant;
@@ -71,43 +72,6 @@ public class AuthAspect {
      */
     private static final boolean isOneDeviceLogin = true;
 
-    /**
-     * 保存token与用户的关系
-     */
-    public static final Cache<String, AuthUserVO> USER_TOKEN_CACHE_MAP = CacheBuilder.newBuilder()
-            //设置缓存初始大小
-            .initialCapacity(10)
-            //最大值
-            .maximumSize(500)
-            //多线程并发数
-            .concurrencyLevel(5)
-            //过期时间，写入后30s过期
-            .expireAfterWrite(30, TimeUnit.SECONDS)
-            // 过期监听
-            .removalListener((RemovalListener<String, AuthUserVO>) removalNotification -> {
-                log.debug("过期会话缓存清除 token:{} is removed cause:{}", removalNotification.getKey(), removalNotification.getCause());
-            })
-            .recordStats()
-            .build();
-    /**
-     * 保存缓存设备的信息
-     */
-    public static final Cache<Integer, String> USER_DEVICE_CACHE_MAP = CacheBuilder.newBuilder()
-            //设置缓存初始大小
-            .initialCapacity(10)
-            //最大值
-            .maximumSize(500)
-            //多线程并发数
-            .concurrencyLevel(5)
-            //过期时间，写入后30s过期
-            .expireAfterWrite(30, TimeUnit.SECONDS)
-            // 过期监听
-            .removalListener((RemovalListener<Integer, String>) removalNotification -> {
-                log.debug("过期设备缓存清除 userId:{} is removed cause:{}", removalNotification.getKey(), removalNotification.getCause());
-            })
-            .recordStats()
-            .build();
-
     @PostConstruct
     public void init() {
 
@@ -139,19 +103,6 @@ public class AuthAspect {
         systemAllResourceMap = this.rescApi.getSystemAllRescMap(null).getResult();
     }
 
-    /**
-     * 清除本地缓存
-     *
-     * @param token
-     * @param userId
-     */
-    private void clearCache(String token, Integer userId) {
-        // 清除会话缓存
-        USER_TOKEN_CACHE_MAP.invalidate(token);
-        // 清除设备缓存
-        USER_DEVICE_CACHE_MAP.invalidate(userId);
-    }
-
 
     @Pointcut("(execution(* com.coderman..controller..*(..)))")
     public void pointcut() {
@@ -160,6 +111,9 @@ public class AuthAspect {
 
     @Around("pointcut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
+
+        Cache<String, AuthUserVO> tokenCache = CacheUtil.getInstance().getTokenCache();
+        Cache<Integer, String> deviceCache = CacheUtil.getInstance().getDeviceCache();
 
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         String path = request.getServletPath();
@@ -183,7 +137,7 @@ public class AuthAspect {
         // 用户信息
         AuthUserVO authUserVO = null;
         try {
-            authUserVO = USER_TOKEN_CACHE_MAP.get(token, () -> {
+            authUserVO = tokenCache.get(token, () -> {
                 log.debug("尝试从redis中获取用户信息结果.token:{}", token);
                 return userApi.getUserByToken(token);
             });
@@ -191,7 +145,7 @@ public class AuthAspect {
         }
 
         if (authUserVO == null || System.currentTimeMillis() > authUserVO.getExpiredTime()) {
-            USER_TOKEN_CACHE_MAP.invalidate(token);
+            tokenCache.invalidate(token);
             throw new BusinessException(ResultConstant.RESULT_CODE_401, "会话已过期, 请重新登录");
         }
 
@@ -200,22 +154,20 @@ public class AuthAspect {
             Integer userId = authUserVO.getUserId();
             String deviceToken = StringUtils.EMPTY;
             try {
-                deviceToken = USER_DEVICE_CACHE_MAP.get(userId, () -> {
+                deviceToken = deviceCache.get(userId, () -> {
                     log.debug("尝试从redis中获取设备信息结果.userId:{}", userId);
                     return userApi.getTokenByUserId(userId);
                 });
-            }catch (Exception ignore){
-
+            } catch (Exception ignore) {
             }
             if (StringUtils.isNotBlank(deviceToken) && !StringUtils.equals(deviceToken, token)) {
-                USER_DEVICE_CACHE_MAP.invalidate(userId);
+                deviceCache.invalidate(userId);
                 throw new BusinessException(ResultConstant.RESULT_CODE_401, "账号已在其他设备上登录！");
             }
         }
 
         // 不需要过滤的url且有登入信息,设置会话后直接放行
         if (unFilterHasLoginInfoUrl.contains(path)) {
-
             AuthUtil.setCurrent(authUserVO);
             return point.proceed();
         }
@@ -230,7 +182,6 @@ public class AuthAspect {
         if (CollectionUtils.isNotEmpty(myRescIds)) {
             for (Integer rescId : rescIds) {
                 if (myRescIds.contains(rescId)) {
-
                     AuthUtil.setCurrent(authUserVO);
                     return point.proceed();
                 }
@@ -242,21 +193,29 @@ public class AuthAspect {
     }
 
     @RedisChannelListener(channelName = RedisConstant.CHANNEL_REFRESH_RESC)
-    public void doRefreshResc(String msgContent) {
+    public void refreshRescListener(String msgContent) {
 
         log.warn("doRefreshResc start - > {}", msgContent);
         this.refreshSystemAllRescMap();
         log.warn("doRefreshResc end - > {}", msgContent);
     }
 
-    @RedisChannelListener(channelName = RedisConstant.CHANNEL_USER_LOGOUT, clazz = AuthUserVO.class)
-    public void doUserLogout(AuthUserVO logoutUser) {
+    @RedisChannelListener(channelName = RedisConstant.CHANNEL_USER_REFRESH_CACHE, clazz = AuthUserVO.class)
+    public void logoutListener(AuthUserVO logoutUser) {
 
-        String accessToken = logoutUser.getAccessToken();
+        String token = logoutUser.getAccessToken();
         Integer userId = logoutUser.getUserId();
 
-        log.warn("doUserLogout start - > {}", accessToken);
-        this.clearCache(accessToken, userId);
-        log.warn("doUserLogout end - > {}", accessToken);
+        log.warn("doUserLogout start - > {}", token);
+
+        // 清除会话缓存
+        Cache<String, AuthUserVO> tokenCache = CacheUtil.getInstance().getTokenCache();
+        tokenCache.invalidate(token);
+
+        // 清除设备缓存
+        Cache<Integer, String> deviceCache = CacheUtil.getInstance().getDeviceCache();
+        deviceCache.invalidate(userId);
+
+        log.warn("doUserLogout end - > {}", token);
     }
 }

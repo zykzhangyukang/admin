@@ -55,14 +55,14 @@ public class AuthHandshakeInterceptor implements ChannelInterceptor {
         String sessionId = accessor.getSessionId();
         if (CollectionUtils.isEmpty(nativeHeader)) {
 
-            log.error("未登录系统，禁止连接WebSocket!,sessionId:{}",sessionId);
+            log.warn("未登录系统，禁止连接WebSocket!,sessionId:{}",sessionId);
             return null;
         }
 
         String token = nativeHeader.get(0);
         AuthUserVO authUserVO = this.userApi.getUserByToken(token);
         if (authUserVO == null) {
-            log.error("未登录系统，禁止连接WebSocket!, sessionId:{}", sessionId);
+            log.warn("未登录系统，禁止连接WebSocket!, sessionId:{}", sessionId);
             return null;
         }
 

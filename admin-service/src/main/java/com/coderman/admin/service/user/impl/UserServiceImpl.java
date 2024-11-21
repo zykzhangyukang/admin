@@ -254,7 +254,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "用户注销登录");
 
         // 发送广播
-        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_USER_LOGOUT, authUserVO);
+        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_USER_REFRESH_CACHE, authUserVO);
 
         return ResultUtil.getSuccess();
     }
@@ -351,7 +351,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.redisService.setString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + authUserVO.getUserId(), accessToken, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
 
         // 缓存广播
-        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_USER_LOGOUT, authUserVO);
+        this.redisService.sendTopicMessage(RedisConstant.CHANNEL_USER_REFRESH_CACHE, authUserVO);
 
         return authUserVO;
     }

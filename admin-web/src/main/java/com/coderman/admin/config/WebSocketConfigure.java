@@ -2,10 +2,12 @@ package com.coderman.admin.config;
 
 import com.coderman.admin.interceptor.AuthChannelInterceptor;
 import com.coderman.admin.interceptor.AuthHandshakeInterceptor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -48,7 +50,17 @@ public class WebSocketConfigure implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker(CLIENT_DES_PREFIX);
+
+        ThreadPoolTaskScheduler te = new ThreadPoolTaskScheduler();
+        te.setPoolSize(1);
+        te.setThreadNamePrefix("wss-heartbeat-thread-");
+        te.initialize();
+
+        config.enableSimpleBroker(CLIENT_DES_PREFIX)
+                // 心跳时间秒 (客户端心跳,服务端心跳)
+                .setHeartbeatValue(new long[]{10000, 10000})
+                // 检测任务
+                .setTaskScheduler(te);
         config.setApplicationDestinationPrefixes(SERVER_DES_PREFIX);
     }
 
