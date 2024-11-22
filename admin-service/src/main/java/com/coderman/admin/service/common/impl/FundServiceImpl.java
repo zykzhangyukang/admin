@@ -20,11 +20,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -150,7 +153,40 @@ public class FundServiceImpl implements FundService {
         return confList;
     }
 
+    @Override
+    @LogError(value = "导出json配置")
+    public void exportSetting(HttpServletResponse response) throws IOException {
 
+        List<FundSettingItemVO> result = Optional.ofNullable( this.getSetting().getResult()).orElse(Lists.newArrayList());
+        response.setContentType("application/json");
+        response.setHeader("Content-Disposition", "attachment; filename=config.json");
+        response.getWriter().write(JSON.toJSONString(result));
+    }
+
+    @Override
+    @LogError(value = "导入基金配置")
+    public ResultVO<Void> importSetting(MultipartFile file) {
+
+        if (file == null || file.isEmpty()) {
+            return ResultUtil.getFail("导入文件不能为空");
+        }
+        try {
+            String jsonContent = new String(file.getBytes(), StandardCharsets.UTF_8);
+            List<FundSettingItemVO> settingItemVOS = JSON.parseArray(jsonContent, FundSettingItemVO.class);
+            if (CollectionUtils.isEmpty(settingItemVOS)) {
+                return ResultUtil.getWarn("配置文件为空");
+            }
+            // 保存配置
+            this.saveSetting(settingItemVOS);
+        } catch (Exception e) {
+            return ResultUtil.getFail("解析配置文件错误!");
+        }
+
+        return ResultUtil.getSuccess();
+    }
+
+
+    @LogError(value = "天天基金信息获取")
     private FundBeanVO fetchListData(String code, Map<String, String[]> codeMap) throws IOException {
 
         FundBeanVO bean = null;

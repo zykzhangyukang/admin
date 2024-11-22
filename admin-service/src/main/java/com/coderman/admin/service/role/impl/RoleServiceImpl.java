@@ -463,7 +463,7 @@ public class RoleServiceImpl implements RoleService {
         // 查询
         List<RoleExcelVO> roleExcelVos = this.roleDAO.selectExportList(conditionMap);
         // 导出excel
-        EasyExcelUtils.exportExcel(RoleExcelVO.class, roleExcelVos, "角色列表");
+        EasyExcelUtils.exportExcel(RoleExcelVO.class, roleExcelVos, "角色列表.xlsx");
     }
 
 }

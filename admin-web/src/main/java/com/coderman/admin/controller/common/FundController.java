@@ -12,8 +12,10 @@ import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -71,6 +73,18 @@ public class FundController {
         return this.fundService.getSetting();
     }
 
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "导出基金设置")
+    @GetMapping(value = "/export/setting")
+    public void exportSetting(HttpServletResponse response) throws IOException {
+        this.fundService.exportSetting(response);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "导入基金设置")
+    @GetMapping(value = "/import/setting")
+    public ResultVO<Void> importSetting(@RequestParam("file") MultipartFile file) throws IOException {
+        return this.fundService.importSetting(file);
+    }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取历史净值")
     @GetMapping(value = "/history")

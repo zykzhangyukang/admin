@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.admin.vo.common.FundSettingItemVO;
 import com.coderman.api.vo.ResultVO;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -48,4 +50,17 @@ public interface FundService {
      * @return
      */
     List<String> getApiParams();
+
+    /**
+     * 导出json配置
+     * @param response
+     */
+    void exportSetting(HttpServletResponse response) throws IOException;
+
+    /**
+     * 导入json配置
+     * @param file
+     * @return
+     */
+    ResultVO<Void> importSetting(MultipartFile file) throws IOException;
 }

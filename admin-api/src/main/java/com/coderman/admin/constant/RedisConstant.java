@@ -21,5 +21,5 @@ public interface RedisConstant {
     /**
      * 存储websocket连接的用户
      */
-    public static final String WEBSOCKET_USER_SET = "websocket:user_set";
+    public static final String WEBSOCKET_USER_SET = "auth:websocket";
 }

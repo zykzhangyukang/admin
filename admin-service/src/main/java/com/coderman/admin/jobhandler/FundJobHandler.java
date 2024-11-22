@@ -40,10 +40,10 @@ public class FundJobHandler {
     private RedisService redisService;
 
     /**
-     * (每天上午11:30和下午14:30执行)
+     * (每天上午11:40和下午14:40执行)
      * 基金收益提醒
      */
-     @Scheduled(cron = "0 30 11,14 * * ?")
+     @Scheduled(cron = "0 40 10,14 * * ?")
     public void notifyFundDataToUser() {
         if(!isOpen(LocalDateTime.now())){
             return;
