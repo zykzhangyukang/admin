@@ -3,6 +3,7 @@ package com.coderman.admin.service.common.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.utils.HttpClientUtil;
 import com.coderman.admin.vo.common.FundBeanVO;
@@ -18,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
@@ -77,12 +80,9 @@ public class FundServiceImpl implements FundService {
 
         Map<String, String> headers = getHeaderMap();
 
-        String result = HttpClientUtil.doGet("https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code +
-                        "&pageIndex=" + currentPage + "&pageSize=" + pageSize + "&startDate=&endDate=&_=" + System.currentTimeMillis(),
-                headers
-        );
+        String result = HttpClientUtil.doGet("https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code + "&pageIndex=" + currentPage + "&pageSize=" + pageSize + "&startDate=&endDate=&_=" + System.currentTimeMillis(), headers);
 
-        Assert.notNull(result , "获取数据错误!");
+        Assert.notNull(result, "获取数据错误!");
 
         int startIndex = result.indexOf('(') + 1;
         int endIndex = result.lastIndexOf(')');
@@ -93,7 +93,7 @@ public class FundServiceImpl implements FundService {
     }
 
     private static Map<String, String> getHeaderMap() {
-        Map<String,String> headers = Maps.newHashMap();
+        Map<String, String> headers = Maps.newHashMap();
 
         headers.put("accept", "*/*");
         headers.put("accept-language", "zh-CN,zh;q=0.9,en;q=0.8");
@@ -137,14 +137,14 @@ public class FundServiceImpl implements FundService {
 
         ResultVO<List<FundSettingItemVO>> setting = this.getSetting();
         List<String> confList = Lists.newArrayList();
-        if(CollectionUtils.isNotEmpty(setting.getResult())){
+        if (CollectionUtils.isNotEmpty(setting.getResult())) {
 
             for (FundSettingItemVO settingItemVO : setting.getResult()) {
                 StringBuilder str = new StringBuilder(settingItemVO.getFundCode());
-                if(Objects.nonNull(settingItemVO.getCostPrise()) && settingItemVO.getCostPrise().compareTo(BigDecimal.ZERO) > 0){
+                if (Objects.nonNull(settingItemVO.getCostPrise()) && settingItemVO.getCostPrise().compareTo(BigDecimal.ZERO) > 0) {
                     str.append(",").append(settingItemVO.getCostPrise());
                 }
-                if(Objects.nonNull(settingItemVO.getBonds()) && settingItemVO.getBonds().compareTo(BigDecimal.ZERO) > 0){
+                if (Objects.nonNull(settingItemVO.getBonds()) && settingItemVO.getBonds().compareTo(BigDecimal.ZERO) > 0) {
                     str.append(",").append(settingItemVO.getBonds());
                 }
                 confList.add(str.toString());
@@ -155,12 +155,20 @@ public class FundServiceImpl implements FundService {
 
     @Override
     @LogError(value = "导出json配置")
-    public void exportSetting(HttpServletResponse response) throws IOException {
+    public void exportSetting(HttpServletResponse response) {
 
-        List<FundSettingItemVO> result = Optional.ofNullable( this.getSetting().getResult()).orElse(Lists.newArrayList());
-        response.setContentType("application/json");
-        response.setHeader("Content-Disposition", "attachment; filename=config.json");
-        response.getWriter().write(JSON.toJSONString(result));
+        List<FundSettingItemVO> list = Optional.ofNullable(this.getSetting().getResult()).orElse(Lists.newArrayList());
+
+        try (OutputStream outputStream = response.getOutputStream()) {
+            response.setContentType("application/json");
+            response.setHeader("Content-Disposition", "attachment; filename=\"config.json\"");
+            response.setHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "content-disposition");
+            String jsonString = JSON.toJSONString(list, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+            outputStream.write(jsonString.getBytes(StandardCharsets.UTF_8));
+            outputStream.flush();
+        } catch (Exception e) {
+            log.error("导出json配置失败" + e);
+        }
     }
 
     @Override
@@ -179,7 +187,7 @@ public class FundServiceImpl implements FundService {
             // 保存配置
             this.saveSetting(settingItemVOS);
         } catch (Exception e) {
-            return ResultUtil.getFail("解析配置文件错误!");
+            return ResultUtil.getWarn("请检查上传的json文件是否正确！");
         }
 
         return ResultUtil.getSuccess();
@@ -211,18 +219,14 @@ public class FundServiceImpl implements FundService {
                     bean.setIncomePercent("0");
                 } else {
                     // 计算收益率 =
-                    BigDecimal incomePercentDec = incomeDiff.divide(costPriceDec, 8, RoundingMode.HALF_UP)
-                            .multiply(BigDecimal.TEN)
-                            .multiply(BigDecimal.TEN)
-                            .setScale(3, RoundingMode.HALF_UP);
+                    BigDecimal incomePercentDec = incomeDiff.divide(costPriceDec, 8, RoundingMode.HALF_UP).multiply(BigDecimal.TEN).multiply(BigDecimal.TEN).setScale(3, RoundingMode.HALF_UP);
                     bean.setIncomePercent(incomePercentDec.toString());
                 }
 
                 String bondStr = bean.getBonds();
                 if (StringUtils.isNotEmpty(bondStr)) {
                     BigDecimal bondDec = new BigDecimal(bondStr);
-                    BigDecimal incomeDec = incomeDiff.multiply(bondDec)
-                            .setScale(2, RoundingMode.HALF_UP);
+                    BigDecimal incomeDec = incomeDiff.multiply(bondDec).setScale(2, RoundingMode.HALF_UP);
                     bean.setIncome(incomeDec.toString());
 
                     // 计算当天收益  = (当前净值 - 昨天净值) * 份额
@@ -247,29 +251,13 @@ public class FundServiceImpl implements FundService {
                 }
 
                 // 5日、10日、20日、30日
-                BigDecimal average5 = list.stream()
-                        .limit(5)
-                        .map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-                        .divide(new BigDecimal(5), 2, RoundingMode.HALF_DOWN);
+                BigDecimal average5 = list.stream().limit(5).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(5), 2, RoundingMode.HALF_DOWN);
 
-                BigDecimal average10 = list.stream()
-                        .limit(10)
-                        .map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-                        .divide(new BigDecimal(10), 2, RoundingMode.HALF_DOWN);
+                BigDecimal average10 = list.stream().limit(10).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(10), 2, RoundingMode.HALF_DOWN);
 
-                BigDecimal average20 = list.stream()
-                        .limit(20)
-                        .map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-                        .divide(new BigDecimal(20), 2, RoundingMode.HALF_DOWN);
+                BigDecimal average20 = list.stream().limit(20).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(20), 2, RoundingMode.HALF_DOWN);
 
-                BigDecimal average30 = list.stream()
-                        .limit(30)
-                        .map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add)
-                        .divide(new BigDecimal(30), 2, RoundingMode.HALF_DOWN);
+                BigDecimal average30 = list.stream().limit(30).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(30), 2, RoundingMode.HALF_DOWN);
 
                 bean.setJz5(average5.toString());
                 bean.setJz10(average10.toString());

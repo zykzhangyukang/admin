@@ -81,8 +81,8 @@ public class FundController {
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "导入基金设置")
-    @GetMapping(value = "/import/setting")
-    public ResultVO<Void> importSetting(@RequestParam("file") MultipartFile file) throws IOException {
+    @PostMapping(value = "/import/setting")
+    public ResultVO<Void> importSetting(@RequestPart("file") MultipartFile file) throws IOException {
         return this.fundService.importSetting(file);
     }
 
