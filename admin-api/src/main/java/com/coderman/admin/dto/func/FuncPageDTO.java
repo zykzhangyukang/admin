@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author zhangyukang
@@ -49,4 +50,7 @@ public class FuncPageDTO extends BaseModel {
 
     @ApiModelProperty(value = "排序字段")
     private String sortField;
+
+    @ApiModelProperty(value = "勾选的id")
+    private List<Integer> idList;
 }

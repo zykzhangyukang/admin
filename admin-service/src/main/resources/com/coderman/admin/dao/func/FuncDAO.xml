@@ -274,6 +274,40 @@
     where func_id = #{funcId,jdbcType=INTEGER}
   </update>
 
+  <select id="selectExportList" resultType="com.coderman.admin.vo.func.FuncExcelVO">
+    SELECT
+    f.func_id,
+    f.func_name,
+    f.func_key,
+    f.parent_id,
+    f.create_time,
+    f.update_time,
+    f.func_type,
+    f.func_sort,
+    f.hide
+    FROM
+    auth_func f
+    <include refid="pageWhere"></include>
+    order by
+    <choose>
+      <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
+        ${sortField} ${sortType}
+      </when>
+      <otherwise>
+        <choose>
+          <when test="parentId!=null">
+            FIELD(
+            f.func_id,
+            #{parentId}
+            ) desc, f.create_time desc
+          </when>
+          <otherwise>
+            f.create_time desc
+          </otherwise>
+        </choose>
+      </otherwise>
+    </choose>
+  </select>
 
   <select id="page" resultType="com.coderman.admin.vo.func.FuncVO">
     SELECT
@@ -340,6 +374,12 @@
       </if>
       <if test="endTime">
         and f.create_time &lt;= #{endTime}
+      </if>
+      <if test="idList!=null and idList.size()>0">
+        and f.func_id IN
+        <foreach collection="idList" item="item" separator="," open="(" close=")">
+          #{item}
+        </foreach>
       </if>
       <if test="rescUrl!=null and rescUrl!=''">
         AND EXISTS (
@@ -443,23 +483,7 @@
     </trim>
   </insert>
 
-  <select id="selectFuncListByUserId" resultMap="BaseResultMap">
-      SELECT DISTINCT
-          f.func_id,
-          f.func_name,
-          f.func_key,
-          f.parent_id,
-          f.create_time,
-          f.update_time
-      FROM
-          auth_user u
-          INNER JOIN auth_user_role ur ON u.user_id = ur.user_id
-          INNER JOIN auth_role r ON ur.role_id = r.role_id
-          INNER JOIN auth_role_func rf ON r.role_id = rf.role_id
-          INNER JOIN auth_func f ON rf.func_id = f.func_id
-      WHERE
-          u.user_id = #{userId}
-  </select>
+
 
   <select id="selectAllByUserIdAndFuncType"  resultType="com.coderman.admin.vo.func.FuncTreeVO">
     SELECT DISTINCT

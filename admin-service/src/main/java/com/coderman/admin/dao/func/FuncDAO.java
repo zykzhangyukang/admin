@@ -2,6 +2,7 @@ package com.coderman.admin.dao.func;
 
 import com.coderman.admin.model.func.FuncExample;
 import com.coderman.admin.model.func.FuncModel;
+import com.coderman.admin.vo.func.FuncExcelVO;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.FuncVO;
 import com.coderman.admin.vo.func.MenuVO;
@@ -99,4 +100,11 @@ public interface FuncDAO extends BaseDAO<FuncModel, FuncExample> {
      * @return
      */
     List<String> selectUserButtons(@Param(value = "userId") Integer userId);
+
+    /**
+     * 查询功能导出列表
+     * @param conditionMap
+     * @return
+     */
+    List<FuncExcelVO> selectExportList(Map<String, Object> conditionMap);
 }

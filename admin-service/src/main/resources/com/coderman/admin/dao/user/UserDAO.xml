@@ -430,4 +430,22 @@
       #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
   </insert>
 
+  <select id="selectFuncListByUserId" resultMap="BaseResultMap">
+    SELECT DISTINCT
+      f.func_id,
+      f.func_name,
+      f.func_key,
+      f.parent_id,
+      f.create_time,
+      f.update_time
+    FROM
+      auth_user u
+        INNER JOIN auth_user_role ur ON u.user_id = ur.user_id
+        INNER JOIN auth_role r ON ur.role_id = r.role_id
+        INNER JOIN auth_role_func rf ON r.role_id = rf.role_id
+        INNER JOIN auth_func f ON rf.func_id = f.func_id
+    WHERE
+      u.user_id = #{userId}
+  </select>
+
 </mapper>

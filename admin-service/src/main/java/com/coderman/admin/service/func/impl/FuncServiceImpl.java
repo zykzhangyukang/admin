@@ -19,11 +19,9 @@ import com.coderman.admin.model.user.UserRoleExample;
 import com.coderman.admin.model.user.UserRoleModel;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.service.log.LogService;
+import com.coderman.admin.utils.EasyExcelUtils;
 import com.coderman.admin.utils.TreeUtils;
-import com.coderman.admin.vo.func.FuncRescVO;
-import com.coderman.admin.vo.func.FuncTreeVO;
-import com.coderman.admin.vo.func.FuncVO;
-import com.coderman.admin.vo.func.MenuVO;
+import com.coderman.admin.vo.func.*;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -31,10 +29,13 @@ import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.anntation.LogErrorParam;
+import com.coderman.service.dict.ConstItem;
+import com.coderman.service.dict.ConstService;
 import com.coderman.sync.util.MsgBuilder;
 import com.coderman.sync.util.ProjectEnum;
 import com.coderman.sync.util.SyncUtil;
 import com.coderman.sync.vo.PlanMsg;
+import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -74,9 +75,8 @@ public class FuncServiceImpl implements FuncService {
         return TreeUtils.buildFuncTreeByList(funcTreeVos);
     }
 
-    @Override
-    @LogError(value = "功能列表")
-    public ResultVO<PageVO<List<FuncVO>>> page(@LogErrorParam FuncPageDTO funcPageDTO) {
+    private Map<String, Object> getCondition(@LogErrorParam FuncPageDTO funcPageDTO) {
+
 
         Map<String, Object> conditionMap = new HashMap<>(5);
         String funcName = funcPageDTO.getFuncName();
@@ -88,8 +88,6 @@ public class FuncServiceImpl implements FuncService {
         Date startTime = funcPageDTO.getStartTime();
         Date endTime = funcPageDTO.getEndTime();
 
-        Integer currentPage = funcPageDTO.getCurrentPage();
-        Integer pageSize = funcPageDTO.getPageSize();
 
         if (StringUtils.isNotBlank(funcName)) {
             conditionMap.put("funcName", funcName.trim());
@@ -115,6 +113,9 @@ public class FuncServiceImpl implements FuncService {
         if (Objects.nonNull(endTime)) {
             conditionMap.put("endTime", endTime);
         }
+        if (CollectionUtils.isNotEmpty(funcPageDTO.getIdList())) {
+            conditionMap.put("idList", funcPageDTO.getIdList());
+        }
         // 字段排序
         String sortType = funcPageDTO.getSortType();
         String sortField = funcPageDTO.getSortField();
@@ -123,22 +124,81 @@ public class FuncServiceImpl implements FuncService {
             conditionMap.put("sortField", sortField);
         }
 
+        return conditionMap;
+    }
+
+    @Override
+    @LogError(value = "列表导出")
+    public void export(FuncPageDTO funcPageDTO) {
+
+        Map<String, Object> conditionMap = this.getCondition(funcPageDTO);
+
+        Map<Object, String> typeCostMap = ConstService.getConstList(AuthConstant.FUNC_TYPE_GROUP).stream().collect(Collectors.toMap(ConstItem::getCode, ConstItem::getName));
+        Map<Object, String> hideCostMap = ConstService.getConstList(AuthConstant.FUNC_HIDE_GROUP).stream().collect(Collectors.toMap(ConstItem::getCode, ConstItem::getName));
+
+        List<FuncExcelVO> funcExcelVOList = this.funcDAO.selectExportList(conditionMap);
+        List<Integer> funcIdList = funcExcelVOList.stream().map(FuncExcelVO::getFuncId).distinct().collect(Collectors.toList());
+        List<Integer> parentIdList = funcExcelVOList.stream().map(FuncExcelVO::getParentId).distinct().collect(Collectors.toList());
+
+        Map<Integer, FuncModel> parentFuncMap = Maps.newHashMap();
+        if (CollectionUtils.isNotEmpty(parentIdList)) {
+            List<FuncModel> funcModels = this.funcDAO.selectAllByFuncIdList(parentIdList);
+            parentFuncMap = funcModels.stream().collect(Collectors.toMap(FuncModel::getFuncId, e -> e, (k1, k2) -> k2));
+        }
+
+        Map<Integer, List<FuncRescVO>> funcRescVoMap = Maps.newHashMap();
+        if (CollectionUtils.isNotEmpty(funcIdList)) {
+            funcRescVoMap = this.funcRescDAO.selectResListByFuncId(funcIdList)
+                    .stream().collect(Collectors.groupingBy(FuncRescVO::getFuncId));
+        }
+
+        for (FuncExcelVO funcExcelVO : funcExcelVOList) {
+            String funcType = typeCostMap.get(funcExcelVO.getFuncType());
+            String hide = hideCostMap.get(Integer.parseInt(funcExcelVO.getHide()));
+            if (StringUtils.isNotBlank(funcType)) {
+                funcExcelVO.setFuncType(funcType);
+            }
+            if (StringUtils.isNotBlank(hide)) {
+                funcExcelVO.setHide(hide);
+            }
+
+            String rescUrlList = funcRescVoMap.getOrDefault(funcExcelVO.getFuncId(), Lists.newArrayList()).stream()
+                    .map(e -> e.getRescUrl() + "【" + e.getRescName() + "】").collect(Collectors.joining("\n"));
+            funcExcelVO.setRescUrlList(rescUrlList);
+
+            if (Objects.nonNull(funcExcelVO.getParentId())) {
+                FuncModel parent = parentFuncMap.get(funcExcelVO.getParentId());
+                if (parent != null) {
+                    funcExcelVO.setParentFuncName(parent.getFuncName());
+                    funcExcelVO.setParentFuncKey(parent.getFuncKey());
+                }
+            }
+        }
+        EasyExcelUtils.exportExcel(FuncExcelVO.class, funcExcelVOList, "功能列表.xlsx");
+    }
+
+
+    @Override
+    @LogError(value = "功能列表")
+    public ResultVO<PageVO<List<FuncVO>>> page(@LogErrorParam FuncPageDTO funcPageDTO) {
+
+        Integer currentPage = funcPageDTO.getCurrentPage();
+        Integer pageSize = funcPageDTO.getPageSize();
+        Map<String, Object> conditionMap = this.getCondition(funcPageDTO);
+
         List<FuncVO> funcVOList = new ArrayList<>();
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
 
         Long count = this.funcDAO.countPage(conditionMap);
         if (count > 0) {
-
             funcVOList = this.funcDAO.page(conditionMap);
         }
 
-        if(CollectionUtils.isNotEmpty(funcVOList)){
-
-            // 设置资源列表
+        // 设置资源列表
+        if (CollectionUtils.isNotEmpty(funcVOList)) {
             List<Integer> funcIdList = funcVOList.stream().map(FuncModel::getFuncId).distinct().collect(Collectors.toList());
-            Map<Integer, List<FuncRescVO>> funcRescVoMap = this.funcRescDAO.selectResListByFuncId(funcIdList).stream()
-                    .collect(Collectors.groupingBy(FuncRescVO::getFuncId));
-
+            Map<Integer, List<FuncRescVO>> funcRescVoMap = this.funcRescDAO.selectResListByFuncId(funcIdList)
+                    .stream().collect(Collectors.groupingBy(FuncRescVO::getFuncId));
             for (FuncVO vo : funcVOList) {
                 List<FuncRescVO> list = funcRescVoMap.getOrDefault(vo.getFuncId(), new ArrayList<>());
                 vo.setRescVOList(list);
@@ -205,9 +265,7 @@ public class FuncServiceImpl implements FuncService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_MIDDLE, "新增功能信息");
 
-        PlanMsg build = MsgBuilder.create("insert_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC)
-                .addIntList("insert_admin_sync_func", Collections.singletonList(insert.getFuncId()))
-                .build();
+        PlanMsg build = MsgBuilder.create("insert_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC).addIntList("insert_admin_sync_func", Collections.singletonList(insert.getFuncId())).build();
         SyncUtil.sync(build);
 
 
@@ -283,9 +341,7 @@ public class FuncServiceImpl implements FuncService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_MIDDLE, "更新功能信息");
 
-        PlanMsg build = MsgBuilder.create("update_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC)
-                .addIntList("update_admin_sync_func", Collections.singletonList(funcId))
-                .build();
+        PlanMsg build = MsgBuilder.create("update_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC).addIntList("update_admin_sync_func", Collections.singletonList(funcId)).build();
         SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
@@ -323,8 +379,7 @@ public class FuncServiceImpl implements FuncService {
         // 校验是否有用户绑定了该功能
         RoleFuncExample roleFuncModelExample = new RoleFuncExample();
         roleFuncModelExample.createCriteria().andFuncIdEqualTo(funcId);
-        List<Integer> roleIds = this.roleFuncDAO.selectByExample(roleFuncModelExample).stream().map(RoleFuncModel::getRoleId)
-                .distinct().collect(Collectors.toList());
+        List<Integer> roleIds = this.roleFuncDAO.selectByExample(roleFuncModelExample).stream().map(RoleFuncModel::getRoleId).distinct().collect(Collectors.toList());
 
         if (!CollectionUtils.isEmpty(roleIds)) {
 
@@ -341,9 +396,7 @@ public class FuncServiceImpl implements FuncService {
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_FUNC, AuthConstant.LOG_MODULE_IMPORTANT, "删除功能信息");
 
-        PlanMsg build = MsgBuilder.create("delete_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC)
-                .addIntList("delete_admin_sync_func", Collections.singletonList(funcId))
-                .build();
+        PlanMsg build = MsgBuilder.create("delete_admin_sync_func", ProjectEnum.ADMIN, ProjectEnum.SYNC).addIntList("delete_admin_sync_func", Collections.singletonList(funcId)).build();
         SyncUtil.sync(build);
 
         return ResultUtil.getSuccess();
@@ -508,7 +561,7 @@ public class FuncServiceImpl implements FuncService {
     @Override
     public List<MenuVO> selectUserMenusTree(List<MenuVO> allMenus) {
 
-        if(CollectionUtils.isEmpty(allMenus)){
+        if (CollectionUtils.isEmpty(allMenus)) {
             return Lists.newArrayList();
         }
 
@@ -541,6 +594,7 @@ public class FuncServiceImpl implements FuncService {
 
     /**
      * 对菜单列表及其子菜单进行递归排序
+     *
      * @param menus 菜单列表
      */
     private void sortMenus(List<MenuVO> menus) {
@@ -559,11 +613,5 @@ public class FuncServiceImpl implements FuncService {
     @LogError(value = "获取用户按钮")
     public List<String> selectUserButtons(Integer userId) {
         return this.funcDAO.selectUserButtons(userId);
-    }
-
-    @Override
-    @LogError(value = "列表导出")
-    public void export(FuncPageDTO funcPageDTO) {
-
     }
 }
