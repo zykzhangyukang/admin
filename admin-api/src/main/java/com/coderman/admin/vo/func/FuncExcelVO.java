@@ -9,6 +9,7 @@ import com.alibaba.excel.enums.poi.FillPatternTypeEnum;
 import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
 import com.alibaba.excel.enums.poi.VerticalAlignmentEnum;
 import com.coderman.api.model.BaseModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -41,6 +42,21 @@ public class FuncExcelVO extends BaseModel {
     @ExcelIgnore
     private Integer parentId;
 
+    // 隐藏列
+    @ExcelProperty(value = "父级功能key")
+    @ColumnWidth(value = 0)
+    private String parentFuncKey;
+
+    @ExcelProperty(value = "功能类型")
+    @ColumnWidth(value = 0)
+    private String funcType;
+
+    @ExcelProperty(value = "是否隐藏")
+    @ColumnWidth(value = 0)
+    private String hide;
+
+
+    // 显示列
     @ExcelProperty(value = "功能名称")
     @ColumnWidth(value = 20)
     private String funcName;
@@ -57,15 +73,4 @@ public class FuncExcelVO extends BaseModel {
     @ColumnWidth(value = 20)
     private String parentFuncName;
 
-    @ExcelProperty(value = "父级功能key")
-    @ColumnWidth(value = 20)
-    private String parentFuncKey;
-
-    @ExcelProperty(value = "功能类型")
-    @ColumnWidth(value = 20)
-    private String funcType;
-
-    @ExcelProperty(value = "是否隐藏")
-    @ColumnWidth(value = 20)
-    private String hide;
 }

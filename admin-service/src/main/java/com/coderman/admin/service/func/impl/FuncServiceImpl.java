@@ -174,7 +174,8 @@ public class FuncServiceImpl implements FuncService {
                 }
             }
         }
-        EasyExcelUtils.exportExcel(FuncExcelVO.class, funcExcelVOList, "功能列表.xlsx");
+        int[] hiddenColumns = {0, 1, 2};
+        EasyExcelUtils.exportExcel(FuncExcelVO.class, funcExcelVOList, "功能列表.xlsx", hiddenColumns);
     }
 
 

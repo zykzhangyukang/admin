@@ -5,11 +5,13 @@ import com.alibaba.excel.enums.CellDataTypeEnum;
 import com.alibaba.excel.metadata.Head;
 import com.alibaba.excel.metadata.data.WriteCellData;
 import com.alibaba.excel.util.MapUtils;
+import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.HttpContextUtil;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.http.HttpHeaders;
 
 import javax.servlet.http.HttpServletResponse;
@@ -93,6 +95,40 @@ public class EasyExcelUtils {
                                     return cellData.getNumberValue().toString().getBytes().length;
                                 default:
                                     return -1;
+                            }
+                        }
+                    })
+                    .sheet()
+                    .doWrite(list);
+        } catch (Exception e) {
+            throw new BusinessException("导出文件失败:"+ e.getMessage());
+        }
+    }
+    /**
+     * 导出excel
+     * @param clazz 类型
+     * @param list 数据
+     * @param fileName 文件名
+     * @param <T> 类型
+     */
+    public static <T>void exportExcel(Class<T> clazz , List<T> list, String fileName, int[] hiddenColumns){
+
+        HttpServletResponse response = HttpContextUtil.getHttpServletResponse();
+
+        String encodedFileName;
+        try {
+            encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
+            response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName);
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "content-disposition");
+            response.setCharacterEncoding("utf-8");
+            EasyExcel.write(response.getOutputStream(), clazz)
+                    .registerWriteHandler(new SheetWriteHandler(){
+                        @Override
+                        public void afterSheetCreate(com.alibaba.excel.write.handler.context.SheetWriteHandlerContext context) {
+                            Sheet sheet = context.getWriteSheetHolder().getSheet();
+                            for (int colIndex : hiddenColumns) {
+                                sheet.setColumnHidden(colIndex, true); // 隐藏列
                             }
                         }
                     })
