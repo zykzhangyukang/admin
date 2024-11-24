@@ -60,6 +60,10 @@ sync:
     destList:
       - project: sync
         url: https://api.coderman.club
+
+      - project: sms
+        url: https://api.coderman.club
+
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20
