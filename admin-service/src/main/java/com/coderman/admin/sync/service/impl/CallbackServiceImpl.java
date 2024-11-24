@@ -323,7 +323,7 @@ public class CallbackServiceImpl implements CallbackService {
         builder.append("select");
         if (StringUtils.equals(dbType, SyncConstant.DB_TYPE_MSSQL)) {
 
-            builder.append(" top ").append(count).append(" = ");
+            builder.append(" top ").append(count).append(" * ");
             builder.append(" from ( select row_number() over(order by callback_id desc)");
             builder.append(" as rownumber, uuid,msg_id, src_project,dest_project,msg_content,create_time,send_time,ack_time,repeat_count,status,remark,error_msg ");
             builder.append(" from pub_callback with(nolock) ");
