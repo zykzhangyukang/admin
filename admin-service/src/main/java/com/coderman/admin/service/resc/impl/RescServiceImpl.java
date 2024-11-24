@@ -1,6 +1,10 @@
 package com.coderman.admin.service.resc.impl;
 
+import com.coderman.admin.dto.role.RolePageDTO;
+import com.coderman.admin.utils.EasyExcelUtils;
 import com.coderman.admin.utils.ValidationUtil;
+import com.coderman.admin.vo.resc.RescExcelVO;
+import com.coderman.admin.vo.role.RoleExcelVO;
 import com.coderman.api.constant.ResultConstant;
 import com.coderman.api.util.PageUtil;
 import com.coderman.api.util.ResultUtil;
@@ -54,12 +58,10 @@ public class RescServiceImpl implements RescService {
     @Resource
     private RedisService redisService;
 
-    @Override
-    @LogError(value = "资源列表")
-    public ResultVO<PageVO<List<RescVO>>> page(@LogErrorParam RescPageDTO rescPageDTO) {
+    private Map<String, Object> getCondition(@LogErrorParam RescPageDTO rescPageDTO) {
 
-        Integer currentPage = rescPageDTO.getCurrentPage();
-        Integer pageSize = rescPageDTO.getPageSize();
+        Map<String, Object> conditionMap = new HashMap<>(12);
+
         String rescUrl = rescPageDTO.getRescUrl();
         String rescName = rescPageDTO.getRescName();
         String rescDomain = rescPageDTO.getRescDomain();
@@ -68,7 +70,6 @@ public class RescServiceImpl implements RescService {
         Date startTime = rescPageDTO.getStartTime();
         Date endTime = rescPageDTO.getEndTime();
 
-        Map<String, Object> conditionMap = new HashMap<>(6);
 
         if (StringUtils.isNotBlank(rescUrl)) {
             conditionMap.put("rescUrl", rescUrl.trim());
@@ -98,9 +99,19 @@ public class RescServiceImpl implements RescService {
             conditionMap.put("sortType", sortType);
             conditionMap.put("sortField", sortField);
         }
+        return conditionMap;
+    }
+
+    @Override
+    @LogError(value = "资源列表")
+    public ResultVO<PageVO<List<RescVO>>> page(@LogErrorParam RescPageDTO rescPageDTO) {
+
+        Integer currentPage = rescPageDTO.getCurrentPage();
+        Integer pageSize = rescPageDTO.getPageSize();
+
+        Map<String, Object> conditionMap = this.getCondition(rescPageDTO);
 
         PageUtil.getConditionMap(conditionMap, currentPage, pageSize);
-
         Long count = this.rescDAO.countPage(conditionMap);
 
         List<RescVO> rescVOList = new ArrayList<>();
@@ -358,5 +369,17 @@ public class RescServiceImpl implements RescService {
         String msg = Objects.requireNonNull(AuthUtil.getCurrent()).getUsername() + "刷新系统资源：" + DateFormatUtils.format(new Date(), "yyyy-MM dd HH:mm:ss");
         this.redisService.sendTopicMessage(RedisConstant.CHANNEL_REFRESH_RESC, msg);
         return ResultUtil.getSuccess();
+    }
+
+    @Override
+    @LogError(value = "列表导出")
+    public void export(RescPageDTO rescPageDTO) {
+
+        Map<String, Object> conditionMap = this.getCondition(rescPageDTO);
+        // 查询
+        List<RescExcelVO> rescExcelVOS = this.rescDAO.selectExportList(conditionMap);
+        // 导出excel
+        EasyExcelUtils.exportExcel(RescExcelVO.class, rescExcelVOS, "资源列表.xlsx");
+
     }
 }

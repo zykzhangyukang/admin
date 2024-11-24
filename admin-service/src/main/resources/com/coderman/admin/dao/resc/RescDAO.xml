@@ -263,6 +263,22 @@
     limit #{offset},#{size}
   </select>
 
+  <select id="selectExportList" resultType="com.coderman.admin.vo.resc.RescExcelVO">
+    select
+    <include refid="Base_Column_List" />
+    from auth_resc
+    <include refid="pageWhere"></include>
+    order by
+    <choose>
+      <when test="sortType!=null and sortType!='' and sortField!=null and sortField!=''">
+        ${sortField} ${sortType}
+      </when>
+      <otherwise>
+        create_time desc
+      </otherwise>
+    </choose>
+  </select>
+
   <select id="countPage" resultType="long">
      select count(1)
      from auth_resc

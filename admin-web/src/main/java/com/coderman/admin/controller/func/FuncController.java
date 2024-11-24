@@ -4,6 +4,7 @@ import com.coderman.admin.dto.func.FuncPageDTO;
 import com.coderman.admin.dto.func.FuncRescUpdateDTO;
 import com.coderman.admin.dto.func.FuncSaveDTO;
 import com.coderman.admin.dto.func.FuncUpdateDTO;
+import com.coderman.admin.dto.user.UserPageDTO;
 import com.coderman.admin.service.func.FuncService;
 import com.coderman.admin.vo.func.FuncTreeVO;
 import com.coderman.admin.vo.func.FuncVO;
@@ -90,6 +91,13 @@ public class FuncController {
     })
     public ResultVO<PageVO<List<FuncVO>>> page(@RequestBody FuncPageDTO funcPageDTO) {
         return funcService.page(funcPageDTO);
+    }
+
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "列表导出")
+    @PostMapping(value = "/export")
+    public void export(@RequestBody FuncPageDTO funcPageDTO) {
+        this.funcService.export(funcPageDTO);
     }
 
     @ApiOperation(value = "保存功能", httpMethod = SwaggerConstant.METHOD_POST)

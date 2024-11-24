@@ -93,5 +93,9 @@ public interface RescService {
      */
     ResultVO<Void> refresh();
 
-
+    /**
+     * 列表导出
+     * @param rescPageDTO
+     */
+    void export(RescPageDTO rescPageDTO);
 }

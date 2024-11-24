@@ -58,7 +58,7 @@ sync:
   callback:
     destList:
       - project: sync
-        url: http://127.0.0.1:8787
+        url: https://api.coderman.club
   # 同步系统jdbc配置
   jdbc:
     commonMaxIdle: 20

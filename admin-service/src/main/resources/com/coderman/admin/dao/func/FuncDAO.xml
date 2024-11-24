@@ -487,7 +487,7 @@
     f.func_sort ASC
   </select>
 
-  <select id="selectUserMenus" resultType="com.coderman.admin.vo.func.MenuVO">
+  <select id="selectUserAllMenus" resultType="com.coderman.admin.vo.func.MenuVO">
     SELECT DISTINCT
         f.func_id AS id,
         f.func_name AS `name`,

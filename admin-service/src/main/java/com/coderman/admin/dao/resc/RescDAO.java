@@ -2,6 +2,7 @@ package com.coderman.admin.dao.resc;
 
 import com.coderman.admin.model.resc.RescExample;
 import com.coderman.admin.model.resc.RescModel;
+import com.coderman.admin.vo.resc.RescExcelVO;
 import com.coderman.admin.vo.resc.RescVO;
 import com.coderman.mybatis.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
@@ -60,4 +61,11 @@ public interface RescDAO extends BaseDAO<RescModel, RescExample> {
      * @return
      */
     int insertReturnKey(RescModel rescModel);
+
+    /**
+     * 列表导出查询
+     * @param conditionMap
+     * @return
+     */
+    List<RescExcelVO> selectExportList(Map<String, Object> conditionMap);
 }

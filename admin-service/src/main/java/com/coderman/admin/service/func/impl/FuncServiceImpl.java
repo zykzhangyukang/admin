@@ -36,6 +36,7 @@ import com.coderman.sync.util.ProjectEnum;
 import com.coderman.sync.util.SyncUtil;
 import com.coderman.sync.vo.PlanMsg;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -505,9 +506,11 @@ public class FuncServiceImpl implements FuncService {
     }
 
     @Override
-    public List<MenuVO> selectUserMenus(Integer userId) {
+    public List<MenuVO> selectUserMenusTree(List<MenuVO> allMenus) {
 
-        List<MenuVO> allMenus = this.funcDAO.selectUserMenus(userId);
+        if(CollectionUtils.isEmpty(allMenus)){
+            return Lists.newArrayList();
+        }
 
         List<MenuVO> rootMenus = new ArrayList<>();
         Map<Integer, MenuVO> menuMap = allMenus.stream().collect(Collectors.toMap(MenuVO::getId, menu -> menu));
@@ -529,6 +532,13 @@ public class FuncServiceImpl implements FuncService {
         return rootMenus;
     }
 
+    @Override
+    @LogError(value = "获取用户菜单扁平化")
+    public List<MenuVO> selectUserAllMenus(Integer userId) {
+
+        return this.funcDAO.selectUserAllMenus(userId);
+    }
+
     /**
      * 对菜单列表及其子菜单进行递归排序
      * @param menus 菜单列表
@@ -546,7 +556,14 @@ public class FuncServiceImpl implements FuncService {
     }
 
     @Override
+    @LogError(value = "获取用户按钮")
     public List<String> selectUserButtons(Integer userId) {
         return this.funcDAO.selectUserButtons(userId);
+    }
+
+    @Override
+    @LogError(value = "列表导出")
+    public void export(FuncPageDTO funcPageDTO) {
+
     }
 }

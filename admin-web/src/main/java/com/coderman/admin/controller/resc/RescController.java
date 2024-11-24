@@ -1,12 +1,12 @@
 package com.coderman.admin.controller.resc;
 
-import com.coderman.api.vo.PageVO;
-import com.coderman.api.vo.ResultVO;
 import com.coderman.admin.dto.resc.RescPageDTO;
 import com.coderman.admin.dto.resc.RescSaveDTO;
 import com.coderman.admin.dto.resc.RescUpdateDTO;
 import com.coderman.admin.service.resc.RescService;
 import com.coderman.admin.vo.resc.RescVO;
+import com.coderman.api.vo.PageVO;
+import com.coderman.api.vo.ResultVO;
 import com.coderman.limiter.annotation.RateLimit;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
@@ -43,6 +43,12 @@ public class RescController {
     })
     public ResultVO<PageVO<List<RescVO>>> page(@RequestBody RescPageDTO rescPageDTO) {
         return this.rescService.page(rescPageDTO);
+    }
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "列表导出")
+    @PostMapping(value = "/export")
+    public void export(@RequestBody RescPageDTO rescPageDTO) {
+        this.rescService.export(rescPageDTO);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "新增资源")

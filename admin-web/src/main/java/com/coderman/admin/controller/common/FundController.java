@@ -75,7 +75,7 @@ public class FundController {
 
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "导出基金设置")
-    @GetMapping(value = "/export/setting")
+    @PostMapping(value = "/export/setting")
     public void exportSetting(HttpServletResponse response) throws IOException {
         this.fundService.exportSetting(response);
     }

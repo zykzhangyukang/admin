@@ -56,12 +56,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author coderman
@@ -948,18 +946,24 @@ public class UserServiceImpl extends BaseService implements UserService {
 
 
     @Override
+    @LogError(value = "获取用户权限信息")
     public ResultVO<Map<String, Object>> getPermissionInfo() {
         AuthUserVO currentUser = AuthUtil.getCurrent();
         Assert.notNull(currentUser, "当前用户未登录!");
 
-        // 菜单权限
-        List<MenuVO> userMenus = this.funcService.selectUserMenus(currentUser.getUserId());
+        List<MenuVO> userAllMenus = this.funcService.selectUserAllMenus(currentUser.getUserId());
+
+        // 菜单权限树
+        List<MenuVO> userMenus = this.funcService.selectUserMenusTree(userAllMenus);
+
         // 按钮权限
         List<String> userButtons = this.funcService.selectUserButtons(currentUser.getUserId());
+        List<String> menusKeys = userAllMenus.stream().map(MenuVO::getKey).distinct().collect(Collectors.toList());
+        List<String> permissions = Stream.of(menusKeys, userButtons).flatMap(Collection::stream).distinct().collect(Collectors.toList());
 
         Map<String, Object> map = new HashMap<>();
         map.put("menus", userMenus);
-        map.put("buttons", userButtons);
+        map.put("permissions", permissions);
         return ResultUtil.getSuccessMap(Map.class, map);
     }
 

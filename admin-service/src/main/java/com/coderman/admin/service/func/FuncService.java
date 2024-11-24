@@ -11,6 +11,7 @@ import com.coderman.admin.vo.func.FuncVO;
 import com.coderman.admin.vo.func.MenuVO;
 import com.coderman.api.vo.PageVO;
 import com.coderman.api.vo.ResultVO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.List;
@@ -113,13 +114,19 @@ public interface FuncService {
     List<FuncModel> selectAllByFuncIdList(Collection<Integer> funcIdList);
 
     /**
-     * 获取用户菜单
+     * 获取用户菜单 (tree)
      *
+     * @param menuVOList
+     * @return
+     */
+    List<MenuVO> selectUserMenusTree(List<MenuVO> menuVOList);
+
+    /**
+     * 获取用户菜单 （扁平化）
      * @param userId
      * @return
      */
-    List<MenuVO> selectUserMenus(Integer userId);
-
+    List<MenuVO> selectUserAllMenus(Integer userId);
     /**
      * 获取用户按钮
      *
@@ -127,4 +134,10 @@ public interface FuncService {
      * @return
      */
     List<String> selectUserButtons(Integer userId);
+
+    /**
+     * 列表导出
+     * @param funcPageDTO
+     */
+    void export(FuncPageDTO funcPageDTO);
 }
