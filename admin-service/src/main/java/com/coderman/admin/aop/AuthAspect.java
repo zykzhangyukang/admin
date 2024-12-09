@@ -12,8 +12,6 @@ import com.coderman.api.exception.BusinessException;
 import com.coderman.redis.annotaion.RedisChannelListener;
 import com.coderman.service.util.HttpContextUtil;
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.RemovalListener;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,12 +23,12 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 权限拦截器
@@ -40,182 +38,154 @@ import java.util.concurrent.TimeUnit;
  */
 @Aspect
 @Component
-@Order(value = AopConstant.AUTH_ASPECT_ORDER)
-@Lazy(value = false)
+@Order(AopConstant.AUTH_ASPECT_ORDER)
+@Lazy(false)
 @Slf4j
 public class AuthAspect {
 
-    /**
-     * 白名单接口
-     */
-    public static List<String> whiteListUrl = new ArrayList<>();
-    /**
-     * 资源url与功能关系
-     */
-    public static Map<String, Set<Integer>> systemAllResourceMap = new HashMap<>();
-    /**
-     * 无需拦截的url且有登录信息
-     */
-    public static List<String> unFilterHasLoginInfoUrl = new ArrayList<>();
-    /**
-     * 资源api
-     */
+    private static final boolean IS_ONE_DEVICE_LOGIN = true;
+
     @Resource
     private RescService rescApi;
-    /**
-     * 用户api
-     */
+
     @Resource
     private UserService userApi;
-    /**
-     * 是否单设备登录校验
-     */
-    private static final boolean isOneDeviceLogin = true;
+
+    private static final Set<String> WHITE_LIST_URLS = Sets.newHashSet(
+            "/auth/user/token",
+            "/auth/user/refresh/token",
+            "/auth/user/logout"
+    );
+
+    private static final Set<String> UNFILTER_HAS_LOGIN_INFO_URLS = Sets.newHashSet(
+            "/auth/user/info",
+            "/auth/user/permission",
+            "/common/const/all",
+            "/common/notification/count",
+            "/common/notification/read",
+            "/common/notification/page"
+    );
+
+    private static volatile Map<String, Set<Integer>> systemAllResourceMap = new HashMap<>();
 
     @PostConstruct
     public void init() {
-
-        // 白名单URL
-        whiteListUrl.addAll(Arrays.asList(
-                "/auth/user/token"
-                , "/auth/user/refresh/token"
-                , "/auth/user/logout"
-        ));
-
-        // 无需拦截且有会话信息URL
-        unFilterHasLoginInfoUrl.addAll(Arrays.asList(
-                "/auth/user/info"
-                , "/auth/user/permission"
-                , "/common/const/all"
-                , "/common/notification/count"
-                , "/common/notification/read"
-                , "/common/notification/page"
-        ));
-
-        // 刷新系统资源
         refreshSystemAllRescMap();
     }
 
-    /**
-     * 刷新系统资源
-     */
     public void refreshSystemAllRescMap() {
-        systemAllResourceMap = this.rescApi.getSystemAllRescMap(null).getResult();
+        systemAllResourceMap = rescApi.getSystemAllRescMap(null).getResult();
+        log.info("System resource map refreshed successfully.");
     }
 
-
-    @Pointcut("(execution(* com.coderman..controller..*(..)))")
+    @Pointcut("execution(* com.coderman..controller..*(..))")
     public void pointcut() {
     }
 
-
     @Around("pointcut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
-
-        Cache<String, AuthUserVO> tokenCache = CacheUtil.getInstance().getTokenCache();
-        Cache<Integer, String> deviceCache = CacheUtil.getInstance().getDeviceCache();
-
         HttpServletRequest request = HttpContextUtil.getHttpServletRequest();
         String path = request.getServletPath();
 
-        // 白名单直接放行
-        if (whiteListUrl.contains(path)) {
-
+        if (isWhiteListed(path)) {
             return point.proceed();
         }
 
-        // 访问令牌
         String token = AuthUtil.getToken();
         if (StringUtils.isBlank(token)) {
-            throw new BusinessException(ResultConstant.RESULT_CODE_401, "会话已过期, 请重新登录");
-        }
-        // 系统不存在的资源直接返回
-        if (!systemAllResourceMap.containsKey(path) && !unFilterHasLoginInfoUrl.contains(path)) {
-            throw new BusinessException(ResultConstant.RESULT_CODE_404, "您访问的接口不存在!");
+            throwUnauthorized("会话已过期, 请重新登录");
         }
 
-        // 用户信息
-        AuthUserVO authUserVO = null;
-        try {
-            authUserVO = tokenCache.get(token, () -> {
-                log.debug("尝试从redis中获取用户信息结果.token:{}", token);
-                return userApi.getUserByToken(token);
-            });
-        } catch (Exception ignore) {
+        AuthUserVO authUserVO = validateToken(token);
+        Assert.notNull(authUserVO , "会话已过期, 请重新登录");
+
+        if (IS_ONE_DEVICE_LOGIN) {
+            validateDevice(authUserVO, token);
         }
 
-        if (authUserVO == null || System.currentTimeMillis() > authUserVO.getExpiredTime()) {
-            tokenCache.invalidate(token);
-            throw new BusinessException(ResultConstant.RESULT_CODE_401, "会话已过期, 请重新登录");
-        }
-
-        // 单设备校验
-        if (isOneDeviceLogin) {
-            Integer userId = authUserVO.getUserId();
-            String deviceToken = StringUtils.EMPTY;
-            try {
-                deviceToken = deviceCache.get(userId, () -> {
-                    log.debug("尝试从redis中获取设备信息结果.userId:{}", userId);
-                    return userApi.getTokenByUserId(userId);
-                });
-            } catch (Exception ignore) {
-            }
-            if (StringUtils.isNotBlank(deviceToken) && !StringUtils.equals(deviceToken, token)) {
-                deviceCache.invalidate(userId);
-                throw new BusinessException(ResultConstant.RESULT_CODE_401, "账号已在其他设备上登录！");
-            }
-        }
-
-        // 不需要过滤的url且有登入信息,设置会话后直接放行
-        if (unFilterHasLoginInfoUrl.contains(path)) {
+        if (UNFILTER_HAS_LOGIN_INFO_URLS.contains(path)) {
             AuthUtil.setCurrent(authUserVO);
             return point.proceed();
         }
 
-        // 验证用户权限
-        List<Integer> myRescIds = authUserVO.getRescIdList();
-        Set<Integer> rescIds = Sets.newHashSet();
-        if (CollectionUtils.isNotEmpty(systemAllResourceMap.get(path))) {
-            rescIds = new HashSet<>(systemAllResourceMap.get(path));
+        validatePermission(authUserVO, path);
+        AuthUtil.setCurrent(authUserVO);
+        return point.proceed();
+    }
+
+    private boolean isWhiteListed(String path) {
+        return WHITE_LIST_URLS.contains(path);
+    }
+
+    private AuthUserVO validateToken(String token) {
+        Cache<String, AuthUserVO> tokenCache = CacheUtil.getInstance().getTokenCache();
+        AuthUserVO authUserVO;
+
+        try {
+            authUserVO = tokenCache.get(token, () -> userApi.getUserByToken(token));
+        } catch (Exception e) {
+            log.error("Error retrieving user from cache: token={}", token, e);
+            throwUnauthorized("会话已过期, 请重新登录");
+            return null; // Unreachable
         }
 
-        if (CollectionUtils.isNotEmpty(myRescIds)) {
-            for (Integer rescId : rescIds) {
-                if (myRescIds.contains(rescId)) {
-                    AuthUtil.setCurrent(authUserVO);
-                    return point.proceed();
-                }
+        if (authUserVO == null || System.currentTimeMillis() > authUserVO.getExpiredTime()) {
+            tokenCache.invalidate(token);
+            throwUnauthorized("会话已过期, 请重新登录");
+        }
+
+        return authUserVO;
+    }
+
+    private void validateDevice(AuthUserVO authUserVO, String token) {
+        Cache<Integer, String> deviceCache = CacheUtil.getInstance().getDeviceCache();
+        Integer userId = authUserVO.getUserId();
+
+        try {
+            String storedToken = deviceCache.get(userId, () -> userApi.getTokenByUserId(userId));
+            if (!StringUtils.equals(storedToken, token)) {
+                deviceCache.invalidate(userId);
+                throwUnauthorized("账号已在其他设备上登录！");
             }
-
+        } catch (Exception e) {
+            log.error("Error validating device token: userId={}", userId, e);
+            throwUnauthorized("设备校验失败，请重新登录");
         }
+    }
 
+    private void validatePermission(AuthUserVO authUserVO, String path) {
+        List<Integer> userRescIds = authUserVO.getRescIdList();
+        Set<Integer> pathRescIds = systemAllResourceMap.getOrDefault(path, Collections.emptySet());
+
+        if (CollectionUtils.isEmpty(userRescIds) || !CollectionUtils.containsAny(userRescIds, pathRescIds)) {
+            throwForbidden();
+        }
+    }
+
+    private void throwUnauthorized(String message) {
+        throw new BusinessException(ResultConstant.RESULT_CODE_401, message);
+    }
+
+    private void throwForbidden() {
         throw new BusinessException(ResultConstant.RESULT_CODE_403, "接口无权限");
     }
 
     @RedisChannelListener(channelName = RedisConstant.CHANNEL_REFRESH_RESC)
     public void refreshRescListener(String msgContent) {
-
-        log.warn("doRefreshResc start - > {}", msgContent);
-        this.refreshSystemAllRescMap();
-        log.warn("doRefreshResc end - > {}", msgContent);
+        log.warn("Refreshing system resources: {}", msgContent);
+        refreshSystemAllRescMap();
     }
 
-    @RedisChannelListener(channelName = RedisConstant.CHANNEL_USER_REFRESH_CACHE, clazz = AuthUserVO.class)
-    public void logoutListener(AuthUserVO logoutUser) {
+    @RedisChannelListener(channelName = RedisConstant.CHANNEL_REFRESH_SESSION_CACHE, clazz = AuthUserVO.class)
+    public void refreshSessionCache(AuthUserVO logoutUser) {
+        log.warn("Clearing session cache: {}", logoutUser);
 
-        String token = logoutUser.getAccessToken();
-        Integer userId = logoutUser.getUserId();
-
-        log.warn("doUserLogout start - > {}", token);
-
-        // 清除会话缓存
         Cache<String, AuthUserVO> tokenCache = CacheUtil.getInstance().getTokenCache();
-        tokenCache.invalidate(token);
+        tokenCache.invalidate(logoutUser.getAccessToken());
 
-        // 清除设备缓存
         Cache<Integer, String> deviceCache = CacheUtil.getInstance().getDeviceCache();
-        deviceCache.invalidate(userId);
+        deviceCache.invalidate(logoutUser.getUserId());
 
-        log.warn("doUserLogout end - > {}", token);
+        log.info("Session cache cleared successfully for user: {}", logoutUser.getUserId());
     }
 }

@@ -13,7 +13,7 @@ public interface RedisConstant {
     /**
      * 用户退出登录
      */
-    public static final String CHANNEL_USER_REFRESH_CACHE = "topic://refresh_user_cache";
+    public static final String CHANNEL_REFRESH_SESSION_CACHE = "topic://refresh_session_cache";
     /**
      * websocket消息广播
      */
