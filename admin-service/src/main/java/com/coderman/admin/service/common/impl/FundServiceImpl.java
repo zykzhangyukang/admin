@@ -8,6 +8,7 @@ import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.utils.HttpClientUtil;
 import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.admin.vo.common.FundSettingItemVO;
+import com.coderman.admin.vo.common.MarketIndexVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
@@ -72,6 +73,29 @@ public class FundServiceImpl implements FundService {
     }
 
     @Override
+    public List<MarketIndexVO> getMarkIndexList() throws IOException {
+
+        String result = HttpClientUtil.doGet("https://push2.eastmoney.com/api/qt/ulist.np/get?fields=f1,f2,f15,f16,f3,f4,f12,f13,f14,f292&fltt=2&secids=1.000001,0.399001,0.399006,100.HSI&deviceid=Wap&plat=Wap&product=EFund&version=2.0.0&Uid=", Maps.newHashMap());
+
+        Assert.notNull(result, "获取大盘数据错误!");
+        JSONObject jsonObject = JSON.parseObject(result);
+
+        List<MarketIndexVO> list = Lists.newArrayList();
+        for (Object o : jsonObject.getJSONObject("data").getJSONArray("diff")) {
+            JSONObject jsonObj = (JSONObject) o;
+
+            MarketIndexVO marketIndexVO = new MarketIndexVO();
+            marketIndexVO.setIndexName(jsonObj.getString("f14"));
+            marketIndexVO.setIndex(jsonObj.getBigDecimal("f2"));
+            marketIndexVO.setChangeVal(jsonObj.getBigDecimal("f4"));
+            marketIndexVO.setChangeRate(jsonObj.getBigDecimal("f3"));
+            list.add(marketIndexVO);
+        }
+
+        return list;
+    }
+
+    @Override
     @LogError(value = "获取历史净值")
     public JSONObject getHistoryData(Integer currentPage, Integer pageSize, String code) throws IOException {
 
@@ -82,7 +106,7 @@ public class FundServiceImpl implements FundService {
 
         String result = HttpClientUtil.doGet("https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code + "&pageIndex=" + currentPage + "&pageSize=" + pageSize + "&startDate=&endDate=&_=" + System.currentTimeMillis(), headers);
 
-        Assert.notNull(result, "获取数据错误!");
+        Assert.notNull(result, "获取获取历史净值错误!");
 
         int startIndex = result.indexOf('(') + 1;
         int endIndex = result.lastIndexOf(')');

@@ -3,6 +3,7 @@ package com.coderman.admin.service.common;
 import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.admin.vo.common.FundSettingItemVO;
+import com.coderman.admin.vo.common.MarketIndexVO;
 import com.coderman.api.vo.ResultVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,14 @@ public interface FundService {
      * @return
      */
     List<FundBeanVO> getListData();
+
+
+    /**
+     * 大盘信息
+     * @return
+     */
+    List<MarketIndexVO> getMarkIndexList() throws IOException;
+
     /**
      * 获取历史净值
      * @param currentPage

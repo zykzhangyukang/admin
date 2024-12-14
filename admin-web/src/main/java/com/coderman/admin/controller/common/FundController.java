@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.vo.common.FundBeanVO;
 import com.coderman.admin.vo.common.FundSettingItemVO;
+import com.coderman.admin.vo.common.MarketIndexVO;
 import com.coderman.api.util.ResultUtil;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
@@ -23,16 +24,16 @@ import java.util.List;
  * @author ：zhangyukang
  * @date ：2024/10/24 14:32
  */
-@Api(value = "基金模块接口", tags = "基金模块接口")
+@Api(value = "理财模块接口", tags = "理财模块接口")
 @RestController
-@RequestMapping(value = "/trade/fund")
+@RequestMapping(value = "/trade")
 public class FundController {
 
     @Resource
     private FundService fundService;
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取基金列表")
-    @GetMapping(value = "/list")
+    @GetMapping(value = "/fund/list")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
@@ -43,8 +44,19 @@ public class FundController {
         return ResultUtil.getSuccessList(FundBeanVO.class, list);
     }
 
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取大盘信息")
+    @GetMapping(value = "/mark/index/info")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "MarketIndexVO", value = {"indexName", "changeRate", "index"}),
+    })
+    public ResultVO<List<MarketIndexVO>> getMarkIndexList() throws IOException {
+        List<MarketIndexVO> markIndexList = this.fundService.getMarkIndexList();
+        return ResultUtil.getSuccessList(MarketIndexVO.class, markIndexList);
+    }
+
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "基金搜索")
-    @GetMapping(value = "/search")
+    @GetMapping(value = "/fund/search")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
@@ -55,7 +67,7 @@ public class FundController {
 
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "保存基金设置")
-    @PostMapping(value = "/save/setting")
+    @PostMapping(value = "/fund/save/setting")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
@@ -64,7 +76,7 @@ public class FundController {
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "保存基金设置")
-    @GetMapping(value = "/get/setting")
+    @GetMapping(value = "/fund/get/setting")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "FundSettingItemVO", value = {"costPrise", "fundCode", "bonds"}),
@@ -75,19 +87,19 @@ public class FundController {
 
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "导出基金设置")
-    @PostMapping(value = "/export/setting")
+    @PostMapping(value = "/fund/export/setting")
     public void exportSetting(HttpServletResponse response) throws IOException {
         this.fundService.exportSetting(response);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "导入基金设置")
-    @PostMapping(value = "/import/setting")
+    @PostMapping(value = "/fund/import/setting")
     public ResultVO<Void> importSetting(@RequestPart("file") MultipartFile file) throws IOException {
         return this.fundService.importSetting(file);
     }
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_GET, value = "获取历史净值")
-    @GetMapping(value = "/history")
+    @GetMapping(value = "/fund/history")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
