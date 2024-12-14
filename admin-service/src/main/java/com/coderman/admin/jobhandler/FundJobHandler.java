@@ -14,6 +14,7 @@ import com.coderman.redis.service.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 
 @Component
@@ -141,7 +143,9 @@ public class FundJobHandler {
         // 持久化到redis
         List<Boolean> saveToRedis = this.saveToRedis(fundBeanVOS);
         // 打印日志
-        this.printLog(fundBeanVOS);
+        if(saveToRedis.stream().anyMatch(BooleanUtils::isTrue)){
+            this.printLog(fundBeanVOS);
+        }
     }
 
     private List<Boolean> saveToRedis(List<FundBeanVO> fundBeanVOS) {
@@ -187,7 +191,7 @@ public class FundJobHandler {
                 return true;
             }
             // 判断下午 13:00 到 15:00
-            return time.isAfter(LocalTime.of(13, 0)) && time.isBefore(LocalTime.of(18, 30));
+            return time.isAfter(LocalTime.of(13, 0)) && time.isBefore(LocalTime.of(15, 0));
         }
         return false;
     }

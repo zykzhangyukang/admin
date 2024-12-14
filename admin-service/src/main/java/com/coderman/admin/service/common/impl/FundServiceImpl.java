@@ -245,24 +245,22 @@ public class FundServiceImpl implements FundService {
                 String key = "FUND_HISTORY_DATA:" + code + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
                 JSONArray list = this.redisService.getObject(key, JSONArray.class, RedisDbConstant.REDIS_DB_DEFAULT);
                 if (list == null || list.isEmpty()) {
-                    JSONObject historyData = this.getHistoryData(1, 30, code);
+                    JSONObject historyData = this.getHistoryData(1, 20, code);
                     list = historyData.getJSONArray("LSJZList");
                     this.redisService.setObject(key, list, 3600, RedisDbConstant.REDIS_DB_DEFAULT);
                 }
 
-                // 5日、10日、20日、30日
+                // 5日、10日、20日
                 BigDecimal average5 = list.stream().limit(5).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(5), 2, RoundingMode.HALF_DOWN);
 
                 BigDecimal average10 = list.stream().limit(10).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(10), 2, RoundingMode.HALF_DOWN);
 
                 BigDecimal average20 = list.stream().limit(20).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(20), 2, RoundingMode.HALF_DOWN);
 
-                BigDecimal average30 = list.stream().limit(30).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(30), 2, RoundingMode.HALF_DOWN);
 
                 bean.setJz5(average5.toString());
                 bean.setJz10(average10.toString());
                 bean.setJz20(average20.toString());
-                bean.setJz30(average30.toString());
 
             } catch (Exception e) {
                 log.error("计算基金编码 [{}] 的近15天和7天均值时发生异常: {}", code, e.getMessage(), e);
