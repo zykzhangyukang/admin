@@ -48,7 +48,7 @@ public class FundController {
     @GetMapping(value = "/mark/index/info")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "MarketIndexVO", value = {"indexName", "changeRate", "index"}),
+            @ApiReturnParam(name = "MarketIndexVO", value = {"indexName", "changeRate","changeVal", "index"}),
     })
     public ResultVO<List<MarketIndexVO>> getMarkIndexList() throws IOException {
         List<MarketIndexVO> markIndexList = this.fundService.getMarkIndexList();
