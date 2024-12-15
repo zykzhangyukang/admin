@@ -48,7 +48,7 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
                 // 将会话信息从redis中移除
                 AuthPrincipal authPrincipal = (AuthPrincipal) principal;
                 user = String.valueOf(authPrincipal.getUserId());
-                redisService.removeFromSet(RedisConstant.WEBSOCKET_USER_SET, user, RedisDbConstant.REDIS_DB_DEFAULT);
+                redisService.removeFromSet(RedisConstant.WEBSOCKET_USER_SET, user, RedisDbConstant.REDIS_DB_AUTH);
 
             } else {
 
