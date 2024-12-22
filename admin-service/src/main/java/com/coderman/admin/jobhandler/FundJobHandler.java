@@ -95,7 +95,11 @@ public class FundJobHandler {
     @Scheduled(cron = "*/5 * * * * ?")
     public void notifyFundWebsocketData() throws IOException {
 
-        List<FundBeanVO> list = this.fundService.getListData();
+        List<FundBeanVO> list = this.getRedisData();
+        if(CollectionUtils.isEmpty(list)){
+            list = this.fundService.getListData();
+        }
+
         List<MarketIndexVO> markIndexList = this.fundService.getMarkIndexList();
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -103,6 +107,7 @@ public class FundJobHandler {
         JSONObject result = new JSONObject();
         result.put("fundList", list);
         result.put("markIndexList", markIndexList);
+        result.put("currentTime", DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
 
         // 推送消息
         NotificationDTO msg = NotificationDTO.builder()
@@ -135,7 +140,7 @@ public class FundJobHandler {
      * 刷新基金实时走势
      */
     @Scheduled(cron = "*/30 * * * * ?")
-    public void refreshFundData() {
+    public void saveFundDataToRedis() {
 
         if (!isOpen(LocalDateTime.now())) {
             return;
