@@ -33,7 +33,7 @@ import java.util.Set;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(prefix = "job",name = "enable",havingValue = "true")
+@ConditionalOnProperty(prefix = "job", name = "enable", havingValue = "false")
 public class FundJobHandler {
 
     @Resource
@@ -47,9 +47,9 @@ public class FundJobHandler {
      * (每天上午11:40和下午14:40执行)
      * 基金收益提醒
      */
-     @Scheduled(cron = "0 40 10,14 * * ?")
+    @Scheduled(cron = "0 40 10,14 * * ?")
     public void notifyFundDataToUser() {
-        if(!isOpen(LocalDateTime.now())){
+        if (!isOpen(LocalDateTime.now())) {
             return;
         }
         List<FundBeanVO> currentFundData = this.getRedisData();
@@ -147,7 +147,7 @@ public class FundJobHandler {
         // 持久化到redis
         List<Boolean> saveToRedis = this.saveToRedis(list);
         // 打印日志
-        if(saveToRedis.stream().anyMatch(BooleanUtils::isTrue)){
+        if (saveToRedis.stream().anyMatch(BooleanUtils::isTrue)) {
             this.printLog(list);
         }
     }
