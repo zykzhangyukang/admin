@@ -1,25 +1,27 @@
 package com.coderman.admin.jobhandler;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.coderman.admin.constant.NotificationConstant;
 import com.coderman.admin.dto.common.NotificationDTO;
 import com.coderman.admin.service.common.FundService;
 import com.coderman.admin.service.common.NotificationService;
 import com.coderman.admin.utils.WxApiUtils;
 import com.coderman.admin.vo.common.FundBeanVO;
+import com.coderman.admin.vo.common.MarketIndexVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.redis.service.RedisService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,11 +29,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 
 @Component
 @Slf4j
+@ConditionalOnProperty(prefix = "job",name = "enable",havingValue = "true")
 public class FundJobHandler {
 
     @Resource
@@ -82,7 +84,6 @@ public class FundJobHandler {
                  .userId(61)
                  .title("基金收益提醒")
                  .message(message.toString())
-                 .url("/trade/fund")
                  .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
                  .build();
         this.notificationService.saveNotifyToUser(msg);
@@ -91,20 +92,23 @@ public class FundJobHandler {
     /**
      * websocket监控数据推送
      */
-    @Scheduled(cron = "*/10 * * * * ?")
-    public void notifyFundWebsocketData() {
-        List<FundBeanVO> resultList = this.getRedisData();
-        if (CollectionUtils.isEmpty(resultList)) {
-            return;
-        }
+    @Scheduled(cron = "*/5 * * * * ?")
+    public void notifyFundWebsocketData() throws IOException {
+
+        List<FundBeanVO> list = this.fundService.getListData();
+        List<MarketIndexVO> markIndexList = this.fundService.getMarkIndexList();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        JSONObject result = new JSONObject();
+        result.put("fundList", list);
+        result.put("markIndexList", markIndexList);
 
         // 推送消息
         NotificationDTO msg = NotificationDTO.builder()
                 .title("基金收益提醒")
-                .message(JSON.toJSONString(resultList, SerializerFeature.WriteNullStringAsEmpty))
-                .url("/dashboard")
-                .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
-                .build();
+                .message( objectMapper.writeValueAsString(result))
+                .type(NotificationConstant.NOTIFICATION_FUND_TIPS).build();
         this.notificationService.sendToTopic(msg);
     }
 
@@ -136,15 +140,15 @@ public class FundJobHandler {
         if (!isOpen(LocalDateTime.now())) {
             return;
         }
-        List<FundBeanVO> fundBeanVOS = this.fundService.getListData();
-        if (CollectionUtils.isEmpty(fundBeanVOS)) {
+        List<FundBeanVO> list = this.fundService.getListData();
+        if (CollectionUtils.isEmpty(list)) {
             return;
         }
         // 持久化到redis
-        List<Boolean> saveToRedis = this.saveToRedis(fundBeanVOS);
+        List<Boolean> saveToRedis = this.saveToRedis(list);
         // 打印日志
         if(saveToRedis.stream().anyMatch(BooleanUtils::isTrue)){
-            this.printLog(fundBeanVOS);
+            this.printLog(list);
         }
     }
 

@@ -61,15 +61,15 @@ public class LogServiceImpl extends BaseService implements LogService {
 
         // 同步到日志系统
         SyncUtil.sync(
-                MsgBuilder.create("insert_admin_sync_log", ProjectEnum.ADMIN, ProjectEnum.SMS)
+                MsgBuilder.create("insert_admin_sync_log", ProjectEnum.ADMIN, ProjectEnum.SYNC)
                         .addIntList("insert_admin_sync_log", Collections.singletonList(logModel.getLogId()))
                         .build()
         );
         // 同步到销售系统
-        SyncUtil.sync(
-                MsgBuilder.create("insert_admin_sms_log", ProjectEnum.ADMIN, ProjectEnum.SMS)
-                .addIntList("insert_admin_sms_log", Collections.singletonList(logModel.getLogId()))
-                .build());
+        // SyncUtil.sync(
+        //        MsgBuilder.create("insert_admin_sms_log", ProjectEnum.ADMIN, ProjectEnum.SMS)
+        //        .addIntList("insert_admin_sms_log", Collections.singletonList(logModel.getLogId()))
+        //        .build());
     }
 
     @Override

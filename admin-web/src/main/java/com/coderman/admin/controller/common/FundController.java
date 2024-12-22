@@ -37,7 +37,8 @@ public class FundController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
             @ApiReturnParam(name = "PageVO", value = {"pageRow", "totalRow", "currPage", "totalPage", "dataList"}),
-            @ApiReturnParam(name = "FundBeanVO", value = {"gszzl", "costPrise", "incomePercent", "dwjz", "jzrq", "todayIncome", "income", "fundName", "gsz", "fundCode", "bonds", "gztime","jz5","jz10","jz20","jz30"}),
+            @ApiReturnParam(name = "FundBeanVO", value = {"gszzl", "costPrise", "incomePercent", "dwjz", "jzrq",
+                    "todayIncome", "income", "fundName", "gsz", "fundCode", "bonds", "gztime","jz5","jz10","jz20","jz30"}),
     })
     public ResultVO<List<FundBeanVO>> getListData() {
         List<FundBeanVO> list = this.fundService.getListData();

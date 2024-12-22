@@ -75,7 +75,9 @@ public class FundServiceImpl implements FundService {
     @Override
     public List<MarketIndexVO> getMarkIndexList() throws IOException {
 
-        String result = HttpClientUtil.doGet("https://push2.eastmoney.com/api/qt/ulist.np/get?fields=f1,f2,f15,f16,f3,f4,f12,f13,f14,f292&fltt=2&secids=1.000001,0.399001,0.399006,100.HSI&deviceid=Wap&plat=Wap&product=EFund&version=2.0.0&Uid=", Maps.newHashMap());
+        String result = HttpClientUtil.doGet("https://push2.eastmoney.com/api/qt/ulist.np/get" +
+                "?fields=f1,f2,f15,f16,f3,f4,f12,f13,f14,f292&fltt=2&secids=1.000001,0.399001,0.399006,100.HSI" +
+                "&deviceid=Wap&plat=Wap&product=EFund&version=2.0.0&Uid=", Maps.newHashMap());
 
         Assert.notNull(result, "获取大盘数据错误!");
         JSONObject jsonObject = JSON.parseObject(result);
@@ -104,7 +106,10 @@ public class FundServiceImpl implements FundService {
 
         Map<String, String> headers = getHeaderMap();
 
-        String result = HttpClientUtil.doGet("https://api.fund.eastmoney.com/f10/lsjz?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code + "&pageIndex=" + currentPage + "&pageSize=" + pageSize + "&startDate=&endDate=&_=" + System.currentTimeMillis(), headers);
+        String result = HttpClientUtil.doGet("https://api.fund.eastmoney.com/f10/lsjz" +
+                "?callback=jQuery18309019060760859061_1729219122448&fundCode=" + code
+                + "&pageIndex=" + currentPage + "&pageSize=" + pageSize
+                + "&startDate=&endDate=&_=" + System.currentTimeMillis(), headers);
 
         Assert.notNull(result, "获取获取历史净值错误!");
 
@@ -187,7 +192,8 @@ public class FundServiceImpl implements FundService {
             response.setContentType("application/json");
             response.setHeader("Content-Disposition", "attachment; filename=\"config.json\"");
             response.setHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "content-disposition");
-            String jsonString = JSON.toJSONString(list, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
+            String jsonString = JSON.toJSONString(list, SerializerFeature.PrettyFormat,
+                    SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
             outputStream.write(jsonString.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
         } catch (Exception e) {
@@ -223,8 +229,9 @@ public class FundServiceImpl implements FundService {
 
         FundBeanVO bean = null;
 
-        String result = HttpClientUtil.doGet("http://fundgz.1234567.com.cn/js/" + code + ".js?rt=" + System.currentTimeMillis(), Maps.newHashMap());
-        Assert.notNull(result, "获取数据错误!");
+        String result = HttpClientUtil.doGet("https://fundgz.1234567.com.cn/js/"
+                + code + ".js?rt=" + System.currentTimeMillis(), Maps.newHashMap());
+        Assert.notNull(result, "获取天天基金信息获取错误!");
 
         String json = result.substring(8, result.length() - 2);
         if (!json.isEmpty()) {
@@ -243,7 +250,8 @@ public class FundServiceImpl implements FundService {
                     bean.setIncomePercent("0");
                 } else {
                     // 计算收益率 =
-                    BigDecimal incomePercentDec = incomeDiff.divide(costPriceDec, 8, RoundingMode.HALF_UP).multiply(BigDecimal.TEN).multiply(BigDecimal.TEN).setScale(3, RoundingMode.HALF_UP);
+                    BigDecimal incomePercentDec = incomeDiff.divide(costPriceDec, 8, RoundingMode.HALF_UP)
+                            .multiply(BigDecimal.TEN).multiply(BigDecimal.TEN).setScale(3, RoundingMode.HALF_UP);
                     bean.setIncomePercent(incomePercentDec.toString());
                 }
 
@@ -275,11 +283,14 @@ public class FundServiceImpl implements FundService {
                 }
 
                 // 5日、10日、20日
-                BigDecimal average5 = list.stream().limit(5).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(5), 2, RoundingMode.HALF_DOWN);
+                BigDecimal average5 = list.stream().limit(5).map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(5), 2, RoundingMode.HALF_DOWN);
 
-                BigDecimal average10 = list.stream().limit(10).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(10), 2, RoundingMode.HALF_DOWN);
+                BigDecimal average10 = list.stream().limit(10).map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(10), 2, RoundingMode.HALF_DOWN);
 
-                BigDecimal average20 = list.stream().limit(20).map(o -> ((JSONObject) o).getBigDecimal("DWJZ")).reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(20), 2, RoundingMode.HALF_DOWN);
+                BigDecimal average20 = list.stream().limit(20).map(o -> ((JSONObject) o).getBigDecimal("DWJZ"))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add).divide(new BigDecimal(20), 2, RoundingMode.HALF_DOWN);
 
 
                 bean.setJz5(average5.toString());

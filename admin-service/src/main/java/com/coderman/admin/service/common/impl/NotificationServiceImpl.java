@@ -203,8 +203,9 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendToTopic(NotificationDTO payload) {
 
         String destination = WebSocketChannelEnum.TOPIC_SYS_MSG.getSubscribeUrl();
-        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(StringUtils.EMPTY, destination, payload, WebSocketChannelEnum.TOPIC_SYS_MSG);
-        // 广播消息
+        WebsocketRedisMsg<Object> websocketRedisMsg = new WebsocketRedisMsg<>(StringUtils.EMPTY, destination, payload,
+                WebSocketChannelEnum.TOPIC_SYS_MSG);
+
         redisService.sendTopicMessage(RedisConstant.CHANNEL_WEBSOCKET_NOTIFY, websocketRedisMsg);
     }
 
