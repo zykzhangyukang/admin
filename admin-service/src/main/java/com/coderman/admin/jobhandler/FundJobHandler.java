@@ -48,8 +48,8 @@ public class FundJobHandler {
      * 基金收益提醒
      */
     @Scheduled(cron = "0 40 10,14 * * ?")
-    public void notifyFundDataToUser() {
-        if (!isOpen(LocalDateTime.now())) {
+    public void sendWechatMessage() {
+        if (isNotOpen(LocalDateTime.now())) {
             return;
         }
         List<FundBeanVO> currentFundData = this.getRedisData();
@@ -61,7 +61,7 @@ public class FundJobHandler {
         for (int i = 0; i < size; i++) {
             FundBeanVO fundBeanVO = currentFundData.get(i);
             message
-                    .append(fundBeanVO.getFundName()).append("(").append(fundBeanVO.getFundCode()).append(")")
+                    .append(fundBeanVO.getFundName())
                     .append(", 估算涨跌: ")
                     .append(fundBeanVO.getGszzl()).append("%")
                     .append(", 当日净值: ")
@@ -80,12 +80,12 @@ public class FundJobHandler {
         log.info("发送企业微信消息:{}", jsonObject.toJSONString());
 
         // 发送系统消息提醒
-         NotificationDTO msg = NotificationDTO.builder()
-                 .userId(61)
-                 .title("基金收益提醒")
-                 .message(message.toString())
-                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
-                 .build();
+        NotificationDTO msg = NotificationDTO.builder()
+                .userId(61)
+                .title("基金收益提醒")
+                .message(message.toString())
+                .type(NotificationConstant.NOTIFICATION_FUND_TIPS)
+                .build();
         this.notificationService.saveNotifyToUser(msg);
     }
 
@@ -96,7 +96,7 @@ public class FundJobHandler {
     public void notifyFundWebsocketData() throws IOException {
 
         List<FundBeanVO> list = this.getRedisData();
-        if(CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             list = this.fundService.getListData();
         }
 
@@ -112,13 +112,13 @@ public class FundJobHandler {
         // 推送消息
         NotificationDTO msg = NotificationDTO.builder()
                 .title("基金收益提醒")
-                .message( objectMapper.writeValueAsString(result))
+                .message(objectMapper.writeValueAsString(result))
                 .type(NotificationConstant.NOTIFICATION_FUND_TIPS).build();
         this.notificationService.sendToTopic(msg);
     }
 
 
-    private List<FundBeanVO> getRedisData(){
+    private List<FundBeanVO> getRedisData() {
         List<FundBeanVO> resultList = Lists.newArrayList();
 
         List<String> apiParams = this.fundService.getApiParams();
@@ -142,7 +142,7 @@ public class FundJobHandler {
     @Scheduled(cron = "*/30 * * * * ?")
     public void saveFundDataToRedis() {
 
-        if (!isOpen(LocalDateTime.now())) {
+        if (isNotOpen(LocalDateTime.now())) {
             return;
         }
         List<FundBeanVO> list = this.fundService.getListData();
@@ -189,7 +189,12 @@ public class FundJobHandler {
         log.info("=========================================================================================================================================================");
     }
 
-    public static boolean isOpen(LocalDateTime dateTime) {
+    /**
+     * 判断是否是开盘时间
+     * @param dateTime 时间
+     * @return
+     */
+    public static boolean isNotOpen(LocalDateTime dateTime) {
         DayOfWeek dayOfWeek = dateTime.getDayOfWeek();
         LocalTime time = dateTime.toLocalTime();
 
@@ -197,11 +202,11 @@ public class FundJobHandler {
         if (dayOfWeek != DayOfWeek.SATURDAY && dayOfWeek != DayOfWeek.SUNDAY) {
             // 判断上午 9:30 到 11:30
             if (time.isAfter(LocalTime.of(9, 30)) && time.isBefore(LocalTime.of(11, 30))) {
-                return true;
+                return false;
             }
             // 判断下午 13:00 到 15:00
-            return time.isAfter(LocalTime.of(13, 0)) && time.isBefore(LocalTime.of(15, 0));
+            return !time.isAfter(LocalTime.of(13, 0)) || !time.isBefore(LocalTime.of(15, 0));
         }
-        return false;
+        return true;
     }
 }
