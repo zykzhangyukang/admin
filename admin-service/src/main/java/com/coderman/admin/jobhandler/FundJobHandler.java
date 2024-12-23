@@ -93,13 +93,13 @@ public class FundJobHandler {
      * websocket监控数据推送
      */
     @Scheduled(cron = "*/5 * * * * ?")
-    public void notifyFundWebsocketData() throws IOException {
+    public void websocketDataPush() throws IOException {
 
-        List<FundBeanVO> list = this.getRedisData();
-        if (CollectionUtils.isEmpty(list)) {
-            list = this.fundService.getListData();
+        if (isNotOpen(LocalDateTime.now())) {
+            return;
         }
 
+        List<FundBeanVO> list =  this.fundService.getListData();
         List<MarketIndexVO> markIndexList = this.fundService.getMarkIndexList();
 
         ObjectMapper objectMapper = new ObjectMapper();
