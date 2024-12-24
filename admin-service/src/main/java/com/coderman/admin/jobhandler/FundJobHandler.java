@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 
 @Component
@@ -52,7 +53,7 @@ public class FundJobHandler {
         if (isNotOpen(LocalDateTime.now())) {
             return;
         }
-        List<FundBeanVO> currentFundData = this.getRedisData();
+        List<FundBeanVO> currentFundData = this.fundService.getListData();
         if (CollectionUtils.isEmpty(currentFundData)) {
             return;
         }
@@ -118,7 +119,7 @@ public class FundJobHandler {
     }
 
 
-    private List<FundBeanVO> getRedisData() {
+    private List<FundBeanVO> getJzRedisData() {
         List<FundBeanVO> resultList = Lists.newArrayList();
 
         List<String> apiParams = this.fundService.getApiParams();
@@ -140,7 +141,7 @@ public class FundJobHandler {
      * 刷新基金实时走势
      */
     @Scheduled(cron = "*/30 * * * * ?")
-    public void saveFundDataToRedis() {
+    public void saveJzDataToRedis() {
 
         if (isNotOpen(LocalDateTime.now())) {
             return;
@@ -150,26 +151,36 @@ public class FundJobHandler {
             return;
         }
         // 持久化到redis
-        List<Boolean> saveToRedis = this.saveToRedis(list);
+        List<Boolean> saveToRedis = this.saveJzToRedis(list);
         // 打印日志
         if (saveToRedis.stream().anyMatch(BooleanUtils::isTrue)) {
             this.printLog(list);
         }
     }
 
-    private List<Boolean> saveToRedis(List<FundBeanVO> fundBeanVOS) {
+    private List<Boolean> saveJzToRedis(List<FundBeanVO> fundBeanVOS) {
 
         List<Boolean> result = Lists.newArrayList();
         for (FundBeanVO fund : fundBeanVOS) {
 
             String redisKey = "FUND_JZ_DATA:" + fund.getFundCode() + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
-            long timestamp = new Date().getTime() / 1000;
+            long timestamp = System.currentTimeMillis() / 1000;
 
+            // 检查键是否存在
+            boolean exists = this.redisService.exists(redisKey, RedisDbConstant.REDIS_DB_DEFAULT);
+
+            // 将元素添加到有序集合中
             Boolean success = this.redisService.zSetAdd(redisKey, fund, timestamp, RedisDbConstant.REDIS_DB_DEFAULT);
+            if (!exists && success) {
+                // 如果键不存在并且元素成功添加，设置过期时间
+                this.redisService.expire(redisKey, (int) TimeUnit.DAYS.toSeconds(7), RedisDbConstant.REDIS_DB_DEFAULT);
+            }
+
             result.add(success);
         }
         return result;
     }
+
 
     private void printLog(List<FundBeanVO> fundBeanVOS) {
         for (FundBeanVO fund : fundBeanVOS) {

@@ -18,8 +18,6 @@ public interface FundService {
      * @return
      */
     List<FundBeanVO> getListData();
-
-
     /**
      * 大盘信息
      * @return
