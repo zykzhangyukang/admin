@@ -173,7 +173,7 @@ public class FundJobHandler {
             Boolean success = this.redisService.zSetAdd(redisKey, fund, timestamp, RedisDbConstant.REDIS_DB_DEFAULT);
             if (!exists && success) {
                 // 如果键不存在并且元素成功添加，设置过期时间
-                this.redisService.expire(redisKey, (int) TimeUnit.DAYS.toSeconds(7), RedisDbConstant.REDIS_DB_DEFAULT);
+                this.redisService.expire(redisKey, (int) TimeUnit.DAYS.toSeconds(14), RedisDbConstant.REDIS_DB_DEFAULT);
             }
 
             result.add(success);
