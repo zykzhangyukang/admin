@@ -1,5 +1,6 @@
 package com.coderman.admin.utils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -43,6 +44,7 @@ public class HttpClientUtil {
         httpClient = HttpClients.custom()
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(requestConfig)
+                .setProxy(new HttpHost("127.0.0.1",8889))
                 .build();
 
         // 在 JVM 关闭时释放连接池资源
