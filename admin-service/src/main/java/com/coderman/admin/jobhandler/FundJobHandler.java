@@ -93,7 +93,7 @@ public class FundJobHandler {
     /**
      * websocket监控数据推送
      */
-    @Scheduled(cron = "*/5 * * * * ?")
+    @Scheduled(cron = "*/3 * * * * ?")
     public void websocketDataPush() throws IOException {
 
         if (isNotOpen(LocalDateTime.now())) {
