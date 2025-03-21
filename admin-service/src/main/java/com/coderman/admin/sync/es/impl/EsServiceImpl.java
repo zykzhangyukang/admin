@@ -1,5 +1,6 @@
 package com.coderman.admin.sync.es.impl;
 
+import ch.qos.logback.classic.util.EnvUtil;
 import com.alibaba.fastjson.JSON;
 import com.coderman.admin.sync.constant.PlanConstant;
 import com.coderman.admin.sync.es.EsService;
@@ -27,6 +28,7 @@ import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.Index;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
@@ -38,6 +40,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -47,6 +50,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author zhangyukang
@@ -57,12 +61,14 @@ public class EsServiceImpl implements EsService {
 
     @Resource
     private RestHighLevelClient restHighLevelClient;
-
     /**
      * 同步系统索引别名
      */
-    private static final String ALIAS = "admin_alias";
-
+    private static String ALIAS = "admin_alias";
+    /**
+     * 索引前缀
+     */
+    private static String INDEX_PREFIX = "admin_result_";
     /**
      * 当前使用的索引名
      */
@@ -103,7 +109,7 @@ public class EsServiceImpl implements EsService {
                 namedParameterJdbcTemplate.update("update sync_result set sync_To_es = 1 where uuid in (:params)", params);
             }
 
-            log.info("同步记录写入Es, 总数:{}, 耗时:{} ms", uuidList.size() , System.currentTimeMillis() - startTime);
+            log.info("同步记录写入Es, 总数:{}, 耗时:{} ms", uuidList.size(), System.currentTimeMillis() - startTime);
         }
 
         return result;
@@ -130,9 +136,8 @@ public class EsServiceImpl implements EsService {
         );
 
         BulkByScrollResponse response = this.restHighLevelClient.updateByQuery(updateByQuery, RequestOptions.DEFAULT);
-        if(CollectionUtils.isNotEmpty(response.getBulkFailures())){
-
-            log.error("批量更新ES同步记录状态失败:{}",JSON.toJSONString(response.getBulkFailures()));
+        if (CollectionUtils.isNotEmpty(response.getBulkFailures())) {
+            log.error("批量更新ES同步记录状态失败:{}", JSON.toJSONString(response.getBulkFailures()));
         }
 
     }
@@ -159,7 +164,7 @@ public class EsServiceImpl implements EsService {
             HighlightField msgContentField = highlightFields.get("msgContent");
             HighlightField syncContentField = highlightFields.get("syncContent");
 
-            if(msgContentField!=null && msgContentField.getFragments()!=null){
+            if (msgContentField != null && msgContentField.getFragments() != null) {
                 Text[] fragments = msgContentField.getFragments();
                 StringBuilder newMsgContent = new StringBuilder();
                 for (Text text : fragments) {
@@ -168,7 +173,7 @@ public class EsServiceImpl implements EsService {
                 resultModel.setHlsMsgContent(newMsgContent.toString());
             }
 
-            if(syncContentField!=null && syncContentField.getFragments()!=null){
+            if (syncContentField != null && syncContentField.getFragments() != null) {
                 Text[] fragments = syncContentField.getFragments();
                 StringBuilder newSyncContent = new StringBuilder();
                 for (Text text : fragments) {
@@ -233,36 +238,41 @@ public class EsServiceImpl implements EsService {
     }
 
 
+    /**
+     * 根据环境区分命名空间
+     */
+    private void initNameSpace() {
+        Environment environment = SpringContextUtil.getApplicationContext().getEnvironment();
+        String[] profiles = environment.getActiveProfiles();
+        String currentEnv = Stream.of(profiles).findFirst().orElse(null);
+        if (!"pro".equalsIgnoreCase(currentEnv)) {
+            ALIAS = "admin_test_alias";
+            INDEX_PREFIX = "admin_test_result_";
+        }
+    }
+
     @PostConstruct
     public void init() throws IOException {
+
+        this.initNameSpace();
 
         GetAliasesRequest getAliasesRequest = new GetAliasesRequest(ALIAS);
         boolean existsAlias = this.restHighLevelClient.indices().existsAlias(getAliasesRequest, RequestOptions.DEFAULT);
 
         if (!existsAlias) {
-
-            // 创建索引
             this.createResultModelIndex();
-
         } else {
-
-            // 找出最新创建的一条索引为当前索引
             GetAliasesResponse response = this.restHighLevelClient.indices().getAlias(new GetAliasesRequest(EsServiceImpl.ALIAS), RequestOptions.DEFAULT);
-
             List<Long> list = new ArrayList<>();
-
             for (Map.Entry<String, Set<AliasMetaData>> entry : response.getAliases().entrySet()) {
-
                 String indexName = entry.getKey();
-
-                if (indexName.matches("^admin_result_\\d{13}$")) {
-
-                    list.add(Long.valueOf(indexName.replace("admin_result_", "")));
+                if (indexName.matches("^" + INDEX_PREFIX + "\\d{13}$")) {
+                    list.add(Long.valueOf(indexName.replace(INDEX_PREFIX, "")));
                 }
             }
 
             list.sort((o1, o2) -> (int) (o2 - o1));
-            this.syncResultIndexName = "admin_result_" + list.get(0);
+            this.syncResultIndexName = INDEX_PREFIX + list.get(0);
             log.info("当前es工作索引为:{}", this.syncResultIndexName);
         }
     }
@@ -331,7 +341,7 @@ public class EsServiceImpl implements EsService {
                 .endObject()
                 .endObject();
 
-        this.syncResultIndexName = "admin_result_" + System.currentTimeMillis();
+        this.syncResultIndexName = INDEX_PREFIX + System.currentTimeMillis();
 
         // 创建索引
         CreateIndexRequest createIndexRequest = new CreateIndexRequest();

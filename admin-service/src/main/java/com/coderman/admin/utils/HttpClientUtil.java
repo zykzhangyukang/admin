@@ -44,7 +44,6 @@ public class HttpClientUtil {
         httpClient = HttpClients.custom()
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(requestConfig)
-                .setProxy(new HttpHost("127.0.0.1",8889))
                 .build();
 
         // 在 JVM 关闭时释放连接池资源
