@@ -36,7 +36,7 @@ public class CacheUtil {
     /**
      * 保存缓存设备的信息
      */
-    private  final Cache<Integer, String> USER_DEVICE_CACHE_MAP = CacheBuilder.newBuilder()
+    private final Cache<Integer, String> USER_DEVICE_CACHE_MAP = CacheBuilder.newBuilder()
             //设置缓存初始大小
             .initialCapacity(10)
             //最大值
@@ -63,11 +63,11 @@ public class CacheUtil {
     private CacheUtil() {
     }
 
-    public Cache<String, AuthUserVO> getTokenCache(){
+    public Cache<String, AuthUserVO> getTokenCache() {
         return USER_TOKEN_CACHE_MAP;
     }
 
-    public Cache<Integer, String> getDeviceCache(){
+    public Cache<Integer, String> getDeviceCache() {
         return USER_DEVICE_CACHE_MAP;
     }
 }

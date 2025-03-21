@@ -111,7 +111,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getWarn("用户已被禁用！");
         }
 
-        AuthUserVO authUserVO = this.createSession(user.getUsername());
+        AuthUserVO authUserVO = this.createSession(user.getUsername(), user.getUserId());
 
         // 删除当前访问令牌和刷新令牌
         this.redisService.del(AuthConstant.AUTH_ACCESS_TOKEN_NAME + current.getAccessToken(), RedisDbConstant.REDIS_DB_AUTH);
@@ -162,30 +162,10 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         try {
 
-            // 是否有其他设备登录， 如果有则需要踢出该设备
-            String oldSession = this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + dbUser.getUserId(), RedisDbConstant.REDIS_DB_AUTH);
             // 创建用户会话
-            AuthUserVO authUserVO = this.createSession(dbUser.getUsername());
+            AuthUserVO authUserVO = this.createSession(dbUser.getUsername(), dbUser.getUserId());
             // 记录登录日志
             this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(), "用户登录系统");
-            // 多设备登录提醒
-            if(StringUtils.isNotBlank(oldSession) && !StringUtils.equals(oldSession, authUserVO.getAccessToken())){
-
-                String message = String.format("系统检测到当前账号于%s在其他设备上登录-%s(%s)。若非本人操作，您的登录密码可能已经泄露，请及时更改密码，紧急情况可联系管理员冻结账号。（管理员邮箱：3053161401@qq.com）",
-                        DateFormatUtils.format(new Date(),"HH:mm:ss"),
-                        IpUtil.getCityInfo(),
-                        IpUtil.getIpAddr()
-                );
-
-                NotificationDTO msg = NotificationDTO.builder()
-                        .userId(authUserVO.getUserId())
-                        .title("设备登录系统")
-                        .sessionKey(oldSession)
-                        .message(message)
-                        .type(NotificationConstant.NOTIFICATION_DEVICE_CHECK)
-                        .build();
-                this.notificationService.sendToUserSession(msg);
-            }
 
             TokenResultVO response = TokenResultVO.builder()
                     .accessToken(authUserVO.getAccessToken())
@@ -196,6 +176,32 @@ public class UserServiceImpl extends BaseService implements UserService {
 
         } finally {
             this.redisLockService.unlock(lockName);
+        }
+    }
+
+    /**
+     * 通知其他设备下线
+     * @param authUserVO 用户会话
+     * @param oldSession 旧session(token)
+     */
+    private void sendMultiDeviceLoginNotification(AuthUserVO authUserVO, String oldSession) {
+        if (StringUtils.isNotBlank(oldSession) && !StringUtils.equals(oldSession, authUserVO.getAccessToken())) {
+            String message = String.format("系统检测到当前账号于%s在其他设备上登录-%s(%s)。若非本人操作，您的登录密码可能已经泄露，" +
+                            "请及时更改密码，紧急情况可联系管理员冻结账号。（管理员邮箱：3053161401@qq.com）",
+                    DateFormatUtils.format(new Date(), "HH:mm:ss"),
+                    IpUtil.getCityInfo(),
+                    IpUtil.getIpAddr()
+            );
+
+            NotificationDTO msg = NotificationDTO.builder()
+                    .userId(authUserVO.getUserId())
+                    .title("设备登录系统")
+                    .sessionKey(oldSession)
+                    .message(message)
+                    .type(NotificationConstant.NOTIFICATION_DEVICE_CHECK)
+                    .build();
+
+            notificationService.sendToUserSession(msg);
         }
     }
 
@@ -292,7 +298,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                     throw new BusinessException(ResultConstant.RESULT_CODE_401, "当前用户状态已被禁用!");
                 }
 
-                AuthUserVO authUserVO = this.createSession(userVO.getUsername());
+                AuthUserVO authUserVO = this.createSession(userVO.getUsername(), userVO.getUserId());
                 tokenResultVO.setAccessToken(authUserVO.getAccessToken());
                 tokenResultVO.setRefreshToken(authUserVO.getRefreshToken());
                 // 删除之前的刷新令牌
@@ -311,13 +317,17 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     /**
      * 创建用户会话信息
-     *
+     * @param username 用户名
+     * @param userId 用户id
      * @return 返回用户会话VO
      */
-    private AuthUserVO createSession(String username) {
+    private AuthUserVO createSession(String username,Integer userId) {
 
         UserVO user = this.selectUserByName(username);
         Assert.notNull(user, "用户不存在");
+
+        // 是否有其他设备登录， 如果有则需要踢出该设备
+        String oldSession = this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + userId, RedisDbConstant.REDIS_DB_AUTH);
 
         // 令牌生成
         String accessToken = RandomStringUtils.randomAlphanumeric(32);
@@ -347,9 +357,10 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.redisService.setObject(AuthConstant.AUTH_ACCESS_TOKEN_NAME + accessToken, authUserVO, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.setObject(AuthConstant.AUTH_REFRESH_TOKEN_NAME + refreshToken, authUserVO, AuthConstant.REFRESH_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.setString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + authUserVO.getUserId(), accessToken, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
-
         // 缓存广播
         this.redisService.sendTopicMessage(RedisConstant.CHANNEL_REFRESH_SESSION_CACHE, authUserVO);
+        // 多设备登录提醒
+        this.sendMultiDeviceLoginNotification(authUserVO, oldSession);
 
         return authUserVO;
     }
