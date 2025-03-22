@@ -22,6 +22,7 @@
     <properties>
         <elasticsearch.version>7.6.2</elasticsearch.version>
         <easyexcel.version>4.0.3</easyexcel.version>
+        <dashscope.version>2.12.0</dashscope.version>
     </properties>
 
     <dependencyManagement>
@@ -57,6 +58,12 @@
                 <groupId>com.coderman</groupId>
                 <artifactId>admin-service</artifactId>
                 <version>${i.project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>dashscope-sdk-java</artifactId>
+                <version>${dashscope.version}</version>
             </dependency>
 
         </dependencies>
