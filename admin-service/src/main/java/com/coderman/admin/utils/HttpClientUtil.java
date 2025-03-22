@@ -1,4 +1,5 @@
 package com.coderman.admin.utils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class HttpClientUtil {
 
     private static final PoolingHttpClientConnectionManager connectionManager;
@@ -54,7 +56,7 @@ public class HttpClientUtil {
                 }
                 connectionManager.shutdown();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("error:{}",e.getMessage(),e);
             }
         }));
     }

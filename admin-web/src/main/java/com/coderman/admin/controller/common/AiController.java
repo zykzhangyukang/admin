@@ -4,10 +4,12 @@ import com.alibaba.dashscope.aigc.generation.Generation;
 import com.alibaba.dashscope.aigc.generation.GenerationParam;
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
 import com.alibaba.dashscope.common.Message;
+import com.alibaba.dashscope.common.ResultCallback;
 import com.alibaba.dashscope.common.Role;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
+import com.coderman.api.constant.CommonConstant;
 import com.coderman.service.util.DesUtil;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -34,21 +36,33 @@ public class AiController {
         return callWithMessage(question);
     }
 
-    public String callWithMessage(String question)
-            throws NoApiKeyException, ApiException, InputRequiredException {
+    public String callWithMessage(String question) throws NoApiKeyException, ApiException, InputRequiredException {
         Generation gen = new Generation();
+
         List<Message> messages = new ArrayList<>();
         Message userMsg = Message.builder().role(Role.USER.getValue()).content(question).build();
         messages.add(userMsg);
-        String crypyKey = System.getProperty("secret.key");
-        String apiKey = DesUtil.decrypt("345D37C0A831EA3BF82562BE4758A70285A77A4AB8E0685299C5246B3DD67F3F74843A274F180E0C", crypyKey);
-        GenerationParam param =
-                GenerationParam.builder().model(Generation.Models.QWEN_TURBO).messages(messages)
-                        .resultFormat(GenerationParam.ResultFormat.MESSAGE)
-                        .apiKey(apiKey)
-                        .build();
-        GenerationResult result = gen.call(param);
-        return result.getOutput().getChoices().get(0).getMessage().getContent();
+
+        GenerationParam param = GenerationParam.builder().model(Generation.Models.QWEN_TURBO)
+                .messages(messages)
+                .resultFormat(GenerationParam.ResultFormat.MESSAGE)
+                .apiKey(DesUtil.decrypt("345D37C0A831EA3BF82562BE4758A70285A77A4AB8E0685299C5246B3DD67F3F74843A274F180E0C", CommonConstant.SECRET_KEY))
+                .incrementalOutput(true).build();
+        gen.streamCall(param, new ResultCallback<GenerationResult>() {
+            @Override
+            public void onEvent(GenerationResult message) {
+                log.info(message.toString());
+            }
+
+            @Override
+            public void onComplete() {
+            }
+
+            @Override
+            public void onError(Exception e) {
+            }
+        });
+        return "success";
     }
 
 }
