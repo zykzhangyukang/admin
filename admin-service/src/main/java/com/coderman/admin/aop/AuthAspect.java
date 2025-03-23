@@ -55,7 +55,7 @@ public class AuthAspect {
             "/auth/user/token",
             "/auth/user/refresh/token",
             "/auth/user/logout",
-            "/common/ai/chat"
+            "/common/chat/completion"
     );
 
     private static final Set<String> UNFILTER_HAS_LOGIN_INFO_URLS = Sets.newHashSet(
