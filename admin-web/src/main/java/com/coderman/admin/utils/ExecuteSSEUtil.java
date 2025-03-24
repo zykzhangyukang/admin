@@ -20,8 +20,7 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public class ExecuteSSEUtil {
 
-    private static final String KEY = "345D37C0A831EA3BF82562BE4758A70285A77A4AB8E0685299C5246B3DD67F3F74843A274F180E0C";
-
+    private static final String DECRYPTED_API_KEY = DesUtil.decrypt("345D37C0A831EA3BF82562BE4758A70285A77A4AB8E0685299C5246B3DD67F3F74843A274F180E0C", CommonConstant.SECRET_KEY);
     private final CountDownLatch countDownLatch = new CountDownLatch(1);
     private final StringBuilder output = new StringBuilder();
     private PrintWriter writer;
@@ -61,18 +60,15 @@ public class ExecuteSSEUtil {
                 .model(Generation.Models.QWEN_TURBO)
                 .messages(messages)
                 .resultFormat(GenerationParam.ResultFormat.MESSAGE)
-                .apiKey(DesUtil.decrypt(KEY, CommonConstant.SECRET_KEY))
+                .apiKey(DECRYPTED_API_KEY)
                 .incrementalOutput(true)
                 .build();
 
         // 发起流式调用
         gen.streamCall(param, new ResultCallback<GenerationResult>() {
 
-
             @Override
             public void onEvent(GenerationResult message) {
-
-
                 if (writer != null) {
                     try {
 
@@ -102,7 +98,7 @@ public class ExecuteSSEUtil {
                 } catch (Exception e) {
                     log.error("关闭失败: ", e);
                 } finally {
-                    countDownLatch.countDown(); // 释放锁
+                    countDownLatch.countDown();
                 }
             }
 
@@ -118,7 +114,7 @@ public class ExecuteSSEUtil {
                 } catch (Exception ex) {
                     log.error("关闭失败: ", ex);
                 } finally {
-                    countDownLatch.countDown(); // 释放锁
+                    countDownLatch.countDown();
                 }
             }
         });
