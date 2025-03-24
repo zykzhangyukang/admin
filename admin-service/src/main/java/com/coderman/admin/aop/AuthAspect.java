@@ -150,7 +150,7 @@ public class AuthAspect {
             }
         } catch (Exception e) {
             log.error("Error validating device token: userId={}", userId, e);
-            throwUnauthorized("设备校验失败，请重新登录");
+            throwUnauthorized(e.getMessage());
         }
     }
 
