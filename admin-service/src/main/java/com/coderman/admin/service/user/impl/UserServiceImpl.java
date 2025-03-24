@@ -111,7 +111,7 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getWarn("用户已被禁用！");
         }
 
-        AuthUserVO authUserVO = this.createSession(user.getUsername(), user.getUserId());
+        AuthUserVO authUserVO = this.createSession(user.getUsername());
 
         // 删除当前访问令牌和刷新令牌
         this.redisService.del(AuthConstant.AUTH_ACCESS_TOKEN_NAME + current.getAccessToken(), RedisDbConstant.REDIS_DB_AUTH);
@@ -161,11 +161,14 @@ public class UserServiceImpl extends BaseService implements UserService {
         }
 
         try {
-
+            // 是否有其他设备登录， 如果有则需要踢出该设备
+            String oldSession = this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + dbUser.getUserId(), RedisDbConstant.REDIS_DB_AUTH);
             // 创建用户会话
-            AuthUserVO authUserVO = this.createSession(dbUser.getUsername(), dbUser.getUserId());
+            AuthUserVO authUserVO = this.createSession(dbUser.getUsername());
             // 记录登录日志
             this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, dbUser.getUserId(), dbUser.getUsername(), dbUser.getRealName(), "用户登录系统");
+            // 多设备登录提醒
+            this.sendMultiDeviceLoginNotification(authUserVO, oldSession);
 
             TokenResultVO response = TokenResultVO.builder()
                     .accessToken(authUserVO.getAccessToken())
@@ -181,6 +184,7 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     /**
      * 通知其他设备下线
+     *
      * @param authUserVO 用户会话
      * @param oldSession 旧session(token)
      */
@@ -298,7 +302,7 @@ public class UserServiceImpl extends BaseService implements UserService {
                     throw new BusinessException(ResultConstant.RESULT_CODE_401, "当前用户状态已被禁用!");
                 }
 
-                AuthUserVO authUserVO = this.createSession(userVO.getUsername(), userVO.getUserId());
+                AuthUserVO authUserVO = this.createSession(userVO.getUsername());
                 tokenResultVO.setAccessToken(authUserVO.getAccessToken());
                 tokenResultVO.setRefreshToken(authUserVO.getRefreshToken());
                 // 删除之前的刷新令牌
@@ -317,17 +321,15 @@ public class UserServiceImpl extends BaseService implements UserService {
 
     /**
      * 创建用户会话信息
+     *
      * @param username 用户名
-     * @param userId 用户id
+     * @param userId   用户id
      * @return 返回用户会话VO
      */
-    private AuthUserVO createSession(String username,Integer userId) {
+    private AuthUserVO createSession(String username) {
 
         UserVO user = this.selectUserByName(username);
         Assert.notNull(user, "用户不存在");
-
-        // 是否有其他设备登录， 如果有则需要踢出该设备
-        String oldSession = this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + userId, RedisDbConstant.REDIS_DB_AUTH);
 
         // 令牌生成
         String accessToken = RandomStringUtils.randomAlphanumeric(32);
@@ -359,8 +361,6 @@ public class UserServiceImpl extends BaseService implements UserService {
         this.redisService.setString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + authUserVO.getUserId(), accessToken, AuthConstant.ACCESS_TOKEN_EXPIRED_SECOND, RedisDbConstant.REDIS_DB_AUTH);
         // 缓存广播
         this.redisService.sendTopicMessage(RedisConstant.CHANNEL_REFRESH_SESSION_CACHE, authUserVO);
-        // 多设备登录提醒
-        this.sendMultiDeviceLoginNotification(authUserVO, oldSession);
 
         return authUserVO;
     }
