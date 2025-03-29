@@ -7,6 +7,7 @@ import com.alibaba.dashscope.common.Message;
 import com.alibaba.dashscope.common.ResultCallback;
 import com.alibaba.dashscope.common.Role;
 import com.alibaba.fastjson.JSON;
+import com.coderman.admin.dto.common.ChatGptDTO;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.service.util.DesUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,10 @@ public class ExecuteSSEUtil {
     private final StringBuilder output = new StringBuilder();
     private PrintWriter writer;
 
-    public void executeSSE(String question, HttpServletResponse response) {
+    public void executeSSE(ChatGptDTO chatGptDTO, HttpServletResponse response) {
         try {
             // 调用阿里云 GPT
-            this.callWithMessage(question, response);
+            this.callWithMessage(chatGptDTO, response);
             // 等待流式响应完成
             countDownLatch.await();
         } catch (Exception e) {
@@ -37,8 +38,10 @@ public class ExecuteSSEUtil {
         }
     }
 
-    public void callWithMessage(String question, HttpServletResponse response) throws Exception {
+    public void callWithMessage(ChatGptDTO chatGptDTO, HttpServletResponse response) throws Exception {
         Generation gen = new Generation();
+
+        String prompt = chatGptDTO.getPrompt();
 
         // 设置 SSE 响应头
         response.setContentType("text/event-stream");
@@ -52,7 +55,7 @@ public class ExecuteSSEUtil {
         List<Message> messages = new ArrayList<>();
         messages.add(Message.builder()
                 .role(Role.USER.getValue())
-                .content(question)
+                .content(prompt)
                 .build());
 
         // 构建请求参数
