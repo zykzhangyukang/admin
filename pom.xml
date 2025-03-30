@@ -22,7 +22,7 @@
     <properties>
         <elasticsearch.version>7.6.2</elasticsearch.version>
         <easyexcel.version>4.0.3</easyexcel.version>
-        <langchain4j.version>1.0.0-beta1</langchain4j.version>
+        <dashscope.version>2.18.0</dashscope.version>
     </properties>
 
     <dependencyManagement>

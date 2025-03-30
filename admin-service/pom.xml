@@ -166,9 +166,15 @@
         </dependency>
 
         <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-community-dashscope</artifactId>
-            <version>${langchain4j.version}</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dashscope-sdk-java</artifactId>
+            <version>${dashscope.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
 

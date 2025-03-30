@@ -1,33 +1,22 @@
 package com.coderman.admin.service.common.impl;
 
-import com.alibaba.dashscope.aigc.generation.Generation;
-import com.alibaba.dashscope.aigc.generation.GenerationParam;
-import com.alibaba.dashscope.aigc.generation.GenerationResult;
-import com.alibaba.dashscope.common.Message;
-import com.alibaba.dashscope.common.ResultCallback;
-import com.alibaba.dashscope.common.Role;
+import com.alibaba.dashscope.app.Application;
+import com.alibaba.dashscope.app.ApplicationParam;
+import com.alibaba.dashscope.app.ApplicationResult;
 import com.coderman.admin.dto.common.ChatGptDTO;
 import com.coderman.admin.service.common.ChatService;
 import com.coderman.api.constant.CommonConstant;
-import com.coderman.api.exception.BusinessException;
 import com.coderman.service.util.DesUtil;
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @Slf4j
 public class ChatServiceImpl implements ChatService {
-
-    /**
-     * 接口秘钥
-     */
-    private static final String API_KEY = "345D37C0A831EA3BF82562BE4758A70285A77A4AB8E0685299C5246B3DD67F3F74843A274F180E0C";
 
     @Override
     public void completion(ChatGptDTO chatGptDTO, SseEmitter sseEmitter) {
@@ -41,60 +30,42 @@ public class ChatServiceImpl implements ChatService {
 
     /**
      * 调用大模型接口
+     *
      * @param chatGptDTO 参数
      * @param sseEmitter sse
      * @throws Exception
      */
     public void callWithMessage(ChatGptDTO chatGptDTO, SseEmitter sseEmitter) throws Exception {
 
-        StringBuilder output = new StringBuilder();
-        Generation gen = new Generation();
-
         String prompt = chatGptDTO.getPrompt();
-
-        List<Message> messages = new ArrayList<>();
-
-        // 系统提示词
-        String systemPrompt = "请保持回答简洁明了。如果可能，请直接给出答案而不进行过多解释。";
-        messages.add(Message.builder().role(Role.SYSTEM.getValue()).content(systemPrompt).build());
-
-        // 用户消息
-        messages.add(Message.builder().role(Role.USER.getValue()).content(prompt).build());
+        String sessionId = chatGptDTO.getToken();
+        StringBuilder str = new StringBuilder();
 
         // 构建请求参数
-        GenerationParam param = GenerationParam.builder().model(Generation.Models.QWEN_MAX)
-                .maxTokens(1024)
-                .messages(messages)
-                .resultFormat(GenerationParam.ResultFormat.MESSAGE)
-                .apiKey(DesUtil.decrypt(API_KEY, CommonConstant.SECRET_KEY))
-                .incrementalOutput(true).build();
+        ApplicationParam param = ApplicationParam.builder()
+                .apiKey(DesUtil.decrypt("345D37C0A831EA3BF82562BE4758A70285A77A4AB8E0685299C5246B3DD67F3F74843A274F180E0C", CommonConstant.SECRET_KEY))
+                .appId(DesUtil.decrypt("578ACCC33A9F3503E8995759F9EE1CCC4230D1DB6A362CEEF77C0DDBCBA0567C5F2EC4A83FE5B5FD", CommonConstant.SECRET_KEY))
+                .prompt(prompt)
+                .parameter("question",prompt)
+                .sessionId(sessionId)
+                .incrementalOutput(true)
+                .build();
 
-        // 发起流式调用
-        gen.streamCall(param, new ResultCallback<GenerationResult>() {
+        Application application = new Application();
+        Flowable<ApplicationResult> flowable = application.streamCall(param);
+        Disposable subscribe = flowable.subscribe(applicationResult -> {
 
-            @Override
-            public void onEvent(GenerationResult message) {
+            sseEmitter.send(applicationResult, MediaType.APPLICATION_JSON);
+            str.append(applicationResult.getOutput().getText());
+        }, error -> {
 
-                try {
-                    sseEmitter.send(message.getOutput(), MediaType.APPLICATION_JSON);
-                    output.append(message.getOutput().getChoices().get(0).getMessage().getContent());
-                } catch (IOException e) {
-                    log.error("SSE消息发送失败: {}", e.getMessage(), e);
-                    throw new BusinessException("SSE消息发送失败:" + e.getMessage());
-                }
-            }
+            sseEmitter.completeWithError(error);
+            log.error("流式调用发生错误:{}", error.getMessage(), error);
+        }, () -> {
 
-            @Override
-            public void onComplete() {
-                sseEmitter.complete();
-                log.info("GPT请求处理完成, 输出内容:{},输出长度: {}", output, output.length());
-            }
-
-            @Override
-            public void onError(Exception e) {
-                log.error("GPT调用发生错误", e);
-                sseEmitter.completeWithError(e);
-            }
+            sseEmitter.complete();
+            log.info(str.toString());
         });
+        log.info("subscribe:{}", subscribe);
     }
 }

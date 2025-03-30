@@ -14,13 +14,13 @@ import com.coderman.api.anntation.ConstList;
 public interface AuthConstant {
 
     /**
-     * 访问令牌过期时间 - 30分钟
+     * 访问令牌过期时间 - 8h
      */
-    Integer ACCESS_TOKEN_EXPIRED_SECOND = 30 * 60;
+    Integer ACCESS_TOKEN_EXPIRED_SECOND = 8 * 60 * 60;
     /**
-     * 刷新令牌过期时间 24 小时
+     * 刷新令牌过期时间 7day
      */
-    Integer REFRESH_TOKEN_EXPIRED_SECOND = 60 * 60 * 24;
+    Integer REFRESH_TOKEN_EXPIRED_SECOND = 60 * 60 * 24 * 7;
 
     /**
      * 用户会话redis key 前缀
