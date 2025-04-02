@@ -3,16 +3,32 @@ package com.coderman.admin.config;
 import com.coderman.admin.service.common.Assistant;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.service.util.DesUtil;
+import dev.langchain4j.data.document.Document;
+import dev.langchain4j.data.document.loader.FileSystemDocumentLoader;
+import dev.langchain4j.data.document.parser.TextDocumentParser;
+import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.dashscope.QwenEmbeddingModel;
 import dev.langchain4j.model.dashscope.QwenStreamingChatModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
+import dev.langchain4j.model.output.Response;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
+import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author ：zhangyukang
@@ -26,7 +42,29 @@ public class ChatAiConfigure {
     private RedisProperties redisProperties;
 
     @Bean
-    public Assistant assistant(){
+    public Assistant assistant() throws URISyntaxException {
+        EmbeddingModel embeddingModel =  QwenEmbeddingModel.builder()
+                .apiKey(this.getApiKey())
+                .build();
+        InMemoryEmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
+        ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
+                .embeddingStore(embeddingStore)
+                .embeddingModel(embeddingModel)
+                // 最相似的3个结果
+                .maxResults(3)
+                // 只找相似度在0.5以上的内容
+                .minScore(0.5)
+                .build();
+
+        // 初始化知识库
+        Path path = Paths.get(Objects.requireNonNull(
+                Thread.currentThread().getContextClassLoader().getResource("rag.txt")).toURI());
+        Document document = FileSystemDocumentLoader.loadDocument(path, new TextDocumentParser());
+        List<TextSegment> textSegments = new RagDocumentSplitter().split(document);
+        Response<List<Embedding>> response = embeddingModel.embedAll(textSegments);
+        List<Embedding> embeddings = response.content();
+        embeddingStore.addAll(embeddings, textSegments);
+
         // 自定义存储方式
         RedisChatMemoryStore redisChatMemoryStore = RedisChatMemoryStore.builder()
                 .port(redisProperties.getPort())
@@ -48,6 +86,7 @@ public class ChatAiConfigure {
                         .maxMessages(10)
                         .chatMemoryStore(redisChatMemoryStore)
                         .build())
+                .contentRetriever(contentRetriever)
                 .build();
     }
 
@@ -60,5 +99,4 @@ public class ChatAiConfigure {
             throw new RuntimeException("无法解密 API Key");
         }
     }
-
 }
