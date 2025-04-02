@@ -52,8 +52,8 @@ public class ChatAiConfigure {
                 .embeddingModel(embeddingModel)
                 // 最相似的3个结果
                 .maxResults(3)
-                // 只找相似度在0.5以上的内容
-                .minScore(0.5)
+                // 只找相似度在0.8以上的内容
+                .minScore(0.8)
                 .build();
 
         // 初始化知识库
