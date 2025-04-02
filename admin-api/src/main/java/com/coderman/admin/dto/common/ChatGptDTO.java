@@ -9,11 +9,8 @@ import lombok.EqualsAndHashCode;
 @Data
 public class ChatGptDTO extends BaseModel {
 
-    @ApiModelProperty(value = "令牌")
-    private String token;
-
     @ApiModelProperty(value = "会话id")
-    private String sessionId;
+    private String token;
 
     @ApiModelProperty(value = "提示词")
     private String prompt;

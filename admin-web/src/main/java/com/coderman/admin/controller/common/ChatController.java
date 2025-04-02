@@ -2,9 +2,6 @@ package com.coderman.admin.controller.common;
 
 import com.coderman.admin.dto.common.ChatGptDTO;
 import com.coderman.admin.service.common.ChatService;
-import com.coderman.admin.service.user.UserService;
-import com.coderman.admin.utils.AuthUtil;
-import com.coderman.admin.vo.user.AuthUserVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +25,6 @@ public class ChatController {
 
     @Resource
     private ChatService chatService;
-
-    @Resource
-    private UserService userApi;
 
     @ApiModelProperty(value = "AI对话")
     @GetMapping(value = "/completion",produces = {MediaType.TEXT_EVENT_STREAM_VALUE})
