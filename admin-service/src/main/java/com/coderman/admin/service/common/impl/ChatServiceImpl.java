@@ -1,5 +1,6 @@
 package com.coderman.admin.service.common.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.coderman.admin.dto.common.ChatGptDTO;
 import com.coderman.admin.service.common.Assistant;
 import com.coderman.admin.service.common.ChatService;
@@ -41,7 +42,9 @@ public class ChatServiceImpl implements ChatService {
 
     private void sendSseData(SseEmitter sseEmitter, String result) {
         try {
-            sseEmitter.send(result, MediaType.APPLICATION_JSON);
+            JSONObject jsonObject =  new JSONObject();
+            jsonObject.put("text",result);
+            sseEmitter.send(jsonObject, MediaType.APPLICATION_JSON);
         } catch (IOException e) {
             log.warn("SSE 发送数据失败:{}", e.getMessage());
         }
