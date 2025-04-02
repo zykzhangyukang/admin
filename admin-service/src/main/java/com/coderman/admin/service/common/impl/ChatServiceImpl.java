@@ -1,7 +1,7 @@
 package com.coderman.admin.service.common.impl;
 
 import com.coderman.admin.dto.common.ChatGptDTO;
-import com.coderman.admin.service.common.AssistantService;
+import com.coderman.admin.service.common.Assistant;
 import com.coderman.admin.service.common.ChatService;
 import dev.langchain4j.service.TokenStream;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class ChatServiceImpl implements ChatService {
 
     @Resource
-    private AssistantService assistantService;
+    private Assistant assistant;
 
     /**
      * 调用大模型接口
@@ -27,7 +27,7 @@ public class ChatServiceImpl implements ChatService {
      * @param sseEmitter sse
      */
     public void completion(ChatGptDTO chatGptDTO, SseEmitter sseEmitter) {
-        TokenStream stream = assistantService.completion(chatGptDTO.getToken(), chatGptDTO.getPrompt());
+        TokenStream stream = assistant.completion(chatGptDTO.getToken(), chatGptDTO.getPrompt());
         // 监听回调
         stream.onNext(result -> sendSseData(sseEmitter, result));
         stream.onError(throwable -> handleError(sseEmitter, throwable));

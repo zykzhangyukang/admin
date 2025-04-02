@@ -1,6 +1,6 @@
 package com.coderman.admin.config;
 
-import com.coderman.admin.service.common.AssistantService;
+import com.coderman.admin.service.common.Assistant;
 import com.coderman.api.constant.CommonConstant;
 import com.coderman.service.util.DesUtil;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
@@ -26,7 +26,7 @@ public class ChatAiConfigure {
     private RedisProperties redisProperties;
 
     @Bean
-    public AssistantService assistantService(){
+    public Assistant assistant(){
         // 自定义存储方式
         RedisChatMemoryStore redisChatMemoryStore = RedisChatMemoryStore.builder()
                 .port(redisProperties.getPort())
@@ -41,7 +41,7 @@ public class ChatAiConfigure {
                 .enableSearch(true)
                 .build();
         // 构建服务
-        return AiServices.builder(AssistantService.class)
+        return AiServices.builder(Assistant.class)
                 .streamingChatLanguageModel(model)
                 .chatMemoryProvider(memoryId -> MessageWindowChatMemory.builder()
                         .id(memoryId)
