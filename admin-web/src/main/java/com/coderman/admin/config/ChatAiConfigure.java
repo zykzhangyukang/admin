@@ -93,7 +93,7 @@ public class ChatAiConfigure {
             List<Embedding> embeddings = response.content();
             embeddingStore.addAll(embeddings, textSegments);
         } catch (Exception e) {
-            log.error("初始化知识库失败:{}", e.getMessage(), e);
+            log.warn("初始化知识库失败:{}", e.getMessage());
         }
     }
 

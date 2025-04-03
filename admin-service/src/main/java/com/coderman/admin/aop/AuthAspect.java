@@ -54,8 +54,7 @@ public class AuthAspect {
     private static final Set<String> WHITE_LIST_URLS = Sets.newHashSet(
             "/auth/user/token",
             "/auth/user/refresh/token",
-            "/auth/user/logout",
-            "/common/chat/completion"
+            "/auth/user/logout"
     );
 
     private static final Set<String> UNFILTER_HAS_LOGIN_INFO_URLS = Sets.newHashSet(
@@ -64,7 +63,8 @@ public class AuthAspect {
             "/common/const/all",
             "/common/notification/count",
             "/common/notification/read",
-            "/common/notification/page"
+            "/common/notification/page",
+            "/common/chat/completion"
     );
 
     private static volatile Map<String, Set<Integer>> systemAllResourceMap = new HashMap<>();
@@ -124,8 +124,8 @@ public class AuthAspect {
 
         try {
             authUserVO = tokenCache.get(token, () -> userApi.getUserByToken(token));
-        } catch (Exception e) {
-            log.error("Error retrieving user from cache: token={}", token, e);
+        } catch (Exception ignore) {
+            log.error("Error retrieving user from cache: token={}", token);
             throwUnauthorized("会话已过期, 请重新登录");
             return null; // Unreachable
         }
@@ -149,7 +149,7 @@ public class AuthAspect {
                 throwUnauthorized("账号已在其他设备上登录！");
             }
         } catch (Exception e) {
-            log.error("Error validating device token: userId={}", userId, e);
+            log.error("Error validating device token: userId={}", userId);
             throwUnauthorized(e.getMessage());
         }
     }

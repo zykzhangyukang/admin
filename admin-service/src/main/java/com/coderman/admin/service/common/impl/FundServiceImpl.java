@@ -274,7 +274,7 @@ public class FundServiceImpl implements FundService {
             try {
 
                 // 获取近n天的历史净值数据
-                String key = "FUND_HISTORY_DATA:" + code + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+                String key = "fund_history_data:" + code + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
                 JSONArray list = this.redisService.getObject(key, JSONArray.class, RedisDbConstant.REDIS_DB_DEFAULT);
                 if (list == null || list.isEmpty()) {
                     JSONObject historyData = this.getHistoryData(1, 20, code);

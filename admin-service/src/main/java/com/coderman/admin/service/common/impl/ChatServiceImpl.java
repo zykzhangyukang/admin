@@ -29,7 +29,7 @@ public class ChatServiceImpl implements ChatService {
      */
     public void completion(ChatGptDTO chatGptDTO, SseEmitter sseEmitter) {
         try {
-            TokenStream stream = assistant.completion(chatGptDTO.getToken(), chatGptDTO.getPrompt());
+            TokenStream stream = assistant.completion(chatGptDTO.getSessionId(), chatGptDTO.getPrompt());
             // 监听回调
             stream.onNext(result -> sendSseData(sseEmitter, result));
             stream.onError(throwable -> handleError(sseEmitter, throwable));

@@ -126,7 +126,7 @@ public class FundJobHandler {
         for (String str : apiParams) {
 
             String[] strArray = str.contains(",") ? str.split(",") : new String[]{str};
-            String redisKey = "FUND_JZ_DATA:" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+            String redisKey = "fund_jz_data:" + strArray[0] + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
 
             // 获取最新的一条数据
             Set<FundBeanVO> fundBeanVOS = this.redisService.zRevRange(redisKey, FundBeanVO.class, 0, 0, RedisDbConstant.REDIS_DB_DEFAULT);
@@ -163,7 +163,7 @@ public class FundJobHandler {
         List<Boolean> result = Lists.newArrayList();
         for (FundBeanVO fund : fundBeanVOS) {
 
-            String redisKey = "FUND_JZ_DATA:" + fund.getFundCode() + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
+            String redisKey = "fund_jz_data:" + fund.getFundCode() + ":" + DateFormatUtils.format(new Date(), "yyyy-MM-dd");
             long timestamp = System.currentTimeMillis() / 1000;
 
             // 检查键是否存在
