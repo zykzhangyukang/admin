@@ -24,11 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author ：zhangyukang
@@ -42,7 +38,7 @@ public class ChatAiConfigure {
     private RedisProperties redisProperties;
 
     @Bean
-    public Assistant assistant() throws URISyntaxException {
+    public Assistant assistant() {
         EmbeddingModel embeddingModel =  QwenEmbeddingModel.builder()
                 .apiKey(this.getApiKey())
                 .build();
@@ -57,13 +53,7 @@ public class ChatAiConfigure {
                 .build();
 
         // 初始化知识库
-        Path path = Paths.get(Objects.requireNonNull(
-                Thread.currentThread().getContextClassLoader().getResource("rag.txt")).toURI());
-        Document document = FileSystemDocumentLoader.loadDocument(path, new TextDocumentParser());
-        List<TextSegment> textSegments = new RagDocumentSplitter().split(document);
-        Response<List<Embedding>> response = embeddingModel.embedAll(textSegments);
-        List<Embedding> embeddings = response.content();
-        embeddingStore.addAll(embeddings, textSegments);
+        this.loadEmbedding(embeddingModel, embeddingStore);
 
         // 自定义存储方式
         RedisChatMemoryStore redisChatMemoryStore = RedisChatMemoryStore.builder()
@@ -88,6 +78,23 @@ public class ChatAiConfigure {
                         .build())
                 .contentRetriever(contentRetriever)
                 .build();
+    }
+
+    /**
+     * 初始化RAG向量
+     * @param embeddingModel 模型
+     * @param embeddingStore 向量存储
+     */
+    private void loadEmbedding(EmbeddingModel embeddingModel, InMemoryEmbeddingStore<TextSegment> embeddingStore) {
+        try {
+            Document document = FileSystemDocumentLoader.loadDocument("/opt/rag.txt", new TextDocumentParser());
+            List<TextSegment> textSegments = new RagDocumentSplitter().split(document);
+            Response<List<Embedding>> response = embeddingModel.embedAll(textSegments);
+            List<Embedding> embeddings = response.content();
+            embeddingStore.addAll(embeddings, textSegments);
+        } catch (Exception e) {
+            log.error("初始化知识库失败:{}", e.getMessage(), e);
+        }
     }
 
     private String getApiKey() {
