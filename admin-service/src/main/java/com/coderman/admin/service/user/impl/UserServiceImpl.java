@@ -111,12 +111,12 @@ public class UserServiceImpl extends BaseService implements UserService {
             return ResultUtil.getWarn("用户已被禁用！");
         }
 
-        AuthUserVO authUserVO = this.createSession(user.getUsername());
-
         // 删除当前访问令牌和刷新令牌
         this.redisService.del(AuthConstant.AUTH_ACCESS_TOKEN_NAME + current.getAccessToken(), RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.del(AuthConstant.AUTH_REFRESH_TOKEN_NAME + current.getRefreshToken(), RedisDbConstant.REDIS_DB_AUTH);
         this.redisService.del(AuthConstant.AUTH_DEVICE_TOKEN_NAME + current.getUserId(), RedisDbConstant.REDIS_DB_AUTH);
+
+        AuthUserVO authUserVO = this.createSession(user.getUsername());
 
         // 记录日志
         this.logService.saveLog(AuthConstant.LOG_MODULE_USER, AuthConstant.LOG_LEVEL_NORMAL, authUserVO.getUserId(), authUserVO.getUsername(), authUserVO.getRealName(), "切换用户登录");
@@ -323,7 +323,6 @@ public class UserServiceImpl extends BaseService implements UserService {
      * 创建用户会话信息
      *
      * @param username 用户名
-     * @param userId   用户id
      * @return 返回用户会话VO
      */
     private AuthUserVO createSession(String username) {
