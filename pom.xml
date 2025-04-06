@@ -23,6 +23,7 @@
         <elasticsearch.version>7.6.2</elasticsearch.version>
         <easyexcel.version>4.0.3</easyexcel.version>
         <dashscope.version>2.18.0</dashscope.version>
+        <langchain4j.version>0.35.0</langchain4j.version>
     </properties>
 
     <dependencyManagement>
@@ -58,6 +59,18 @@
                 <groupId>com.coderman</groupId>
                 <artifactId>admin-service</artifactId>
                 <version>${i.project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j</artifactId>
+                <version>${langchain4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-dashscope</artifactId>
+                <version>${langchain4j.version}</version>
             </dependency>
 
         </dependencies>

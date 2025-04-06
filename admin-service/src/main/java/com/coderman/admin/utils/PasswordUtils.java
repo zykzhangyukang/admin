@@ -44,14 +44,4 @@ public class PasswordUtils {
         }
         return hexString.toString();
     }
-
-    public static void main(String[] args) throws NoSuchAlgorithmException {
-        String originalPassword = "123456";
-
-        String md5Hash = encryptMD5(originalPassword);
-        String sha256Hash = encryptSHA256(originalPassword);
-
-        System.out.println("MD5 Hash: " + md5Hash);
-        System.out.println("SHA-256 Hash: " + sha256Hash);
-    }
 }
