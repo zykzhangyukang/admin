@@ -125,7 +125,7 @@ public class AuthAspect {
         try {
             authUserVO = tokenCache.get(token, () -> userApi.getUserByToken(token));
         } catch (Exception ignore) {
-            log.error("Error retrieving user from cache: token={}", token);
+            log.warn("Error retrieving user from cache: token={}", token);
             throwUnauthorized("会话已过期, 请重新登录");
             return null; // Unreachable
         }
@@ -146,11 +146,11 @@ public class AuthAspect {
             String storedToken = deviceCache.get(userId, () -> userApi.getTokenByUserId(userId));
             if (!StringUtils.equals(storedToken, token)) {
                 deviceCache.invalidate(userId);
-                throwUnauthorized("账号已在其他设备上登录！");
+                throwUnauthorized("检测到账号在其他设备登录");
             }
         } catch (Exception e) {
-            log.error("Error validating device token: userId={}", userId);
-            throwUnauthorized(e.getMessage());
+            log.warn("Error validating device token: userId={}", userId);
+            throwUnauthorized("会话已过期, 请重新登录");
         }
     }
 

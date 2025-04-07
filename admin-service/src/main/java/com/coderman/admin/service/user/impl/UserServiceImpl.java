@@ -903,9 +903,8 @@ public class UserServiceImpl extends BaseService implements UserService {
     public String getTokenByUserId(Integer userId) {
         if (userId == null) {
             return StringUtils.EMPTY;
-        } else {
-            return this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + userId, RedisDbConstant.REDIS_DB_AUTH);
         }
+        return this.redisService.getString(AuthConstant.AUTH_DEVICE_TOKEN_NAME + userId, RedisDbConstant.REDIS_DB_AUTH);
     }
 
 
