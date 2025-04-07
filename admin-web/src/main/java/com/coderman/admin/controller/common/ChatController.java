@@ -37,7 +37,7 @@ public class ChatController {
         });
 
         sseEmitter.onError(e -> {
-            log.error("SSE连接错误", e);
+            log.error("SSE连接错误:{}", e.getMessage());
             sseEmitter.complete();
         });
         return sseEmitter;
