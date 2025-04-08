@@ -13,6 +13,9 @@ public class FileChunkDTO extends BaseModel {
     @ApiModelProperty(value = "分片任务上传id")
     private String uploadId;
 
+    @ApiModelProperty(value = "文件名")
+    private String fileName;
+
     @ApiModelProperty(value = "二进制文件")
     private MultipartFile file;
 

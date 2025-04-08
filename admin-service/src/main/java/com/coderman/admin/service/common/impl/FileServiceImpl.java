@@ -88,11 +88,11 @@ public class FileServiceImpl implements FileService {
         String uploadId = dto.getUploadId();
         Integer partNumber = dto.getPartNumber();
         MultipartFile file = dto.getFile();
-        String originalFilename = file.getOriginalFilename();
         String fileHash = dto.getFileHash();
+        String fileName = dto.getFileName();
 
         AliYunOssUtil instance = AliYunOssUtil.getInstance();
-        String path = instance.genFilePath(originalFilename, FileModuleEnum.COMMON_MODULE);
+        String path = instance.genFilePath(fileName, FileModuleEnum.COMMON_MODULE);
         try {
 
             UploadPartResult uploadPartResult = instance.uploadPart(file, path, uploadId, partNumber);
