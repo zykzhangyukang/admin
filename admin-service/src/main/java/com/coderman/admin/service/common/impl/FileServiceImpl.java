@@ -38,7 +38,7 @@ public class FileServiceImpl implements FileService {
     }
 
     private Set<Integer> getUploadedParts(String fileHash) {
-        return this.redisService.getSet("upload:" + fileHash, Integer.class, RedisDbConstant.REDIS_DB_DEFAULT);
+        return this.redisService.getSet("upload:" + fileHash + ":parts", Integer.class, RedisDbConstant.REDIS_DB_DEFAULT);
     }
 
     private void saveUploadMeta(String fileHash, String uploadId, String fileName, Integer totalParts) {

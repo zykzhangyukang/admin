@@ -64,7 +64,9 @@ public class AuthAspect {
             "/common/notification/count",
             "/common/notification/read",
             "/common/notification/page",
-            "/common/chat/completion"
+            "/common/chat/completion",
+            "/common/file/upload/chunk/start",
+            "/common/file/upload/chunk"
     );
 
     private static volatile Map<String, Set<Integer>> systemAllResourceMap = new HashMap<>();
