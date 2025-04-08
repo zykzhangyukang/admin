@@ -31,7 +31,7 @@ public class WxApiUtils {
 
     private final RedisService redisService;
 
-    private static final String TOKEN_CACHE_KEY = "QYWX_TOKEN_CACHE_KEY";
+    private static final String TOKEN_CACHE_KEY = "qw_token_cache_key";
 
     public static String QYWX_CORPID = "573304AB8CE9C6CA54B826CB0568C6816265408F43056521";
     public static String QYWX_SECRET = "5D1C42C9DC2AD98E0B3B20ABB3DB79B83409BF99FF38FA12C475D6E17220F797AB19AC605AD6BBDDB705E95F368D1842";

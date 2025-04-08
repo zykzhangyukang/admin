@@ -2,6 +2,7 @@ package com.coderman.admin.controller.common;
 
 import com.coderman.admin.dto.common.FileChunkDTO;
 import com.coderman.admin.service.common.FileService;
+import com.coderman.admin.vo.common.UploadChunkStartVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * @author ：zhangyukang
@@ -31,8 +33,8 @@ public class FileController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
-    public ResultVO<String> uploadChunkStart(String fileName) {
-        return this.fileService.uploadChunkStart(fileName);
+    public ResultVO<UploadChunkStartVO> uploadChunkStart(String fileName, String fileHash, Integer totalParts) {
+        return this.fileService.uploadChunkStart(fileName,fileHash, totalParts);
     }
 
 
@@ -50,8 +52,8 @@ public class FileController {
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
     })
-    public ResultVO<String> uploadChunkFinish(String uploadId) {
-        return this.fileService.uploadChunkFinish(uploadId);
+    public ResultVO<String> uploadChunkFinish(String fileHash) {
+        return this.fileService.uploadChunkFinish(fileHash);
     }
 
 }

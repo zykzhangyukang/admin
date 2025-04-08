@@ -14,11 +14,11 @@ public class FileChunkDTO extends BaseModel {
     private String uploadId;
 
     @ApiModelProperty(value = "二进制文件")
-    private MultipartFile filePart;
+    private MultipartFile file;
 
     @ApiModelProperty(value = "文件hash")
     private String fileHash;
 
     @ApiModelProperty(value = "当前分片序号")
-    private Integer chunkNumber;
+    private Integer partNumber;
 }
