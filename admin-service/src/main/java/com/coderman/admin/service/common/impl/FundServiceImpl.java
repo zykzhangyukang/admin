@@ -149,14 +149,14 @@ public class FundServiceImpl implements FundService {
     @Override
     @LogError(value = "保存基金设置")
     public ResultVO<Void> saveSetting(List<FundSettingItemVO> settingInfoVO) {
-        this.redisService.setString("FUND_SETTING_DATA", JSONObject.toJSONString(settingInfoVO), RedisDbConstant.REDIS_DB_DEFAULT);
+        this.redisService.setString("fund_setting_data", JSONObject.toJSONString(settingInfoVO), RedisDbConstant.REDIS_DB_DEFAULT);
         return ResultUtil.getSuccess();
     }
 
     @Override
     @LogError(value = "获取基金配置")
     public ResultVO<List<FundSettingItemVO>> getSetting() {
-        String settingData = this.redisService.getString("FUND_SETTING_DATA", RedisDbConstant.REDIS_DB_DEFAULT);
+        String settingData = this.redisService.getString("fund_setting_data", RedisDbConstant.REDIS_DB_DEFAULT);
         List<FundSettingItemVO> settingItemVOs = JSONObject.parseArray(settingData, FundSettingItemVO.class);
         return ResultUtil.getSuccessList(FundSettingItemVO.class, settingItemVOs);
     }
