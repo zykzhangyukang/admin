@@ -32,6 +32,7 @@ public class FileController {
     @PostMapping(value = "/upload/chunk/start")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+            @ApiReturnParam(name = "UploadChunkStartVO", value = {"uploadId", "uploaded"}),
     })
     public ResultVO<UploadChunkStartVO> uploadChunkStart(String fileName, String fileHash, Integer totalParts) {
         return this.fileService.uploadChunkStart(fileName,fileHash, totalParts);

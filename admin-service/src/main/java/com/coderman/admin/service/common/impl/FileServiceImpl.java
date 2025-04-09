@@ -1,6 +1,8 @@
 package com.coderman.admin.service.common.impl;
 
+import com.aliyun.oss.model.CompleteMultipartUploadResult;
 import com.aliyun.oss.model.UploadPartResult;
+import com.coderman.admin.constant.FileConstant;
 import com.coderman.admin.dto.common.FileChunkDTO;
 import com.coderman.admin.service.common.FileService;
 import com.coderman.admin.vo.common.UploadChunkStartVO;
@@ -49,9 +51,17 @@ public class FileServiceImpl implements FileService {
         this.redisService.setHash("upload:" + fileHash, map, RedisDbConstant.REDIS_DB_DEFAULT);
     }
 
+    private Map<String, Object> getUploadMeta(String fileHash){
+        return this.redisService.getMapOfHashAll("upload:" + fileHash, Object.class, RedisDbConstant.REDIS_DB_DEFAULT);
+    }
+
     private void markPartUploaded(String fileHash, Integer partNumber, String eTag) {
         this.redisService.addToSet("upload:" + fileHash + ":parts", partNumber, RedisDbConstant.REDIS_DB_DEFAULT);
         this.redisService.setHash("upload:" + fileHash + ":etags", String.valueOf(partNumber), eTag, RedisDbConstant.REDIS_DB_DEFAULT);
+    }
+
+    private Map<String,String> getETagMap(String fileHash){
+        return this.redisService.getMapOfHashAll("upload:" + fileHash + ":etags", String.class, RedisDbConstant.REDIS_DB_DEFAULT);
     }
 
     @Override
@@ -62,23 +72,28 @@ public class FileServiceImpl implements FileService {
             return ResultUtil.getFail("无效的上传参数");
         }
 
-        String existingUploadId = this.getUploadId(fileHash);
-        UploadChunkStartVO initVO = new UploadChunkStartVO();
-        if (existingUploadId != null) {
-            Set<Integer> uploaded = this.getUploadedParts(fileHash);
-            initVO.setUploadId(existingUploadId);
-            initVO.setUploaded(uploaded);
-            return ResultUtil.getSuccess(UploadChunkStartVO.class, initVO);
+        UploadChunkStartVO vo = new UploadChunkStartVO();
+        try {
+            String existingUploadId = this.getUploadId(fileHash);
+            if (existingUploadId != null) {
+                Set<Integer> uploaded = this.getUploadedParts(fileHash);
+                vo.setUploadId(existingUploadId);
+                vo.setUploaded(uploaded);
+                return ResultUtil.getSuccess(UploadChunkStartVO.class, vo);
+            }
+
+            AliYunOssUtil instance = AliYunOssUtil.getInstance();
+            String objectName = instance.genStableObjectName(fileName, fileHash, FileModuleEnum.COMMON_MODULE);
+            String uploadId = instance.getUploadId(objectName);
+            vo.setUploadId(uploadId);
+            // 保存元数据
+            this.saveUploadMeta(fileHash, uploadId, fileName, totalParts);
+        } catch (Exception e) {
+            log.error("上传分片初始化失败 fileName：{}，fileHash：{},totalParts:{}", fileName, fileHash, totalParts, e);
+            throw new BusinessException("上传分片初始化失败!");
         }
 
-        AliYunOssUtil instance = AliYunOssUtil.getInstance();
-        String objectName = instance.genFilePath(fileName, FileModuleEnum.COMMON_MODULE);
-        String uploadId = instance.getUploadId(objectName);
-        initVO.setUploadId(uploadId);
-        // 保存元数据
-        this.saveUploadMeta(fileHash, uploadId, fileName, totalParts);
-
-        return ResultUtil.getSuccess(UploadChunkStartVO.class, initVO);
+        return ResultUtil.getSuccess(UploadChunkStartVO.class, vo);
     }
 
     @Override
@@ -91,14 +106,13 @@ public class FileServiceImpl implements FileService {
         String fileHash = dto.getFileHash();
         String fileName = dto.getFileName();
 
-        AliYunOssUtil instance = AliYunOssUtil.getInstance();
-        String path = instance.genFilePath(fileName, FileModuleEnum.COMMON_MODULE);
         try {
-
-            UploadPartResult uploadPartResult = instance.uploadPart(file, path, uploadId, partNumber);
+            AliYunOssUtil instance = AliYunOssUtil.getInstance();
+            String objectName = instance.genStableObjectName(fileName, fileHash, FileModuleEnum.COMMON_MODULE);
+            UploadPartResult uploadPartResult = instance.uploadPart(file, objectName, uploadId, partNumber);
             this.markPartUploaded(fileHash, partNumber, uploadPartResult.getETag());
         } catch (Exception e) {
-            log.error("上传分片失败 uploadId：{}，partNumber：{}", uploadId, partNumber, e);
+            log.error("上传分片失败 uploadId：{}，partNumber：{},objectName:{}", uploadId, partNumber, fileName, e);
             throw new BusinessException("上传分片失败！");
         }
 
@@ -108,6 +122,35 @@ public class FileServiceImpl implements FileService {
     @Override
     @LogError(value = "文件分片上传完成")
     public ResultVO<String> uploadChunkFinish(String fileHash) {
-        return null;
+
+        if (StringUtils.isBlank(fileHash)) {
+            return ResultUtil.getFail("文件Hash不能为空！");
+        }
+
+        String uploadId = this.getUploadId(fileHash);
+        if (uploadId == null) {
+            return ResultUtil.getFail("未找到对应的上传任务！");
+        }
+
+        Map<String, Object> uploadMeta = this.getUploadMeta(fileHash);
+        String fileName = (String) uploadMeta.get("fileName");
+        Integer totalParts = (Integer) uploadMeta.get("totalParts");
+
+        if (fileName == null || totalParts == null) {
+            return ResultUtil.getFail("上传元数据不完整！");
+        }
+
+        // 2. 获取所有已上传分片的 ETag
+        Map<String, String> eTagMap = this.getETagMap(fileHash);
+        if (eTagMap.size() != totalParts) {
+            return ResultUtil.getFail("分片数量不完整，无法完成上传！");
+        }
+
+        // 3. 组装完成分片上传请求
+        AliYunOssUtil instance = AliYunOssUtil.getInstance();
+        String objectName = instance.genStableObjectName(fileName, fileHash, FileModuleEnum.COMMON_MODULE);
+        CompleteMultipartUploadResult uploadResult = instance.completeMultipartUpload(objectName, uploadId, eTagMap);
+        log.info("分片上传完成:{},fileHash:{}",uploadResult.getLocation(),fileHash);
+        return ResultUtil.getSuccess(String.class, FileConstant.OSS_FILE_DOMAIN + objectName);
     }
 }
