@@ -4,9 +4,12 @@ import com.aliyun.oss.model.CompleteMultipartUploadResult;
 import com.aliyun.oss.model.PartETag;
 import com.aliyun.oss.model.UploadPartResult;
 import com.coderman.admin.constant.FileConstant;
+import com.coderman.admin.dao.common.FileDAO;
 import com.coderman.admin.dto.common.FileChunkDTO;
+import com.coderman.admin.model.common.FileExample;
+import com.coderman.admin.model.common.FileModel;
 import com.coderman.admin.service.common.FileService;
-import com.coderman.admin.vo.common.UploadChunkStartVO;
+import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.exception.BusinessException;
 import com.coderman.api.util.ResultUtil;
@@ -15,17 +18,16 @@ import com.coderman.oss.enums.FileModuleEnum;
 import com.coderman.oss.util.AliYunOssUtil;
 import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
+import com.coderman.service.util.UUIDUtils;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -35,6 +37,8 @@ public class FileServiceImpl implements FileService {
 
     @Resource
     private RedisService redisService;
+    @Resource
+    private FileDAO fileDAO;
 
     private String redisKeyUploadMeta(String fileHash) {
         return "upload:" + fileHash;
@@ -75,18 +79,28 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @LogError("初始化分片上传")
-    public ResultVO<UploadChunkStartVO> uploadChunkStart(String fileName, String fileHash, Integer totalParts) {
+    public ResultVO<UploadChunkInitVO> uploadChunkInit(String fileName, String fileHash, Integer totalParts) {
         if (StringUtils.isAnyBlank(fileName, fileHash) || totalParts == null || totalParts <= 0) {
             return ResultUtil.getFail("参数非法");
         }
 
-        String existingUploadId = redisService.getHash(redisKeyUploadMeta(fileHash), "uploadId", String.class, RedisDbConstant.REDIS_DB_DEFAULT);
+        UploadChunkInitVO vo = new UploadChunkInitVO();
 
-        UploadChunkStartVO vo = new UploadChunkStartVO();
+        // 秒传逻辑
+        FileExample fileExample = new FileExample();
+        fileExample.createCriteria().andFileHashEqualTo(fileHash);
+        List<FileModel> fileModels = this.fileDAO.selectByExample(fileExample);
+        if(CollectionUtils.isNotEmpty(fileModels)){
+            vo.setIsSkip(true);
+            vo.setFilePath(fileModels.get(0).getFilePath());
+            return ResultUtil.getSuccess(UploadChunkInitVO.class, vo);
+        }
+
+        String existingUploadId = redisService.getHash(redisKeyUploadMeta(fileHash), "uploadId", String.class, RedisDbConstant.REDIS_DB_DEFAULT);
         if (existingUploadId != null) {
             vo.setUploadId(existingUploadId);
             vo.setUploaded(getUploadedParts(fileHash));
-            return ResultUtil.getSuccess(UploadChunkStartVO.class, vo);
+            return ResultUtil.getSuccess(UploadChunkInitVO.class, vo);
         }
 
         try {
@@ -101,7 +115,7 @@ public class FileServiceImpl implements FileService {
             throw new BusinessException("初始化上传失败");
         }
 
-        return ResultUtil.getSuccess(UploadChunkStartVO.class, vo);
+        return ResultUtil.getSuccess(UploadChunkInitVO.class, vo);
     }
 
     @Override
@@ -160,12 +174,20 @@ public class FileServiceImpl implements FileService {
             CompleteMultipartUploadResult result = oss.completeMultipartUpload(objectName, uploadId, partETags);
             log.info("分片合并成功: {}", result.getETag());
 
+            FileModel fileModel = new FileModel();
+            fileModel.setFileKey(UUIDUtils.getPrimaryValue());
+            fileModel.setCreateTime(new Date());
+            fileModel.setFileHash(fileHash);
+            fileModel.setFilePath(FileConstant.OSS_FILE_DOMAIN + objectName);
+            fileModel.setFileName(fileName);
+            this.fileDAO.insert(fileModel);
+
             // 清理数据
             redisService.del(redisKeyUploadMeta(fileHash), RedisDbConstant.REDIS_DB_DEFAULT);
             redisService.del(redisKeyUploadedParts(fileHash), RedisDbConstant.REDIS_DB_DEFAULT);
             redisService.del(redisKeyEtags(fileHash), RedisDbConstant.REDIS_DB_DEFAULT);
 
-            return ResultUtil.getSuccess(String.class, FileConstant.OSS_FILE_DOMAIN + objectName);
+            return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
         } catch (Exception e) {
             log.error("合并失败", e);
             throw new BusinessException("文件合并失败！");

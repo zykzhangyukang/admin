@@ -2,7 +2,7 @@ package com.coderman.admin.controller.common;
 
 import com.coderman.admin.dto.common.FileChunkDTO;
 import com.coderman.admin.service.common.FileService;
-import com.coderman.admin.vo.common.UploadChunkStartVO;
+import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.vo.ResultVO;
 import com.coderman.swagger.annotation.ApiReturnParam;
 import com.coderman.swagger.annotation.ApiReturnParams;
@@ -28,13 +28,13 @@ public class FileController {
     private FileService fileService;
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "分片上传开始")
-    @PostMapping(value = "/upload/chunk/start")
+    @PostMapping(value = "/upload/chunk/init")
     @ApiReturnParams({
             @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
-            @ApiReturnParam(name = "UploadChunkStartVO", value = {"uploadId", "uploaded"}),
+            @ApiReturnParam(name = "UploadChunkInitVO", value = {"uploadId", "uploaded","isSkip","filePath"}),
     })
-    public ResultVO<UploadChunkStartVO> uploadChunkStart(String fileName, String fileHash, Integer totalParts) {
-        return this.fileService.uploadChunkStart(fileName,fileHash, totalParts);
+    public ResultVO<UploadChunkInitVO> uploadChunkInit(String fileName, String fileHash, Integer totalParts) {
+        return this.fileService.uploadChunkInit(fileName,fileHash, totalParts);
     }
 
 

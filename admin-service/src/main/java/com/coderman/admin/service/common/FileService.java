@@ -1,7 +1,7 @@
 package com.coderman.admin.service.common;
 
 import com.coderman.admin.dto.common.FileChunkDTO;
-import com.coderman.admin.vo.common.UploadChunkStartVO;
+import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.vo.ResultVO;
 
 public interface FileService {
@@ -13,7 +13,7 @@ public interface FileService {
      * @param totalParts 分片总数
      * @return
      */
-    ResultVO<UploadChunkStartVO> uploadChunkStart(String fileName, String fileHash, Integer totalParts);
+    ResultVO<UploadChunkInitVO> uploadChunkInit(String fileName, String fileHash, Integer totalParts);
 
     /**
      * 文件分片上传

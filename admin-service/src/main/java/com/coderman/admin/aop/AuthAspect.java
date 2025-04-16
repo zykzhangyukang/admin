@@ -66,7 +66,7 @@ public class AuthAspect {
             "/common/notification/page",
             "/common/chat/completion",
             "/common/file/upload/chunk",
-            "/common/file/upload/chunk/start",
+            "/common/file/upload/chunk/init",
             "/common/file/upload/chunk/finish"
     );
 

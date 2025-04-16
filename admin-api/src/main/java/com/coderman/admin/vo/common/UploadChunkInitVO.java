@@ -16,11 +16,17 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadChunkStartVO {
+public class UploadChunkInitVO {
 
     @ApiModelProperty(value = "阿里云oss任务id")
     private String uploadId;
 
     @ApiModelProperty(value = "已经上传的分块")
     private Set<Integer> uploaded;
+
+    @ApiModelProperty(value = "是否秒传")
+    private Boolean isSkip;
+
+    @ApiModelProperty(value = "秒传文件地址")
+    private String filePath;
 }
