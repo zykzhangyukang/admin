@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 
@@ -27,6 +28,15 @@ public class FileController {
     @Resource
     private FileService fileService;
 
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "普通文件上传")
+    @PostMapping(value = "/upload")
+    @ApiReturnParams({
+            @ApiReturnParam(name = "ResultVO", value = {"code", "msg", "result"}),
+    })
+    public ResultVO<String> uploadFile(MultipartFile file, String fileModule) throws Exception {
+        return this.fileService.uploadFile(file, fileModule);
+    }
+
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "分片上传开始")
     @PostMapping(value = "/upload/chunk/init")
     @ApiReturnParams({
@@ -36,7 +46,6 @@ public class FileController {
     public ResultVO<UploadChunkInitVO> uploadChunkInit(String fileName, String fileHash, Integer totalParts) {
         return this.fileService.uploadChunkInit(fileName,fileHash, totalParts);
     }
-
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "分片上传")
     @PostMapping(value = "/upload/chunk")

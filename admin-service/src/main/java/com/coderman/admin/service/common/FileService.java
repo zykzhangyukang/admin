@@ -3,8 +3,18 @@ package com.coderman.admin.service.common;
 import com.coderman.admin.dto.common.FileChunkDTO;
 import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.vo.ResultVO;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService {
+
+    /**
+     * 普通文件上传
+     * @param file 文件
+     * @param fileModule 模块
+     * @return
+     */
+    ResultVO<String> uploadFile(MultipartFile file, String fileModule) throws Exception;
+
     /**
      * 文件分片上传开始
      *

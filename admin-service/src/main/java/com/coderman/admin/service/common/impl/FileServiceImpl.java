@@ -9,6 +9,7 @@ import com.coderman.admin.dto.common.FileChunkDTO;
 import com.coderman.admin.model.common.FileExample;
 import com.coderman.admin.model.common.FileModel;
 import com.coderman.admin.service.common.FileService;
+import com.coderman.admin.utils.FileHashUtils;
 import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.exception.BusinessException;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -78,6 +80,29 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    @Transactional(timeout = 300)
+    public ResultVO<String> uploadFile(MultipartFile file, String fileModule) throws Exception {
+
+        // 计算hash
+        String fileHash = FileHashUtils.calculateFileHash(file, FileHashUtils.DEFAULT_CHUNK_SIZE);
+
+        FileModel fileModel = this.getFileByHash(fileHash);
+        if (fileModel != null) {
+            return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
+        }
+
+        AliYunOssUtil instance = AliYunOssUtil.getInstance();
+        String fileName = file.getOriginalFilename();
+        FileModuleEnum fileModuleEnum = FileModuleEnum.codeOf(fileModule);
+
+        String objectName = instance.genFilePath(fileName, fileModuleEnum);
+        instance.uploadStream(file.getInputStream(), objectName);
+
+        fileModel = this.saveFileToDb(fileName, fileHash, FileConstant.OSS_FILE_DOMAIN + objectName);
+        return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
+    }
+
+    @Override
     @LogError("初始化分片上传")
     public ResultVO<UploadChunkInitVO> uploadChunkInit(String fileName, String fileHash, Integer totalParts) {
         if (StringUtils.isAnyBlank(fileName, fileHash) || totalParts == null || totalParts <= 0) {
@@ -87,12 +112,10 @@ public class FileServiceImpl implements FileService {
         UploadChunkInitVO vo = new UploadChunkInitVO();
 
         // 秒传逻辑
-        FileExample fileExample = new FileExample();
-        fileExample.createCriteria().andFileHashEqualTo(fileHash);
-        List<FileModel> fileModels = this.fileDAO.selectByExample(fileExample);
-        if(CollectionUtils.isNotEmpty(fileModels)){
+        FileModel fileModel = this.getFileByHash(fileHash);
+        if (fileModel != null) {
             vo.setIsSkip(true);
-            vo.setFilePath(fileModels.get(0).getFilePath());
+            vo.setFilePath(fileModel.getFilePath());
             return ResultUtil.getSuccess(UploadChunkInitVO.class, vo);
         }
 
@@ -143,6 +166,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @LogError("完成文件上传")
+    @Transactional(timeout = 300)
     public ResultVO<String> uploadChunkFinish(String fileHash) {
         if (StringUtils.isBlank(fileHash)) {
             return ResultUtil.getFail("文件Hash为空");
@@ -172,15 +196,10 @@ public class FileServiceImpl implements FileService {
                     .collect(Collectors.toList());
 
             CompleteMultipartUploadResult result = oss.completeMultipartUpload(objectName, uploadId, partETags);
-            log.info("分片合并成功: {}", result.getETag());
+            log.info("分片合并结果: {}", result.getETag());
 
-            FileModel fileModel = new FileModel();
-            fileModel.setFileKey(UUIDUtils.getPrimaryValue());
-            fileModel.setCreateTime(new Date());
-            fileModel.setFileHash(fileHash);
-            fileModel.setFilePath(FileConstant.OSS_FILE_DOMAIN + objectName);
-            fileModel.setFileName(fileName);
-            this.fileDAO.insert(fileModel);
+            // 保存文件
+            FileModel fileModel = this.saveFileToDb(fileName, fileHash, FileConstant.OSS_FILE_DOMAIN + objectName);
 
             // 清理数据
             redisService.del(redisKeyUploadMeta(fileHash), RedisDbConstant.REDIS_DB_DEFAULT);
@@ -192,5 +211,26 @@ public class FileServiceImpl implements FileService {
             log.error("合并失败", e);
             throw new BusinessException("文件合并失败！");
         }
+    }
+
+    private FileModel saveFileToDb(String fileName, String fileHash, String filePath) {
+        FileModel fileModel = new FileModel();
+        fileModel.setFileKey(UUIDUtils.getPrimaryValue());
+        fileModel.setCreateTime(new Date());
+        fileModel.setFilePath(filePath);
+        fileModel.setFileHash(fileHash);
+        fileModel.setFileName(fileName);
+        this.fileDAO.insert(fileModel);
+        return fileModel;
+    }
+
+    private FileModel getFileByHash(String fileHash) {
+        FileExample fileExample = new FileExample();
+        fileExample.createCriteria().andFileHashEqualTo(fileHash);
+        List<FileModel> fileModels = this.fileDAO.selectByExample(fileExample);
+        if (CollectionUtils.isNotEmpty(fileModels)) {
+            return fileModels.get(0);
+        }
+        return null;
     }
 }
