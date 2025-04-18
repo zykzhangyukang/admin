@@ -87,21 +87,27 @@ public class FileServiceImpl implements FileService {
 
         // 计算hash
         String fileHash = FileHashUtils.calculateFileHash(file, FileHashUtils.DEFAULT_CHUNK_SIZE);
-
         FileModel fileModel = this.getFileByHash(fileHash);
         if (fileModel != null) {
+
             return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
         }
 
-        AliYunOssUtil instance = AliYunOssUtil.getInstance();
-        String fileName = file.getOriginalFilename();
-        FileModuleEnum fileModuleEnum = FileModuleEnum.codeOf(fileModule);
+        try {
 
-        String objectName = instance.genFilePath(fileName, fileModuleEnum);
-        instance.uploadStream(file.getInputStream(), objectName);
+            String fileName = file.getOriginalFilename();
+            AliYunOssUtil instance = AliYunOssUtil.getInstance();
+            FileModuleEnum fileModuleEnum = FileModuleEnum.codeOf(fileModule);
+            String objectName = instance.genFilePath(fileName, fileModuleEnum);
 
-        fileModel = this.saveFileToDb(fileName, fileHash, FileConstant.OSS_FILE_DOMAIN + objectName);
-        return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
+            instance.uploadStream(file.getInputStream(), objectName);
+            fileModel = this.saveFileToDb(fileName, fileHash, FileConstant.OSS_FILE_DOMAIN + objectName);
+
+            return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
+        } catch (Exception e) {
+            log.error("上传文件失败", e);
+            throw new BusinessException("上传文件失败");
+        }
     }
 
     @Override
