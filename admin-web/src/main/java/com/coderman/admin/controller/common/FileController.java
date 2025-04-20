@@ -9,12 +9,14 @@ import com.coderman.swagger.annotation.ApiReturnParams;
 import com.coderman.swagger.constant.SwaggerConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author ：zhangyukang
@@ -27,6 +29,13 @@ public class FileController {
 
     @Resource
     private FileService fileService;
+
+    @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "文件预览")
+    @GetMapping(value = "/preview")
+    public void preview(String fileUrl, HttpServletResponse response) throws Exception {
+        this.fileService.preview(fileUrl, response);
+    }
+
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "普通文件上传")
     @PostMapping(value = "/upload")

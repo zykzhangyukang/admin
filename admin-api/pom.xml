@@ -30,6 +30,35 @@
             <artifactId>easyexcel</artifactId>
             <version>${easyexcel.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-words</artifactId>
+            <version>22.12</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/aspose-words-22.12-jdk17_cracked.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-cells</artifactId>
+            <version>23.4</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/aspose-cells-23.4-cracked.jar</systemPath>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>lib</directory>
+                <targetPath>BOOT-INFO/lib/</targetPath>
+                <includes>
+                    <include>*.jar</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
 </project>

@@ -10,6 +10,7 @@ import com.coderman.admin.model.common.FileExample;
 import com.coderman.admin.model.common.FileModel;
 import com.coderman.admin.service.common.FileService;
 import com.coderman.admin.utils.FileHashUtils;
+import com.coderman.admin.utils.WordToPdfUtil;
 import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.exception.BusinessException;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -211,6 +213,11 @@ public class FileServiceImpl implements FileService {
             log.error("合并失败", e);
             throw new BusinessException("文件合并失败！");
         }
+    }
+
+    @Override
+    public void preview(String fileUrl, HttpServletResponse response) throws Exception {
+        WordToPdfUtil.convertUrlToPdfToResponseStream(fileUrl,response);
     }
 
     private FileModel saveFileToDb(String fileName, String fileHash, String filePath) {

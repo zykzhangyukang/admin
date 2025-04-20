@@ -5,6 +5,8 @@ import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.vo.ResultVO;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+
 public interface FileService {
 
     /**
@@ -39,4 +41,11 @@ public interface FileService {
      * @return
      */
     ResultVO<String> uploadChunkFinish(String fileHash);
+
+    /**
+     * 文件预览
+     * @param fileUrl
+     * @param response
+     */
+    void preview(String fileUrl, HttpServletResponse response) throws Exception;
 }
