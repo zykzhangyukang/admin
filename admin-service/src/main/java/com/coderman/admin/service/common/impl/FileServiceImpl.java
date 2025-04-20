@@ -3,14 +3,18 @@ package com.coderman.admin.service.common.impl;
 import com.aliyun.oss.model.CompleteMultipartUploadResult;
 import com.aliyun.oss.model.PartETag;
 import com.aliyun.oss.model.UploadPartResult;
+import com.aspose.cells.Workbook;
+import com.aspose.words.Document;
+import com.aspose.words.ImportFormatMode;
+import com.aspose.words.SaveFormat;
 import com.coderman.admin.constant.FileConstant;
 import com.coderman.admin.dao.common.FileDAO;
 import com.coderman.admin.dto.common.FileChunkDTO;
+import com.coderman.admin.dto.common.FilePreviewDTO;
 import com.coderman.admin.model.common.FileExample;
 import com.coderman.admin.model.common.FileModel;
 import com.coderman.admin.service.common.FileService;
 import com.coderman.admin.utils.FileHashUtils;
-import com.coderman.admin.utils.WordToPdfUtil;
 import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.exception.BusinessException;
@@ -22,6 +26,7 @@ import com.coderman.redis.service.RedisService;
 import com.coderman.service.anntation.LogError;
 import com.coderman.service.util.UUIDUtils;
 import com.google.common.collect.Maps;
+import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +36,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -216,9 +226,113 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void preview(String fileUrl, HttpServletResponse response) throws Exception {
-        WordToPdfUtil.convertUrlToPdfToResponseStream(fileUrl,response);
+    public void switchToPdf(FilePreviewDTO filePreviewDTO, HttpServletResponse response) throws Exception {
+        String fileName = filePreviewDTO.getCode();
+        String suffix = filePreviewDTO.getSuffix().toLowerCase();
+        String orgPath = filePreviewDTO.getPath() + fileName;
+
+        // 统一 PDF 存储路径
+        String pdfDirPath = Paths.get(getPdfUploadPath(), "pdf").toString();
+        File pdfDir = new File(pdfDirPath);
+        if (!pdfDir.exists() && pdfDir.mkdirs()) {
+            log.info("创建 PDF 文件夹成功: {}", pdfDirPath);
+        }
+
+        InputStream fis;
+        String pdfPath;
+
+        if ("pdf".equals(suffix)) {
+            pdfPath = orgPath;
+            fis = getFileInputStream(pdfPath);
+        } else {
+            String newPdfName = fileName.replaceAll("\\." + suffix + "$", ".pdf");
+            pdfPath = Paths.get(pdfDirPath, newPdfName).toString();
+            File pdfFile = new File(pdfPath);
+
+            if (!pdfFile.exists()) {
+                pdfPath = convertToPdf(pdfDirPath, newPdfName, suffix, orgPath);
+            }
+
+            fis = new FileInputStream(pdfPath);
+        }
+
+        writePdfToResponse(fis, fileName, response);
     }
+
+    private String convertToPdf(String outputDir, String fileName, String suffix, String sourcePath) throws Exception {
+        @Cleanup InputStream inputStream = getFileInputStream(sourcePath);
+        String fullPdfPath = Paths.get(outputDir, fileName).toString();
+
+        @Cleanup FileOutputStream outputStream = new FileOutputStream(fullPdfPath);
+
+        switch (suffix) {
+            case "doc":
+            case "docx":
+            case "html":
+                Document doc = new Document(inputStream);
+                Document result = new Document();
+                result.removeAllChildren();
+                result.appendDocument(doc, ImportFormatMode.USE_DESTINATION_STYLES);
+                result.save(outputStream, SaveFormat.PDF);
+                break;
+            case "xls":
+            case "xlsx":
+                Workbook workbook = new Workbook(inputStream);
+                workbook.save(outputStream, com.aspose.cells.SaveFormat.PDF);
+                break;
+            default:
+                throw new BusinessException("不支持的文件类型: " + suffix + "，请下载查看。");
+        }
+
+        return fullPdfPath;
+    }
+
+    private void writePdfToResponse(InputStream fis, String fileName, HttpServletResponse response) throws IOException {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=\"" + URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20") + ".pdf\"");
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        @Cleanup OutputStream out = response.getOutputStream();
+        byte[] buffer = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = fis.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
+        }
+        out.flush();
+    }
+
+    private InputStream getFileInputStream(String fileUrl) throws IOException {
+        try {
+            URL url = new URL(fileUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(3000);
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            return connection.getInputStream();
+        } catch (Exception e) {
+            log.error("读取远程文件失败: {}", fileUrl, e);
+            throw new FileNotFoundException("文件链接读取失败: " + fileUrl);
+        }
+    }
+
+    private String getPdfUploadPath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        String basePath;
+        if (os.contains("windows")) {
+            basePath = System.getProperty("user.home") + File.separator + "preview-files";
+        } else {
+            basePath = "/tmp/preview-files";
+        }
+
+        File dir = new File(basePath);
+        if (!dir.exists()) {
+            boolean created = dir.mkdirs();
+            log.info("PDF 临时目录不存在，已创建：{} - 成功？{}", basePath, created);
+        }
+        return dir.getAbsolutePath();
+    }
+
 
     private FileModel saveFileToDb(String fileName, String fileHash, String filePath) {
         FileModel fileModel = new FileModel();
