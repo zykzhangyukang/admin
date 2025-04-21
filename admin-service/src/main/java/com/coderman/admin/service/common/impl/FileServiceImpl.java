@@ -286,6 +286,7 @@ public class FileServiceImpl implements FileService {
                 case "doc":
                 case "docx":
                 case "html":
+                case "txt":
                     Document doc = new Document(inputStream);
                     Document result = new Document();
                     result.removeAllChildren();

@@ -54,8 +54,7 @@ public class AuthAspect {
     private static final Set<String> WHITE_LIST_URLS = Sets.newHashSet(
             "/auth/user/token",
             "/auth/user/refresh/token",
-            "/auth/user/logout",
-            "/common/file/preview"
+            "/auth/user/logout"
     );
 
     private static final Set<String> UNFILTER_HAS_LOGIN_INFO_URLS = Sets.newHashSet(
@@ -66,6 +65,8 @@ public class AuthAspect {
             "/common/notification/read",
             "/common/notification/page",
             "/common/chat/completion",
+            "/common/file/preview",
+            "/common/file/upload",
             "/common/file/upload/chunk",
             "/common/file/upload/chunk/init",
             "/common/file/upload/chunk/finish"
@@ -102,7 +103,7 @@ public class AuthAspect {
         }
 
         AuthUserVO authUserVO = validateToken(token);
-        Assert.notNull(authUserVO , "会话已过期, 请重新登录");
+        Assert.notNull(authUserVO, "会话已过期, 请重新登录");
 
         if (IS_ONE_DEVICE_LOGIN) {
             validateDevice(authUserVO, token);
