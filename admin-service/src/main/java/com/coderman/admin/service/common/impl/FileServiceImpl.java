@@ -3,14 +3,18 @@ package com.coderman.admin.service.common.impl;
 import com.aliyun.oss.model.CompleteMultipartUploadResult;
 import com.aliyun.oss.model.PartETag;
 import com.aliyun.oss.model.UploadPartResult;
+import com.aspose.words.Document;
+import com.aspose.words.ImportFormatMode;
+import com.aspose.words.SaveFormat;
 import com.coderman.admin.constant.FileConstant;
 import com.coderman.admin.dao.common.FileDAO;
 import com.coderman.admin.dto.common.FileChunkDTO;
+import com.coderman.admin.dto.common.FilePreviewDTO;
 import com.coderman.admin.model.common.FileExample;
 import com.coderman.admin.model.common.FileModel;
 import com.coderman.admin.service.common.FileService;
+import com.coderman.admin.utils.PdfUtil;
 import com.coderman.admin.utils.FileHashUtils;
-import com.coderman.admin.utils.WordToPdfUtil;
 import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.constant.RedisDbConstant;
 import com.coderman.api.exception.BusinessException;
@@ -31,6 +35,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -222,9 +231,139 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void preview(String fileUrl, HttpServletResponse response) throws Exception {
-        WordToPdfUtil.convertUrlToPdfToResponseStream(fileUrl,response);
+    public void switchToPdf(FilePreviewDTO filePreviewDTO, HttpServletResponse response) throws Exception {
+        String fileName = filePreviewDTO.getCode();
+        String suffix = filePreviewDTO.getSuffix().toLowerCase();
+        String orgPath = filePreviewDTO.getPath() + fileName;
+
+        // 统一 PDF 存储路径
+        String pdfDirPath = Paths.get(getPdfUploadPath(), "pdf").toString();
+        File pdfDir = new File(pdfDirPath);
+        if (!pdfDir.exists() && pdfDir.mkdirs()) {
+            log.info("创建 PDF 文件夹成功: {}", pdfDirPath);
+        }
+
+        InputStream fis = null;
+        String pdfPath;
+
+        try {
+            if ("pdf".equals(suffix)) {
+                pdfPath = orgPath;
+                fis = getFileInputStream(pdfPath);
+            } else {
+                String newPdfName = fileName.replaceAll("\\." + suffix + "$", ".pdf");
+                pdfPath = Paths.get(pdfDirPath, newPdfName).toString();
+                File pdfFile = new File(pdfPath);
+
+                if (!pdfFile.exists()) {
+                    pdfPath = convertToPdf(pdfDirPath, newPdfName, suffix, orgPath);
+                }
+
+                fis = new FileInputStream(pdfPath);
+            }
+            writePdfToResponse(fis, fileName, response);
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    log.warn("关闭输入流失败", e);
+                }
+            }
+        }
     }
+
+    private String convertToPdf(String outputDir, String fileName, String suffix, String sourcePath) throws Exception {
+        InputStream inputStream = null;
+        FileOutputStream outputStream = null;
+
+        try {
+            inputStream = getFileInputStream(sourcePath);
+            String fullPdfPath = Paths.get(outputDir, fileName).toString();
+            outputStream = new FileOutputStream(fullPdfPath);
+
+            switch (suffix) {
+                case "doc":
+                case "docx":
+                case "html":
+                    Document doc = new Document(inputStream);
+                    Document result = new Document();
+                    result.removeAllChildren();
+                    result.appendDocument(doc, ImportFormatMode.USE_DESTINATION_STYLES);
+                    result.save(outputStream, SaveFormat.PDF);
+                    break;
+                case "xls":
+                case "xlsx":
+                    PdfUtil.excel2pdf(inputStream, outputStream);
+                    break;
+                default:
+                    throw new BusinessException("不支持的文件类型: " + suffix + "，请下载查看。");
+            }
+
+            return fullPdfPath;
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    log.warn("关闭 inputStream 失败", e);
+                }
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    log.warn("关闭 outputStream 失败", e);
+                }
+            }
+        }
+    }
+
+    private void writePdfToResponse(InputStream fis, String fileName, HttpServletResponse response) throws IOException {
+        OutputStream out = null;
+        try {
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline; filename=\"" + URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20") + ".pdf\"");
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
+
+            out = response.getOutputStream();
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            out.flush();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    log.warn("关闭 response 输出流失败", e);
+                }
+            }
+        }
+    }
+
+    private InputStream getFileInputStream(String fileUrl) throws IOException {
+        try {
+            URL url = new URL(fileUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setConnectTimeout(3000);
+            connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
+            return connection.getInputStream();
+        } catch (Exception e) {
+            log.error("读取远程文件失败: {}", fileUrl, e);
+            throw new FileNotFoundException("文件链接读取失败: " + fileUrl);
+        }
+    }
+
+    private String getPdfUploadPath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return os.contains("windows") ? "E:/home/file" : "/var/java/www/uploadFile";
+    }
+
 
     private FileModel saveFileToDb(String fileName, String fileHash, String filePath) {
         FileModel fileModel = new FileModel();

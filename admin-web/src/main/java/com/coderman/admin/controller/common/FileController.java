@@ -1,6 +1,7 @@
 package com.coderman.admin.controller.common;
 
 import com.coderman.admin.dto.common.FileChunkDTO;
+import com.coderman.admin.dto.common.FilePreviewDTO;
 import com.coderman.admin.service.common.FileService;
 import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.vo.ResultVO;
@@ -32,8 +33,8 @@ public class FileController {
 
     @ApiOperation(httpMethod = SwaggerConstant.METHOD_POST, value = "文件预览")
     @GetMapping(value = "/preview")
-    public void preview(String fileUrl, HttpServletResponse response) throws Exception {
-        this.fileService.preview(fileUrl, response);
+    public void switchToPdf(FilePreviewDTO filePreviewDTO, HttpServletResponse response) throws Exception {
+        this.fileService.switchToPdf(filePreviewDTO, response);
     }
 
 

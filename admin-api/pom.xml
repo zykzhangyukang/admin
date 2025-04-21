@@ -44,7 +44,7 @@
             <artifactId>aspose-cells</artifactId>
             <version>23.4</version>
             <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/aspose-cells-23.4-cracked.jar</systemPath>
+            <systemPath>${pom.basedir}/lib/aspose-cells-23.4_cracked.jar</systemPath>
         </dependency>
 
     </dependencies>

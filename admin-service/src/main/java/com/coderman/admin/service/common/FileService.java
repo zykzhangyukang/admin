@@ -1,6 +1,7 @@
 package com.coderman.admin.service.common;
 
 import com.coderman.admin.dto.common.FileChunkDTO;
+import com.coderman.admin.dto.common.FilePreviewDTO;
 import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.vo.ResultVO;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,5 +48,5 @@ public interface FileService {
      * @param fileUrl
      * @param response
      */
-    void preview(String fileUrl, HttpServletResponse response) throws Exception;
+    public void switchToPdf(FilePreviewDTO filePreviewDTO, HttpServletResponse response) throws Exception;
 }
