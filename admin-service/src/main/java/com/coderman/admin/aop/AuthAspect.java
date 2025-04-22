@@ -54,7 +54,8 @@ public class AuthAspect {
     private static final Set<String> WHITE_LIST_URLS = Sets.newHashSet(
             "/auth/user/token",
             "/auth/user/refresh/token",
-            "/auth/user/logout"
+            "/auth/user/logout",
+            "/test/push"
     );
 
     private static final Set<String> UNFILTER_HAS_LOGIN_INFO_URLS = Sets.newHashSet(
