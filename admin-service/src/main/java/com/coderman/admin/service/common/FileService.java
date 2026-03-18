@@ -48,5 +48,5 @@ public interface FileService {
      * @param filePreviewDTO
      * @param response
      */
-    void switchToPdf(FilePreviewDTO filePreviewDTO, HttpServletResponse response) throws Exception;
+    public void switchToPdf(FilePreviewDTO filePreviewDTO, HttpServletResponse response) throws Exception;
 }

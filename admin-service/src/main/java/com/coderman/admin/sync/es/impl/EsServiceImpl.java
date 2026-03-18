@@ -1,6 +1,5 @@
 package com.coderman.admin.sync.es.impl;
 
-import ch.qos.logback.classic.util.EnvUtil;
 import com.alibaba.fastjson.JSON;
 import com.coderman.admin.sync.constant.PlanConstant;
 import com.coderman.admin.sync.es.EsService;
@@ -28,7 +27,6 @@ import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.Index;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;

@@ -3,7 +3,6 @@ package com.coderman.admin.service.common.impl;
 import com.aliyun.oss.model.CompleteMultipartUploadResult;
 import com.aliyun.oss.model.PartETag;
 import com.aliyun.oss.model.UploadPartResult;
-import com.aspose.cells.Workbook;
 import com.aspose.words.Document;
 import com.aspose.words.ImportFormatMode;
 import com.aspose.words.SaveFormat;
@@ -14,6 +13,7 @@ import com.coderman.admin.dto.common.FilePreviewDTO;
 import com.coderman.admin.model.common.FileExample;
 import com.coderman.admin.model.common.FileModel;
 import com.coderman.admin.service.common.FileService;
+import com.coderman.admin.utils.PdfUtil;
 import com.coderman.admin.utils.FileHashUtils;
 import com.coderman.admin.vo.common.UploadChunkInitVO;
 import com.coderman.api.constant.RedisDbConstant;
@@ -97,21 +97,27 @@ public class FileServiceImpl implements FileService {
 
         // 计算hash
         String fileHash = FileHashUtils.calculateFileHash(file, FileHashUtils.DEFAULT_CHUNK_SIZE);
-
         FileModel fileModel = this.getFileByHash(fileHash);
         if (fileModel != null) {
+
             return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
         }
 
-        AliYunOssUtil instance = AliYunOssUtil.getInstance();
-        String fileName = file.getOriginalFilename();
-        FileModuleEnum fileModuleEnum = FileModuleEnum.codeOf(fileModule);
+        try {
 
-        String objectName = instance.genFilePath(fileName, fileModuleEnum);
-        instance.uploadStream(file.getInputStream(), objectName);
+            String fileName = file.getOriginalFilename();
+            AliYunOssUtil instance = AliYunOssUtil.getInstance();
+            FileModuleEnum fileModuleEnum = FileModuleEnum.codeOf(fileModule);
+            String objectName = instance.genFilePath(fileName, fileModuleEnum);
 
-        fileModel = this.saveFileToDb(fileName, fileHash, FileConstant.OSS_FILE_DOMAIN + objectName);
-        return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
+            instance.uploadStream(file.getInputStream(), objectName);
+            fileModel = this.saveFileToDb(fileName, fileHash, FileConstant.OSS_FILE_DOMAIN + objectName);
+
+            return ResultUtil.getSuccess(String.class, fileModel.getFilePath());
+        } catch (Exception e) {
+            log.error("上传文件失败", e);
+            throw new BusinessException("上传文件失败");
+        }
     }
 
     @Override
@@ -238,69 +244,108 @@ public class FileServiceImpl implements FileService {
             log.info("创建 PDF 文件夹成功: {}", pdfDirPath);
         }
 
-        InputStream fis;
+        InputStream fis = null;
         String pdfPath;
 
-        if ("pdf".equals(suffix)) {
-            pdfPath = orgPath;
-            fis = getFileInputStream(pdfPath);
-        } else {
-            String newPdfName = fileName.replaceAll("\\." + suffix + "$", ".pdf");
-            pdfPath = Paths.get(pdfDirPath, newPdfName).toString();
-            File pdfFile = new File(pdfPath);
+        try {
+            if ("pdf".equals(suffix)) {
+                pdfPath = orgPath;
+                fis = getFileInputStream(pdfPath);
+            } else {
+                String newPdfName = fileName.replaceAll("\\." + suffix + "$", ".pdf");
+                pdfPath = Paths.get(pdfDirPath, newPdfName).toString();
+                File pdfFile = new File(pdfPath);
 
-            if (!pdfFile.exists()) {
-                pdfPath = convertToPdf(pdfDirPath, newPdfName, suffix, orgPath);
+                if (!pdfFile.exists()) {
+                    pdfPath = convertToPdf(pdfDirPath, newPdfName, suffix, orgPath);
+                }
+
+                fis = new FileInputStream(pdfPath);
             }
-
-            fis = new FileInputStream(pdfPath);
+            writePdfToResponse(fis, fileName, response);
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    log.warn("关闭输入流失败", e);
+                }
+            }
         }
-
-        writePdfToResponse(fis, fileName, response);
     }
 
     private String convertToPdf(String outputDir, String fileName, String suffix, String sourcePath) throws Exception {
-        @Cleanup InputStream inputStream = getFileInputStream(sourcePath);
-        String fullPdfPath = Paths.get(outputDir, fileName).toString();
+        InputStream inputStream = null;
+        FileOutputStream outputStream = null;
 
-        @Cleanup FileOutputStream outputStream = new FileOutputStream(fullPdfPath);
+        try {
+            inputStream = getFileInputStream(sourcePath);
+            String fullPdfPath = Paths.get(outputDir, fileName).toString();
+            outputStream = new FileOutputStream(fullPdfPath);
 
-        switch (suffix) {
-            case "doc":
-            case "docx":
-            case "html":
-                Document doc = new Document(inputStream);
-                Document result = new Document();
-                result.removeAllChildren();
-                result.appendDocument(doc, ImportFormatMode.USE_DESTINATION_STYLES);
-                result.save(outputStream, SaveFormat.PDF);
-                break;
-            case "xls":
-            case "xlsx":
-                Workbook workbook = new Workbook(inputStream);
-                workbook.save(outputStream, com.aspose.cells.SaveFormat.PDF);
-                break;
-            default:
-                throw new BusinessException("不支持的文件类型: " + suffix + "，请下载查看。");
+            switch (suffix) {
+                case "doc":
+                case "docx":
+                case "html":
+                case "txt":
+                    Document doc = new Document(inputStream);
+                    Document result = new Document();
+                    result.removeAllChildren();
+                    result.appendDocument(doc, ImportFormatMode.USE_DESTINATION_STYLES);
+                    result.save(outputStream, SaveFormat.PDF);
+                    break;
+                case "xls":
+                case "xlsx":
+                    PdfUtil.excel2pdf(inputStream, outputStream);
+                    break;
+                default:
+                    throw new BusinessException("不支持的文件类型: " + suffix + "，请下载查看。");
+            }
+
+            return fullPdfPath;
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    log.warn("关闭 inputStream 失败", e);
+                }
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    log.warn("关闭 outputStream 失败", e);
+                }
+            }
         }
-
-        return fullPdfPath;
     }
 
     private void writePdfToResponse(InputStream fis, String fileName, HttpServletResponse response) throws IOException {
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20") + ".pdf\"");
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
+        OutputStream out = null;
+        try {
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline; filename=\"" + URLEncoder.encode(fileName, "UTF-8").replaceAll("\\+", "%20") + ".pdf\"");
+            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.setHeader("Pragma", "no-cache");
+            response.setDateHeader("Expires", 0);
 
-        @Cleanup OutputStream out = response.getOutputStream();
-        byte[] buffer = new byte[8192];
-        int bytesRead;
-        while ((bytesRead = fis.read(buffer)) != -1) {
-            out.write(buffer, 0, bytesRead);
+            out = response.getOutputStream();
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            out.flush();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    log.warn("关闭 response 输出流失败", e);
+                }
+            }
         }
-        out.flush();
     }
 
     private InputStream getFileInputStream(String fileUrl) throws IOException {
@@ -308,7 +353,7 @@ public class FileServiceImpl implements FileService {
             URL url = new URL(fileUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setConnectTimeout(3000);
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
             return connection.getInputStream();
         } catch (Exception e) {
             log.error("读取远程文件失败: {}", fileUrl, e);
@@ -318,19 +363,7 @@ public class FileServiceImpl implements FileService {
 
     private String getPdfUploadPath() {
         String os = System.getProperty("os.name").toLowerCase();
-        String basePath;
-        if (os.contains("windows")) {
-            basePath = System.getProperty("user.home") + File.separator + "preview-files";
-        } else {
-            basePath = "/tmp/preview-files";
-        }
-
-        File dir = new File(basePath);
-        if (!dir.exists()) {
-            boolean created = dir.mkdirs();
-            log.info("PDF 临时目录不存在，已创建：{} - 成功？{}", basePath, created);
-        }
-        return dir.getAbsolutePath();
+        return os.contains("windows") ? "E:/home/file" : "/var/java/www/uploadFile";
     }
 
 
