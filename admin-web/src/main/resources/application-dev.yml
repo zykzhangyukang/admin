@@ -5,7 +5,7 @@ spring:
     name: admin
   datasource:
     username: root
-    url: jdbc:mysql://123.207.37.80:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://127.0.0.1:3306/admin_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
     password: DES@99D5518076FE8F32214D66F4B59766B7
   redis:
     host: 127.0.0.1
@@ -23,7 +23,7 @@ sync:
   # es 配置
   elasticsearch:
     clusterName: docker-cluster
-    hosts: 123.207.37.80:9200
+    hosts: 127.0.0.1:9200
     scheme: http
     connectTimeOut: 5000
     socketTimeOut: 60000
