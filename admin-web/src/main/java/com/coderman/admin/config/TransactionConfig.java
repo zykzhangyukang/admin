@@ -31,7 +31,7 @@ import java.util.List;
 @Aspect
 @Configuration
 @Slf4j
-public class TransactionConfigure {
+public class TransactionConfig {
 
     @Resource
     private DataSource dataSource;

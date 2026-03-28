@@ -19,7 +19,7 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 @Component(value = "adminRedisConfig")
 @Configuration
-public class RedisConfigure extends BaseRedisConfig {
+public class RedisConfig extends BaseRedisConfig {
 
 
     @Bean
@@ -36,7 +36,8 @@ public class RedisConfigure extends BaseRedisConfig {
     }
 
     @Bean
-    public JedisConnectionFactory jedisConnectionFactory(@Qualifier(value = "adminRedisProperties") RedisProperties properties,@Qualifier(value = "adminJedisPoolConfig") JedisPoolConfig jedisPoolConfig){
+    public JedisConnectionFactory jedisConnectionFactory(@Qualifier(value = "adminRedisProperties") RedisProperties properties,
+                                                         @Qualifier(value = "adminJedisPoolConfig") JedisPoolConfig jedisPoolConfig){
         return createJedisConnectionFactory(properties, jedisPoolConfig);
     }
 
